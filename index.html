@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>가상 과학 실험실</title>
+    <style>
+        :root {
+            --primary-color: #4a90e2;
+            --bg-color: #1a1a2e;
+            --card-bg: #16213e;
+            --text-color: #e9ecef;
+        }
+
+        body {
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 50px;
+            margin-top: 50px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+            text-shadow: 0 0 15px rgba(74, 144, 226, 0.3);
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            width: 100%;
+            max-width: 900px;
+        }
+
+        .lab-card {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .lab-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            border-color: var(--primary-color);
+        }
+
+        .lab-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .lab-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .lab-desc {
+            font-size: 0.95rem;
+            color: #94a3b8;
+            line-height: 1.5;
+        }
+
+        footer {
+            margin-top: auto;
+            padding: 40px;
+            font-size: 0.8rem;
+            color: #64748b;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>🔬 가상 과학 실험실</h1>
+        <p>실험을 선택하여 과학의 원리를 탐구해 보세요.</p>
+    </header>
+
+    <div class="container">
+        <a href="./reflection/" class="lab-card">
+            <span class="lab-icon">🔦</span>
+            <div class="lab-title">빛의 반사</div>
+            <div class="lab-desc">입사각과 반사각의 관계를<br>레이저를 이용해 측정합니다.</div>
+        </a>
+
+        <a href="./refraction/" class="lab-card">
+            <span class="lab-icon">🌈</span>
+            <div class="lab-title">빛의 굴절</div>
+            <div class="lab-desc">매질에 따라 꺾이는 빛의<br>경로를 관찰합니다. (준비 중)</div>
+        </a>
+
+        <a href="#" class="lab-card" style="opacity: 0.6; cursor: default;">
+            <span class="lab-icon">🧪</span>
+            <div class="lab-title">다음 실험</div>
+            <div class="lab-desc">새로운 실험이 곧<br>업데이트될 예정입니다.</div>
+        </a>
+    </div>
+
+    <footer>
+        &copy; 2026 과학 선생님의 가상 실험실. All rights reserved.
+    </footer>
+
+</body>
+</html>
