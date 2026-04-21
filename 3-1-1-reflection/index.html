@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>빛의 반사 법칙 시뮬레이션 v1.2</title>
+    <title>빛의 반사 법칙 시뮬레이션 v1.2.1</title>
     <style>
         body {
             margin: 0;
@@ -15,28 +15,27 @@
             min-height: 100vh;
         }
 
-        /* 상단 실시간 각도 표시 */
-        #top-nav {
+        /* 헤더 (제목만 표시) */
+        header {
             width: 100%;
             background-color: #2c3e50;
             color: white;
-            padding: 15px 0;
+            padding: 20px 0;
             text-align: center;
-            font-size: 1.6rem;
+            font-size: 1.8rem;
             font-weight: bold;
             box-shadow: 0 4px 10px rgba(0,0,0,0.2);
             z-index: 10;
         }
-        #top-nav span { color: #f1c40f; margin: 0 10px; }
 
-        /* 메인 컨텐츠 (중앙) */
+        /* 메인 컨텐츠 */
         #main-wrapper {
             flex: 1;
             display: flex;
             justify-content: center;
             align-items: flex-start;
             gap: 20px;
-            padding: 30px;
+            padding: 40px 30px;
             width: 100%;
             max-width: 1300px;
             margin: 0 auto;
@@ -66,6 +65,16 @@
         }
 
         h2 { font-size: 1.3rem; margin: 0 0 5px 0; color: #34495e; border-bottom: 3px solid #3498db; display: inline-block; }
+
+        .instruction {
+            font-size: 0.9rem;
+            color: #7f8c8d;
+            line-height: 1.5;
+            background: #e8f4fd;
+            padding: 10px;
+            border-radius: 8px;
+            border-left: 4px solid #3498db;
+        }
 
         .input-box {
             background: #f8f9fa;
@@ -129,7 +138,7 @@
             background-color: #2c3e50;
             color: #bdc3c7;
             text-align: center;
-            padding: 20px 0;
+            padding: 25px 0;
             font-size: 0.85rem;
             line-height: 1.6;
         }
@@ -139,9 +148,9 @@
 </head>
 <body>
 
-    <div id="top-nav">
-        실시간 측정값 → [ 입사각: <span id="real-i">0</span>° ] [ 반사각: <span id="real-r">0</span>° ]
-    </div>
+    <header>
+        빛의 반사 법칙 실험실
+    </header>
 
     <div id="main-wrapper">
         <div id="canvas-container">
@@ -149,13 +158,20 @@
         </div>
 
         <div id="control-panel">
-            <h2>측정 기록하기</h2>
+            <h2>측정 방법</h2>
+            <p class="instruction">
+                1. 레이저를 드래그하여 각도를 바꿉니다.<br>
+                2. <b>법선(90°)</b>을 기준으로 입사각과 반사각을 직접 읽어보세요.<br>
+                3. 아래에 측정값을 입력하고 기록하세요.
+            </p>
+
+            <h2>값 입력</h2>
             <div class="input-box">
-                <label>내가 읽은 입사각:</label>
+                <label>내가 측정한 입사각(i):</label>
                 <input type="number" id="ui-i" placeholder="도(°)">
-                <label>내가 읽은 반사각:</label>
+                <label>내가 측정한 반사각(r):</label>
                 <input type="number" id="ui-r" placeholder="도(°)">
-                <button class="btn-add" onclick="saveRecord()">비교 및 기록</button>
+                <button class="btn-add" onclick="saveRecord()">비교 및 기록하기</button>
             </div>
 
             <h2>실험 데이터 목록</h2>
@@ -164,8 +180,8 @@
                     <thead>
                         <tr>
                             <th>회차</th>
-                            <th>내 입력</th>
-                            <th>실제값</th>
+                            <th>내 측정값</th>
+                            <th>실제 정답</th>
                         </tr>
                     </thead>
                     <tbody id="log-body"></tbody>
@@ -177,15 +193,13 @@
 
     <footer>
         <div class="copyright">Copyright © 2026 LEE HANEUL. All Rights Reserved.</div>
-        <div class="version">Physics Simulation: Light Reflection v1.2.0 | Science Education Tool</div>
-        <div>본 시뮬레이션은 중학교 과학 교과과정의 빛의 반사 법칙 학습을 위해 제작되었습니다.</div>
+        <div class="version">Physics Simulation: Light Reflection v1.2.1 | Science Education Tool</div>
+        <div>본 프로그램은 중학교 과학 교육과정의 빛의 반사 법칙 학습을 위해 제작되었습니다.</div>
     </footer>
 
 <script>
     const canvas = document.getElementById('simCanvas');
     const ctx = canvas.getContext('2d');
-    const realI = document.getElementById('real-i');
-    const realR = document.getElementById('real-r');
     const logBody = document.getElementById('log-body');
 
     const W = 800;
@@ -204,16 +218,15 @@
     function draw() {
         ctx.clearRect(0, 0, W, H);
 
-        // 1. [레이어 1] 각도기 흰색 배경
+        // 1. 각도기 흰색 배경
         ctx.beginPath();
         ctx.arc(CX, CY, R, Math.PI, 0);
-        ctx.fillStyle = "rgba(255, 255, 255, 1)";
+        ctx.fillStyle = "white";
         ctx.fill();
 
-        // 2. [레이어 2] 평면 거울 (각도기 배경 위에 그림)
+        // 2. 평면 거울 (배경 위)
         ctx.fillStyle = "#2c3e50"; 
         ctx.fillRect(CX - 380, CY, 760, 40);
-        // 거울 반사면 상단 선
         ctx.beginPath();
         ctx.moveTo(CX - 380, CY);
         ctx.lineTo(CX + 380, CY);
@@ -221,7 +234,7 @@
         ctx.lineWidth = 2;
         ctx.stroke();
 
-        // 3. [레이어 3] 빛(레이저) 그리기
+        // 3. 빛(레이저) 그리기
         const radIn = (90 + currentAngleFromNormal - 180) * (Math.PI / 180);
         const radOut = (90 - currentAngleFromNormal - 180) * (Math.PI / 180);
 
@@ -230,14 +243,11 @@
         const outX = CX + Math.cos(radOut) * R;
         const outY = CY + Math.sin(radOut) * R;
 
-        // 입사광 (빨강)
-        drawLaser(inX, inY, CX, CY, "#ff3e3e");
-        // 반사광 (파랑)
-        drawLaser(CX, CY, outX, outY, "#3498db");
-        // 레이저 포인터 기기
+        drawLaser(inX, inY, CX, CY, "#ff3e3e"); // 입사광
+        drawLaser(CX, CY, outX, outY, "#3498db"); // 반사광
         drawDevice(inX, inY, Math.atan2(CY - inY, CX - inX));
 
-        // 4. [레이어 4] 각도기 눈금과 숫자 (맨 앞으로 배치하여 0도, 180도 가독성 확보)
+        // 4. 각도기 눈금과 숫자 (맨 앞 레이어)
         drawProtractorScales();
 
         // 5. 법선 그리기
@@ -253,11 +263,6 @@
         ctx.font = "bold 14px Arial";
         ctx.textAlign = "center";
         ctx.fillText("법선(90°)", CX, CY - R - 30);
-
-        // 6. 실시간 상단 값 업데이트
-        const absAngle = Math.abs(Math.round(currentAngleFromNormal));
-        realI.innerText = absAngle;
-        realR.innerText = absAngle;
     }
 
     function drawProtractorScales() {
@@ -289,7 +294,6 @@
                 ctx.fillText(i, tx, ty);
             }
         }
-        // 각도기 외곽 테두리
         ctx.beginPath();
         ctx.arc(CX, CY, R, Math.PI, 0);
         ctx.strokeStyle = "#000";
@@ -309,7 +313,6 @@
         ctx.stroke();
         ctx.restore();
 
-        // 진행 방향 화살표
         const mx = (x1 + x2) / 2;
         const my = (y1 + y2) / 2;
         const ang = Math.atan2(y2 - y1, x2 - x1);
@@ -359,13 +362,13 @@
     function saveRecord() {
         const uiI = document.getElementById('ui-i').value;
         const uiR = document.getElementById('ui-r').value;
-        if (uiI === "" || uiR === "") return alert("각도를 먼저 입력해주세요!");
+        if (uiI === "" || uiR === "") return alert("측정값을 먼저 입력해 주세요!");
 
         count++;
         const actual = Math.abs(Math.round(currentAngleFromNormal));
         const row = document.createElement('tr');
         row.innerHTML = `
-            <td>${count}</td>
+            <td>${count}회</td>
             <td>입:${uiI}° / 반:${uiR}°</td>
             <td class="match-text">${actual}° / ${actual}°</td>
         `;
@@ -375,13 +378,12 @@
     }
 
     function resetLogs() {
-        if (confirm("기록된 모든 데이터를 삭제하시겠습니까?")) {
+        if (confirm("실험 기록을 모두 초기화할까요?")) {
             logBody.innerHTML = "";
             count = 0;
         }
     }
 
-    // 페이지 로드 시 초기 그리기
     draw();
 </script>
 </body>
