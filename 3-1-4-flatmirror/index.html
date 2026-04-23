@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>평면 거울 가상 실험실 v2.3</title>
+    <style>
+        :root {
+            --bg-color: #ffffff;
+            --panel-bg: #f8f9fa;
+            --border-color: #dee2e6;
+            --accent-blue: #0284c7;
+            --ray-red: #ef4444;
+            --guide-line-height: 1.6;
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { 
+            font-family: 'Pretendard', sans-serif; 
+            margin: 0; display: flex; height: 100vh; 
+            background: var(--bg-color); color: #333; overflow: hidden; 
+            touch-action: none;
+        }
+
+        /* 좌측 상단 헤더 및 가이드 */
+        #header {
+            position: absolute; top: 25px; left: 25px;
+            z-index: 10; pointer-events: none;
+        }
+        h1 { margin: 0 0 10px 0; font-size: 28px; color: var(--accent-blue); font-weight: 800; }
+        .guide { 
+            background: rgba(255, 255, 255, 0.9); padding: 20px; border-radius: 12px; 
+            font-size: 15px; line-height: var(--guide-line-height); border: 1px solid #e2e8f0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        /* 우측 컨트롤 패널 */
+        #controls {
+            width: 420px; background: var(--panel-bg); border-left: 1px solid var(--border-color);
+            padding: 35px; display: flex; flex-direction: column; gap: 20px; z-index: 10;
+            overflow-y: auto;
+        }
+        
+        .control-group { display: flex; flex-direction: column; gap: 12px; }
+        label { font-size: 15px; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 1px; }
+        
+        button {
+            min-height: 60px; border: 1px solid #e2e8f0; border-radius: 12px; font-size: 17px; font-weight: 600;
+            cursor: pointer; transition: 0.2s; background: #fff;
+        }
+        button.active { background: var(--accent-blue); color: #fff; border-color: var(--accent-blue); }
+        .btn-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+
+        /* 실험 방법 박스 */
+        .method-box {
+            background: #fff; border: 1px solid #e2e8f0; border-radius: 12px;
+            padding: 25px; color: #475569;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
+            font-size: 15px; 
+            line-height: var(--guide-line-height);
+            margin-top: 10px;
+        }
+        .method-box b.title { color: var(--accent-blue); font-size: 18px; display: block; margin-bottom: 12px; }
+        .method-item { margin-bottom: 8px; }
+        .highlight { color: var(--accent-blue); font-weight: 700; }
+
+        #experiment-area { flex: 1; position: relative; display: flex; align-items: center; justify-content: center; background: white; }
+        canvas { cursor: crosshair; touch-action: none; }
+
+        /* 하단 고정 저작권 */
+        .global-copyright {
+            position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+            width: 100%; text-align: center; font-size: 12px; color: #868e96;
+            line-height: 1.6; pointer-events: none; z-index: 100;
+            background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(8px); 
+            padding: 15px 0; border-top: 1px solid #f1f5f9;
+            word-break: keep-all;
+        }
+    </style>
+</head>
+<body>
+
+<div id="header">
+    <h1>평면 거울 가상 실험실</h1>
+    <div class="guide">
+        • <b>물체</b>를 드래그하여 거울과의 거리를 조절해 보세요.<br>
+        • 배경의 <b>방안지 눈금</b>을 통해 상의 크기와 거리를 가늠해 보세요.<br>
+        • 거울면을 기준으로 <b>사과를 든 손</b>의 위치가 어떻게 바뀌는지 확인하세요.
+    </div>
+</div>
+
+<div id="experiment-area">
+    <canvas id="simCanvas"></canvas>
+</div>
+
+<aside id="controls">
+    <div class="control-group">
+        <label>빛의 경로 설정</label>
+        <button onclick="toggleRay()" id="btn-ray" class="active">빛의 경로 켜기</button>
+    </div>
+
+    <div class="control-group">
+        <label>실험 물체 선택</label>
+        <div class="btn-grid">
+            <button onclick="setObject('candle')" id="o-candle" class="active">촛불</button>
+            <button onclick="setObject('bear')" id="o-bear">곰돌이</button>
+            <button onclick="setObject('arrow')" id="o-arrow">수평 화살표</button>
+        </div>
+    </div>
+
+    <div class="method-box">
+        <b class="title">[실험 방법]</b>
+        <div class="method-item">1. <span class="highlight">빛의 경로 설정</span> 버튼을 클릭하여 화면에 <span class="highlight">광선</span>을 표시하고 물리적 원리를 확인합니다.</div>
+        <div class="method-item">2. 화면의 <span class="highlight">실험 물체</span>를 잡고 좌우로 <span class="highlight">드래그</span>하여 거울에 가까이 가거나 멀어지게 합니다.</div>
+        <div class="method-item">3. 배경의 <span class="highlight">눈금</span>을 이용해 거울 속 <span class="highlight">상의 크기</span>가 물체와 항상 같은지 직접 비교해 봅니다.</div>
+        <div class="method-item">4. 곰돌이가 <span class="highlight">사과를 든 손</span>의 위치와 <span class="highlight">수평 화살표</span>가 가리키는 방향이 어떻게 반전되는지 관찰합니다.</div>
+    </div>
+</aside>
+
+<div class="global-copyright">
+    © 2026. <b>LEE HANEUL</b> All rights reserved.<br>
+    Physics Simulation: Light Refraction v1.2.2 (2026-04-23)<br>
+    본 프로그램은 아이패드 및 태블릿 환경에서의 터치 조작을 지원합니다.
+</div>
+
+<script>
+    const canvas = document.getElementById('simCanvas');
+    const ctx = canvas.getContext('2d');
+
+    let width, height, centerX, centerY;
+    let isDragging = false;
+    
+    const state = {
+        objType: 'candle', 
+        showRay: true,
+        objX: -220,
+        objY: 0,
+        eyePos: { x: -450, y: -180 }
+    };
+
+    // 물체별 빛 시작 지점 (dx, dy 오프셋)
+    const rayPointsMap = {
+        candle: [{dx: 0, dy: -65}, {dx: 0, dy: 0}, {dx: 0, dy: 65}],
+        bear: [
+            {dx: 0, dy: -79},  // 정수리
+            {dx: 45, dy: 15},  // 사과 (viewer 기준 오른쪽 손)
+            {dx: 15, dy: 65}   // 오른쪽 발 (viewer 기준 오른쪽 발)
+        ],
+        arrow: [{dx: 55, dy: 0}, {dx: 0, dy: 0}, {dx: -50, dy: 0}]
+    };
+
+    function init() {
+        resize();
+        render();
+    }
+
+    function resize() {
+        width = window.innerWidth - (window.innerWidth > 768 ? 420 : 0);
+        height = window.innerHeight;
+        canvas.width = width;
+        canvas.height = height;
+        centerX = width / 2 + 60;
+        centerY = height / 2;
+        state.eyePos = { x: centerX - 480, y: centerY - 200 };
+    }
+
+    window.addEventListener('resize', init);
+
+    function getInputPos(e) {
+        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+        return { x: clientX, y: clientY };
+    }
+
+    canvas.addEventListener('mousedown', (e) => {
+        const pos = getInputPos(e);
+        if (Math.hypot(pos.x - (centerX + state.objX), pos.y - (centerY + state.objY)) < 130) isDragging = true;
+    });
+
+    window.addEventListener('mousemove', (e) => {
+        if (!isDragging) return;
+        const pos = getInputPos(e);
+        state.objX = Math.min(-70, pos.x - centerX);
+        state.objY = pos.y - centerY;
+        render();
+    });
+
+    window.addEventListener('mouseup', () => isDragging = false);
+    
+    canvas.addEventListener('touchstart', (e) => {
+        const pos = getInputPos(e);
+        if (Math.hypot(pos.x - (centerX + state.objX), pos.y - (centerY + state.objY)) < 150) isDragging = true;
+    }, {passive: false});
+    canvas.addEventListener('touchmove', (e) => {
+        if (!isDragging) return;
+        const pos = getInputPos(e);
+        state.objX = Math.min(-70, pos.x - centerX);
+        state.objY = pos.y - centerY;
+        render();
+    }, {passive: false});
+    window.addEventListener('touchend', () => isDragging = false);
+
+    function setObject(type) {
+        state.objType = type;
+        document.querySelectorAll('.btn-grid button').forEach(b => b.classList.remove('active'));
+        document.getElementById('o-' + type).classList.add('active');
+        render();
+    }
+
+    function toggleRay() {
+        state.showRay = !state.showRay;
+        document.getElementById('btn-ray').classList.toggle('active');
+        document.getElementById('btn-ray').innerText = state.showRay ? "빛의 경로 켜기" : "빛의 경로 끄기";
+        render();
+    }
+
+    function drawGrid() {
+        ctx.save();
+        ctx.strokeStyle = "rgba(0, 0, 0, 0.05)";
+        ctx.lineWidth = 1;
+        const gridSize = 50;
+        for (let x = 0; x < width; x += gridSize) {
+            ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, height); ctx.stroke();
+        }
+        for (let y = 0; y < height; y += gridSize) {
+            ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(width, y); ctx.stroke();
+        }
+        ctx.restore();
+    }
+
+    function drawEye(x, y) {
+        ctx.save();
+        ctx.translate(x, y);
+        ctx.strokeStyle = "#334155"; ctx.lineWidth = 3; ctx.lineCap = "round";
+        ctx.beginPath(); ctx.arc(0, -15, 35, Math.PI * 1.1, Math.PI * 1.9); ctx.stroke();
+        ctx.fillStyle = "#fff"; ctx.strokeStyle = "#1e293b"; ctx.lineWidth = 2.5;
+        ctx.beginPath(); ctx.moveTo(-40, 0); ctx.quadraticCurveTo(0, -28, 40, 0); ctx.quadraticCurveTo(0, 28, -40, 0); ctx.fill(); ctx.stroke();
+        ctx.fillStyle = "#475569"; ctx.beginPath(); ctx.arc(12, 0, 14, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = "#000"; ctx.beginPath(); ctx.arc(14, 0, 7, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.arc(8, -5, 4, 0, Math.PI * 2); ctx.fill();
+        ctx.restore();
+    }
+
+    function drawObject(x, y, type, isImage = false) {
+        ctx.save();
+        ctx.translate(x, y);
+        if (isImage) { ctx.scale(-1, 1); ctx.globalAlpha = 0.5; }
+        ctx.lineWidth = 3; ctx.lineJoin = "round"; ctx.strokeStyle = "#334155";
+
+        switch(type) {
+            case 'candle':
+                ctx.fillStyle = "#FFEDD5"; ctx.fillRect(-15, -30, 30, 95); ctx.strokeRect(-15, -30, 30, 95);
+                ctx.fillStyle = "#F97316";
+                ctx.beginPath(); ctx.moveTo(0, -65); ctx.quadraticCurveTo(18, -48, 0, -30); ctx.quadraticCurveTo(-18, -48, 0, -65); ctx.fill();
+                break;
+            case 'bear':
+                ctx.fillStyle = "#A56D5D";
+                ctx.beginPath(); ctx.ellipse(-15, 65, 12, 18, 0, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+                ctx.beginPath(); ctx.ellipse(15, 65, 12, 18, 0, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+                ctx.beginPath(); ctx.ellipse(0, 20, 38, 50, 0, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+                ctx.beginPath(); ctx.arc(0, -45, 34, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+                ctx.beginPath(); ctx.arc(-26, -72, 13, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+                ctx.beginPath(); ctx.arc(26, -72, 13, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+                ctx.fillStyle = "#F3D6C1"; ctx.beginPath(); ctx.arc(0, -38, 13, 0, Math.PI*2); ctx.fill();
+                ctx.fillStyle = "#333"; ctx.beginPath(); ctx.arc(-13, -51, 3.5, 0, Math.PI*2); ctx.fill();
+                ctx.beginPath(); ctx.arc(13, -51, 3.5, 0, Math.PI*2); ctx.fill();
+                ctx.beginPath(); ctx.ellipse(0, -42, 5, 3, 0, 0, Math.PI*2); ctx.fill();
+                ctx.fillStyle = "#A56D5D";
+                ctx.beginPath(); ctx.arc(-42, 15, 11, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+                ctx.beginPath(); ctx.arc(42, 15, 11, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+                ctx.fillStyle = "#ef4444"; ctx.beginPath(); ctx.arc(45, 15, 10, 0, Math.PI*2); ctx.fill();
+                ctx.fillStyle = "#22c55e"; ctx.fillRect(44, 4, 2, 6);
+                break;
+            case 'arrow':
+                ctx.fillStyle = "#0EA5E9";
+                ctx.beginPath(); ctx.moveTo(-50, -20); ctx.lineTo(10, -20); ctx.lineTo(10, -45); ctx.lineTo(55, 0); ctx.lineTo(10, 45); ctx.lineTo(10, 20); ctx.lineTo(-50, 20); ctx.closePath();
+                ctx.fill(); ctx.stroke();
+                break;
+        }
+        ctx.restore();
+    }
+
+    function render() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        drawGrid();
+
+        const mTop = 100, mBot = height - 150;
+        const grad = ctx.createLinearGradient(centerX-6, 0, centerX+6, 0);
+        grad.addColorStop(0, "#cbd5e1"); grad.addColorStop(0.5, "#f8fafc"); grad.addColorStop(1, "#94a3b8");
+        ctx.fillStyle = grad;
+        ctx.fillRect(centerX - 5, mTop, 10, mBot - mTop);
+        
+        ctx.font = "bold 24px Pretendard"; ctx.textAlign = "center";
+        ctx.fillStyle = "#1e293b";
+        ctx.fillText("거 울", centerX, mTop - 30);
+        
+        // 거울 안쪽 표시 위치 조정 (조금 더 위로)
+        ctx.font = "bold 20px Pretendard";
+        ctx.fillStyle = "#adb5bd";
+        ctx.fillText("거울 안쪽", centerX + 110, centerY + 100);
+
+        if (state.showRay) {
+            const points = rayPointsMap[state.objType];
+            points.forEach(p => {
+                const sX = centerX + state.objX + p.dx, sY = centerY + state.objY + p.dy;
+                const iX = centerX - state.objX - p.dx, iY = sY;
+                const hitX = centerX;
+                const t = (hitX - state.eyePos.x) / (iX - state.eyePos.x);
+                const hitY = state.eyePos.y + t * (iY - state.eyePos.y);
+                ctx.strokeStyle = "#ef4444"; ctx.lineWidth = 2.5;
+                ctx.beginPath(); ctx.moveTo(sX, sY); ctx.lineTo(hitX, hitY); ctx.lineTo(state.eyePos.x, state.eyePos.y); ctx.stroke();
+                ctx.save(); ctx.setLineDash([6, 6]); ctx.globalAlpha = 0.3;
+                ctx.beginPath(); ctx.moveTo(hitX, hitY); ctx.lineTo(iX, iY); ctx.stroke(); ctx.restore();
+                const angle1 = Math.atan2(hitY - sY, hitX - sX);
+                drawArrowHead((sX + hitX)/2, (sY + hitY)/2, angle1);
+                const angle2 = Math.atan2(state.eyePos.y - hitY, state.eyePos.x - hitX);
+                drawArrowHead((hitX + state.eyePos.x)/2, (hitY + state.eyePos.y)/2, angle2);
+            });
+        }
+        drawObject(centerX + state.objX, centerY + state.objY, state.objType, false);
+        drawObject(centerX - state.objX, centerY + state.objY, state.objType, true);
+        drawEye(state.eyePos.x, state.eyePos.y);
+    }
+
+    function drawArrowHead(x, y, angle) {
+        ctx.save(); ctx.translate(x, y); ctx.rotate(angle);
+        ctx.beginPath(); ctx.moveTo(-10, -6); ctx.lineTo(0, 0); ctx.lineTo(-10, 6);
+        ctx.strokeStyle = "#ef4444"; ctx.lineWidth = 2.5; ctx.stroke();
+        ctx.restore();
+    }
+
+    init();
+</script>
+</body>
+</html>
