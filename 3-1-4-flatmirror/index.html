@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>평면 거울 가상 실험실 v2.8</title>
+    <title>평면 거울 가상 실험실 v3.0</title>
     <style>
         :root {
             --bg-color: #ffffff;
@@ -16,52 +16,57 @@
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { 
-            font-family: 'Pretendard', sans-serif; 
+            font-family: 'Pretendard', -apple-system, sans-serif; 
             margin: 0; display: flex; height: 100vh; 
             background: var(--bg-color); color: #333; overflow: hidden; 
             touch-action: none;
         }
 
+        /* [복구] 좌측 상단 헤더 및 가이드 박스: 초기 버전 스타일 */
         #header {
             position: absolute; top: 25px; left: 25px;
             z-index: 10; pointer-events: none;
         }
-        h1 { margin: 0 0 10px 0; font-size: 26px; color: var(--accent-blue); font-weight: 800; }
+        h1 { margin: 0 0 10px 0; font-size: 28px; color: var(--accent-blue); font-weight: 800; }
         .guide { 
-            background: rgba(255, 255, 255, 0.9); padding: 18px; border-radius: 12px; 
-            font-size: 14px; line-height: var(--guide-line-height); border: 1px solid #e2e8f0;
+            background: rgba(255, 255, 255, 0.9); padding: 20px; border-radius: 12px; 
+            font-size: 15px; line-height: var(--guide-line-height); border: 1px solid #e2e8f0;
             box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            max-width: 450px; /* 가이드 박스 너비 충분히 확보 */
         }
 
+        /* 우측 컨트롤 패널: 320px 너비 유지 (아이패드 최적화) */
         #controls {
-            width: 380px; background: var(--panel-bg); border-left: 1px solid var(--border-color);
-            padding: 25px; display: flex; flex-direction: column; gap: 20px; z-index: 10;
+            width: 320px; background: var(--panel-bg); border-left: 1px solid var(--border-color);
+            padding: 20px; display: flex; flex-direction: column; gap: 18px; z-index: 10;
             overflow-y: auto;
         }
         
-        .control-group { display: flex; flex-direction: column; gap: 10px; }
-        label { font-size: 14px; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 1px; }
+        .control-group { display: flex; flex-direction: column; gap: 8px; }
+        label { font-size: 13px; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; }
         
         button {
-            min-height: 54px; border: 1px solid #e2e8f0; border-radius: 10px; font-size: 16px; font-weight: 600;
+            min-height: 50px; border: 1px solid #e2e8f0; border-radius: 10px; font-size: 15px; font-weight: 600;
             cursor: pointer; transition: 0.2s; background: #fff;
         }
         button.active { background: var(--accent-blue); color: #fff; border-color: var(--accent-blue); }
-        .btn-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+        .btn-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; }
 
         .method-box {
-            background: #fff; border: 1px solid #e2e8f0; border-radius: 12px;
-            padding: 20px; color: #475569;
+            background: #fff; border: 1px solid #e2e8f0; border-radius: 10px;
+            padding: 15px; color: #475569;
             box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
-            font-size: 14.5px; line-height: 1.7; margin-top: 5px;
+            font-size: 13px; line-height: 1.6;
         }
-        .method-box b.title { color: var(--accent-blue); font-size: 17px; display: block; margin-bottom: 10px; }
+        .method-box b.title { color: var(--accent-blue); font-size: 15px; display: block; margin-bottom: 8px; }
         .method-item { margin-bottom: 6px; word-break: keep-all; }
         .highlight { color: var(--accent-blue); font-weight: 700; }
 
+        /* 중앙 실험 영역 */
         #experiment-area { flex: 1; position: relative; display: flex; align-items: center; justify-content: center; background: white; }
         canvas { cursor: crosshair; touch-action: none; }
 
+        /* 하단 고정 저작권 표시 */
         .global-copyright {
             position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
             width: 100%; text-align: center; font-size: 11px; color: #94a3b8;
@@ -77,8 +82,8 @@
     <h1>평면 거울 가상 실험실</h1>
     <div class="guide">
         • <b>물체</b>를 드래그하여 거울과의 거리를 조절해 보세요.<br>
-        • 방안지 눈금 한 칸은 <b>10px</b>을 의미합니다.<br>
-        • 수평선의 <b>px 수치</b>로 물체와 상의 거리가 같음을 확인하세요.
+        • 수평선의 <b>px 수치</b>를 통해 상의 위치를 확인하세요.<br>
+        • 거울면을 기준으로 <b>사과를 든 손</b>의 위치 변화를 관찰하세요.
     </div>
 </div>
 
@@ -94,19 +99,19 @@
 
     <div class="control-group">
         <label>실험 물체 선택</label>
-        <div class="btn-grid">
+        <div class="btn-row">
             <button onclick="setObject('candle')" id="o-candle" class="active">촛불</button>
             <button onclick="setObject('bear')" id="o-bear">곰돌이</button>
-            <button onclick="setObject('arrow')" id="o-arrow">수평 화살표</button>
+            <button onclick="setObject('arrow')" id="o-arrow">화살표</button>
         </div>
     </div>
 
     <div class="method-box">
         <b class="title">[실험 방법]</b>
-        <div class="method-item">1. <span class="highlight">빛의 경로 설정</span> 버튼을 눌러 거울 반사 원리를 확인합니다.</div>
-        <div class="method-item">2. 화면의 <span class="highlight">실험 물체</span>를 잡고 드래그하면 <span class="highlight">거리 표시선</span>이 함께 이동합니다.</div>
-        <div class="method-item">3. 배경의 <span class="highlight">픽셀(px) 눈금</span>을 보며 물체와 상의 거리를 비교합니다.</div>
-        <div class="method-item">4. 곰돌이의 사과 손과 화살표 방향을 통해 <span class="highlight">좌우 반전</span>을 확인합니다.</div>
+        <div class="method-item">1. <span class="highlight">빛의 경로 설정</span> 버튼을 클릭하여 화면에 <span class="highlight">광선</span>을 표시합니다.</div>
+        <div class="method-item">2. 화면의 <span class="highlight">실험 물체</span>를 잡고 좌우로 <span class="highlight">드래그</span>하여 위치를 옮깁니다.</div>
+        <div class="method-item">3. 수평선의 <span class="highlight">거리(px)</span> 수치가 거울을 기준으로 항상 같은지 비교합니다.</div>
+        <div class="method-item">4. 곰돌이의 <span class="highlight">사과를 든 손</span>과 화살표의 <span class="highlight">방향</span>이 반전되는지 관찰합니다.</div>
     </div>
 </aside>
 
@@ -122,7 +127,7 @@
 
     let width, height, centerX, centerY;
     let isDragging = false;
-    const GRID_STEP = 10; // 10px 간격의 아주 옅은 방안지
+    const GRID_STEP = 10;
     
     const state = {
         objType: 'candle', 
@@ -144,13 +149,13 @@
     }
 
     function resize() {
-        width = window.innerWidth - (window.innerWidth > 768 ? 380 : 0);
+        width = window.innerWidth - (window.innerWidth > 768 ? 320 : 0);
         height = window.innerHeight;
         canvas.width = width;
         canvas.height = height;
-        centerX = width / 2 + 50;
+        centerX = width / 2 + 30;
         centerY = height / 2;
-        state.eyePos = { x: centerX - 480, y: centerY - 200 };
+        state.eyePos = { x: centerX - 420, y: centerY - 200 };
     }
 
     window.addEventListener('resize', init);
@@ -190,7 +195,7 @@
 
     function setObject(type) {
         state.objType = type;
-        document.querySelectorAll('.btn-grid button').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.btn-row button').forEach(b => b.classList.remove('active'));
         document.getElementById('o-' + type).classList.add('active');
         render();
     }
@@ -202,70 +207,48 @@
         render();
     }
 
-    // --- 더 옅은 방안지 및 상향 조정된 눈금 그리기 ---
     function drawGrid() {
         ctx.save();
-        
-        // 아주 옅은 수직선 (10px 간격)
         for (let x = centerX % GRID_STEP; x < width; x += GRID_STEP) {
             const distFromMirror = Math.abs(Math.round(x - centerX));
-            
-            // 50px(눈금 5칸) 마다 약간의 구분
             if (distFromMirror % 50 === 0) {
                 ctx.strokeStyle = "rgba(0, 0, 0, 0.04)";
+                if (distFromMirror > 0) {
+                    ctx.fillStyle = "#adb5bd";
+                    ctx.font = "10px Arial";
+                    ctx.textAlign = "center";
+                    ctx.fillText(distFromMirror, x, height - 140);
+                }
             } else {
                 ctx.strokeStyle = "rgba(0, 0, 0, 0.015)";
             }
-            
             ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, height); ctx.stroke();
-            
-            // 50px 마다 수치 표시 (저작권에 가리지 않게 위로 조정: height - 140)
-            if (distFromMirror > 0 && distFromMirror % 50 === 0) {
-                ctx.fillStyle = "#adb5bd";
-                ctx.font = "10px Arial";
-                ctx.textAlign = "center";
-                ctx.fillText(distFromMirror, x, height - 140);
-            }
         }
-        
-        // 아주 옅은 수평선
         for (let y = 0; y < height; y += GRID_STEP) {
             ctx.strokeStyle = (Math.abs(Math.round(y-centerY)) % 50 === 0) ? "rgba(0,0,0,0.03)" : "rgba(0,0,0,0.012)";
             ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(width, y); ctx.stroke();
         }
-        
-        // 단위 표시 상향 조정
         ctx.fillStyle = "#adb5bd";
-        ctx.font = "bold 12px Pretendard";
+        ctx.font = "bold 11px Pretendard";
         ctx.fillText("(단위: px)", centerX + 20, height - 120);
-        
         ctx.restore();
     }
 
-    // --- 픽셀 단위 거리 지시선 ---
     function drawDynamicDistance(x1, x2, y, label) {
         ctx.save();
-        ctx.strokeStyle = "#0284c7";
-        ctx.fillStyle = "#0284c7";
-        ctx.lineWidth = 1.5;
-        
+        ctx.strokeStyle = "#0284c7"; ctx.fillStyle = "#0284c7"; ctx.lineWidth = 1.5;
         ctx.beginPath(); ctx.moveTo(x1, y); ctx.lineTo(x2, y); ctx.stroke();
         ctx.beginPath(); ctx.moveTo(x1, y - 8); ctx.lineTo(x1, y + 8);
         ctx.moveTo(x2, y - 8); ctx.lineTo(x2, y + 8); ctx.stroke();
-
         const distPx = Math.abs(Math.round(x1 - x2));
-        ctx.font = "bold 14px Pretendard";
-        ctx.textAlign = "center";
-        
+        ctx.font = "bold 13px Pretendard"; ctx.textAlign = "center";
         ctx.fillText(label, (x1 + x2) / 2, y - 12);
-        ctx.font = "bold 16px Pretendard";
-        ctx.fillText(distPx + " px", (x1 + x2) / 2, y + 22);
+        ctx.font = "bold 15px Pretendard"; ctx.fillText(distPx + " px", (x1 + x2) / 2, y + 22);
         ctx.restore();
     }
 
     function drawEye(x, y) {
-        ctx.save();
-        ctx.translate(x, y);
+        ctx.save(); ctx.translate(x, y);
         ctx.strokeStyle = "#334155"; ctx.lineWidth = 3; ctx.lineCap = "round";
         ctx.beginPath(); ctx.arc(0, -15, 35, Math.PI * 1.1, Math.PI * 1.9); ctx.stroke();
         ctx.fillStyle = "#fff"; ctx.strokeStyle = "#1e293b"; ctx.lineWidth = 2.5;
@@ -277,11 +260,9 @@
     }
 
     function drawObject(x, y, type, isImage = false) {
-        ctx.save();
-        ctx.translate(x, y);
+        ctx.save(); ctx.translate(x, y);
         if (isImage) { ctx.scale(-1, 1); ctx.globalAlpha = 0.5; }
         ctx.lineWidth = 3; ctx.lineJoin = "round"; ctx.strokeStyle = "#334155";
-
         switch(type) {
             case 'candle':
                 ctx.fillStyle = "#FFEDD5"; ctx.fillRect(-15, -30, 30, 95); ctx.strokeRect(-15, -30, 30, 95);
@@ -318,24 +299,19 @@
     function render() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         drawGrid();
-
-        const mTop = 100, mBot = height - 150;
+        const mTop = 100, mBot = height - 160;
         const grad = ctx.createLinearGradient(centerX-6, 0, centerX+6, 0);
         grad.addColorStop(0, "#cbd5e1"); grad.addColorStop(0.5, "#f8fafc"); grad.addColorStop(1, "#94a3b8");
         ctx.fillStyle = grad;
         ctx.fillRect(centerX - 5, mTop, 10, mBot - mTop);
-        
-        ctx.font = "bold 24px Pretendard"; ctx.textAlign = "center";
-        ctx.fillStyle = "#1e293b";
+        ctx.font = "bold 24px Pretendard"; ctx.textAlign = "center"; ctx.fillStyle = "#1e293b";
         ctx.fillText("거 울", centerX, mTop - 30);
-        
-        ctx.font = "bold 18px Pretendard";
-        ctx.fillStyle = "#adb5bd";
+        ctx.font = "bold 16px Pretendard"; ctx.fillStyle = "#adb5bd";
         ctx.fillText("거울 안쪽", centerX + 110, centerY + 100);
 
         const displayY = centerY + state.objY + 115;
-        drawDynamicDistance(centerX + state.objX, centerX, displayY, "물체와 거울까지의 거리");
-        drawDynamicDistance(centerX, centerX - state.objX, displayY, "거울에서 상까지의 거리");
+        drawDynamicDistance(centerX + state.objX, centerX, displayY, "물체와 거울 거리");
+        drawDynamicDistance(centerX, centerX - state.objX, displayY, "거울에서 상 거리");
 
         if (state.showRay) {
             const points = rayPointsMap[state.objType];
