@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>빛의 굴절 실험실 v1.2.2</title>
+    <title>빛의 굴절 실험실 v1.2.5</title>
     <style>
         :root {
             --bg-color: #ffffff;
@@ -20,20 +20,19 @@
             touch-action: none;
         }
         
-        /* 컨트롤 패널: iPad 화면 높이 대응을 위해 내부 스크롤 및 Flex 구조 개선 */
+        /* 컨트롤 패널: iPad 가로폭 대응 */
         #controls {
-            width: 300px; background: var(--panel-bg); border-right: 1px solid var(--border-color);
-            padding: 20px; display: flex; flex-direction: column; gap: 15px; z-index: 10;
+            width: 350px; background: var(--panel-bg); border-right: 1px solid var(--border-color);
+            padding: 25px; display: flex; flex-direction: column; gap: 15px; z-index: 10;
             overflow-y: auto; box-sizing: border-box;
-            padding-bottom: calc(20px + env(safe-area-inset-bottom));
         }
         
-        .control-group { display: flex; flex-direction: column; gap: 6px; flex-shrink: 0; }
-        label { font-weight: bold; font-size: 13px; color: #495057; }
-        select { padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); background: white; font-size: 14px; cursor: pointer; }
+        .control-group { display: flex; flex-direction: column; gap: 8px; flex-shrink: 0; }
+        label { font-weight: bold; font-size: 14px; color: #495057; }
+        select { padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); background: white; font-size: 15px; cursor: pointer; }
         
         button {
-            padding: 12px; font-size: 15px; font-weight: bold; border: none; border-radius: 8px;
+            padding: 14px; font-size: 15px; font-weight: bold; border: none; border-radius: 8px;
             cursor: pointer; transition: 0.2s; margin-top: 5px;
         }
         .btn-power { background: #495057; color: white; }
@@ -43,53 +42,45 @@
 
         .method-box {
             background: #fff; border: 1px solid #e9ecef; border-radius: 8px;
-            padding: 12px; font-size: 12.5px; line-height: 1.6; color: #495057; flex-shrink: 0;
+            padding: 15px; font-size: 14px; line-height: 1.6; color: #495057; flex-shrink: 0;
+            white-space: nowrap;
         }
         .method-box b { color: #339af0; }
 
-        /* 요청하신 형식의 저작권 표시 */
-        .copyright {
-            margin-top: auto;
-            font-size: 11px;
+        /* 하단 고정 저작권 표시 */
+        .global-copyright {
+            position: fixed;
+            bottom: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            text-align: center;
+            font-size: 12px;
             color: #868e96;
-            text-align: left;
-            border-top: 1px solid #dee2e6;
-            padding-top: 15px;
             line-height: 1.6;
+            pointer-events: none;
+            z-index: 100;
             word-break: keep-all;
-            flex-shrink: 0;
+            background: rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(4px);
+            padding: 5px 0;
         }
 
         #experiment-area { flex: 1; position: relative; display: flex; align-items: center; justify-content: center; background: white; }
         canvas { cursor: crosshair; touch-action: none; }
-        
-        .info-box {
-            position: absolute; top: 20px; right: 20px; background: rgba(255,255,255,0.95);
-            padding: 15px; border-radius: 12px; border: 1px solid #eee; box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-            pointer-events: none; z-index: 5;
-        }
-        .info-box div { margin: 5px 0; font-size: 14px; font-weight: 500; }
-        .info-box b.inc { color: var(--laser-red); font-size: 16px; }
-        .info-box b.ref { color: var(--refract-orange); font-size: 16px; }
-
-        .canvas-copyright {
-            position: absolute; bottom: 15px; right: 20px;
-            font-size: 11px; color: rgba(0,0,0,0.15);
-            font-weight: bold; pointer-events: none; text-align: right;
-        }
     </style>
 </head>
 <body>
 
 <div id="controls">
-    <h2 style="margin:0 0 10px 0; font-size: 22px; color: #212529;">빛의 굴절 실험실</h2>
+    <h2 style="margin:0 0 10px 0; font-size: 24px; color: #212529;">빛의 굴절 실험실</h2>
     
     <div class="method-box">
         <b>[실험 방법]</b><br>
-        1. <b>레이저 켜기</b> 버튼을 누릅니다.<br>
-        2. 화면의 <b>레이저 장치</b>를 드래그하여 움직입니다.<br>
-        3. <b>물질</b>을 바꿔보며 배경색과 경로 변화를 관찰합니다.<br>
-        4. <b>각도기</b>로 입사각과 굴절각을 측정합니다.
+        1. <b>레이저 켜기</b> 버튼을 클릭합니다.<br>
+        2. 화면의 <b>레이저 장치</b>를 드래그합니다.<br>
+        3. <b>물질</b>을 바꾸며 경로 변화를 관찰합니다.<br>
+        4. <b>각도기</b>로 굴절되는 정도를 측정합니다.
     </div>
     
     <div class="control-group">
@@ -99,7 +90,7 @@
 
     <div class="control-group">
         <label>2. 보조 도구</label>
-        <button id="protractor-toggle" class="btn-tool active">각도기 표시</button>
+        <button id="protractor-toggle" class="btn-tool">각도기 표시</button>
     </div>
 
     <div class="control-group">
@@ -131,24 +122,15 @@
             <option value="bottom">아래에서 위로</option>
         </select>
     </div>
-
-    <div class="copyright">
-        © 2026. <b>LEE HANEUL</b> All rights reserved.<br>
-        Physics Simulation: Light Refraction v1.2.2 (2026-04-23)<br>
-        본 프로그램은 아이패드 및 태블릿 환경에서의 터치 조작을 지원합니다.
-    </div>
 </div>
 
 <div id="experiment-area">
-    <div class="info-box">
-        <div>입사각: <b id="ui-inc" class="inc">0.0°</b></div>
-        <div>굴절각: <b id="ui-ref" class="ref">0.0°</b></div>
-    </div>
     <canvas id="simCanvas"></canvas>
-    <div class="canvas-copyright">
-        © 2026. LEE HANEUL<br>
-        v1.2.2 (2026-04-23)
-    </div>
+</div>
+
+<div class="global-copyright">
+    © 2026. <b>LEE HANEUL</b> All rights reserved. Physics Simulation: Light Refraction v1.2.5 (2026-04-23)<br>
+    본 프로그램은 아이패드 및 태블릿 환경에서의 터치 조작을 지원합니다.
 </div>
 
 <script>
@@ -160,16 +142,15 @@
     const powerBtn = document.getElementById('power-toggle');
     const protBtn = document.getElementById('protractor-toggle');
 
-    // iPad Pro 12.9 비율을 고려한 캔버스 리사이징 함수
     function resizeCanvas() {
-        canvas.width = window.innerWidth - (window.innerWidth > 768 ? 300 : 0);
+        canvas.width = window.innerWidth - (window.innerWidth > 768 ? 350 : 0);
         canvas.height = window.innerHeight;
     }
     window.addEventListener('resize', resizeCanvas);
     resizeCanvas();
 
     let isOn = false;
-    let showProtractor = true;
+    let showProtractor = false; // 각도기 기본 꺼짐 상태
     let isDragging = false;
     let laserPos = { x: -200, y: -220 }; 
     let beamProgress = 0;
@@ -178,13 +159,12 @@
     const COLOR_REF = "#ff9100"; 
     const beamThickness = 4;
 
-    // 물질별 배경색 매핑
     const mediumColors = {
-        "1.00": "#ffffff", // 공기 (흰색)
-        "1.33": "#e1f5fe", // 물 (연파랑)
-        "1.47": "#fffde7", // 식용유 (연노랑)
-        "1.52": "#f1f8e9", // 유리 (연초록)
-        "2.42": "#f3e5f5"  // 다이아몬드 (연보라)
+        "1.00": "#ffffff", 
+        "1.33": "#e1f5fe", 
+        "1.47": "#fffde7", 
+        "1.52": "#f1f8e9", 
+        "2.42": "#f3e5f5"  
     };
 
     powerBtn.addEventListener('click', () => {
@@ -214,7 +194,6 @@
     window.addEventListener('mouseup', () => isDragging = false);
     canvas.addEventListener('mousemove', (e) => { if(isDragging) updateLaserPos(e.clientX, e.clientY); });
     
-    // 태블릿 터치 이벤트
     canvas.addEventListener('touchstart', (e) => { 
         isDragging = true; 
         updateLaserPos(e.touches[0].clientX, e.touches[0].clientY); 
@@ -263,41 +242,44 @@
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         const cx = canvas.width / 2; const cy = canvas.height / 2;
         
-        const m1Val = m1Sel.value;
-        const m2Val = m2Sel.value;
-
-        // 물질별 동적 배경색 적용
-        ctx.fillStyle = mediumColors[m1Val]; ctx.fillRect(0, 0, canvas.width, cy);
-        ctx.fillStyle = mediumColors[m2Val]; ctx.fillRect(0, cy, canvas.width, canvas.height - cy);
+        ctx.fillStyle = mediumColors[m1Sel.value]; ctx.fillRect(0, 0, canvas.width, cy);
+        ctx.fillStyle = mediumColors[m2Sel.value]; ctx.fillRect(0, cy, canvas.width, canvas.height - cy);
         
-        // 경계선
         ctx.beginPath(); ctx.moveTo(cx-500, cy); ctx.lineTo(cx+500, cy);
         ctx.strokeStyle = "#339af0"; ctx.lineWidth = 2.5; ctx.stroke();
 
         if (showProtractor) drawProtractor(cx, cy, 280);
 
         // 법선
-        ctx.setLineDash([5, 10]); ctx.strokeStyle = "rgba(0,0,0,0.2)";
+        ctx.setLineDash([5, 10]); ctx.strokeStyle = "rgba(0,0,0,0.1)";
         ctx.beginPath(); ctx.moveTo(cx, cy-350); ctx.lineTo(cx, cy+350); ctx.stroke(); ctx.setLineDash([]);
 
-        // 물질 이름 표시
-        ctx.font = "bold 15px Pretendard"; ctx.fillStyle = "rgba(0,0,0,0.4)";
+        // --- 물질 이름 원래 위치(좌측) 표시 ---
+        ctx.save();
+        ctx.textAlign = "left"; 
+        ctx.font = "bold 15px Pretendard"; 
+        
+        // 위쪽 물질 이름
+        ctx.fillStyle = "rgba(0,0,0,0.4)";
         ctx.fillText(m1Sel.options[m1Sel.selectedIndex].text, cx - 440, cy - 20);
-        ctx.fillStyle = "#339af0"; ctx.fillText(m2Sel.options[m2Sel.selectedIndex].text, cx - 440, cy + 30);
+        
+        // 아래쪽 물질 이름
+        ctx.fillStyle = "#339af0";
+        ctx.fillText(m2Sel.options[m2Sel.selectedIndex].text, cx - 440, cy + 30);
+        ctx.restore();
 
         const angleToCenter = Math.atan2(cy - (cy + laserPos.y), cx - (cx + laserPos.x));
         drawLaserPointer(cx + laserPos.x, cy + laserPos.y, angleToCenter);
 
         if (isOn) {
             if (beamProgress < 2) beamProgress += 0.05;
-            const n1 = parseFloat(m1Val), n2 = parseFloat(m2Val);
+            const n1 = parseFloat(m1Sel.value), n2 = parseFloat(m2Sel.value);
             const isTop = dirSel.value === 'top';
             const nIn = isTop ? n1 : n2, nOut = isTop ? n2 : n1;
             const theta1 = Math.atan2(Math.abs(laserPos.x), Math.abs(laserPos.y));
             const sinTheta2 = (nIn * Math.sin(theta1)) / nOut;
             const isReflectingOnly = (nIn > nOut) && (sinTheta2 >= 1.0);
 
-            // 1. 입사광선 (빨강)
             const p1 = Math.min(1, beamProgress);
             const lx = cx + laserPos.x, ly = cy + laserPos.y;
             const bx = lx + (cx - lx) * p1, by = ly + (cy - ly) * p1;
@@ -306,27 +288,21 @@
             ctx.beginPath(); ctx.moveTo(lx, ly); ctx.lineTo(bx, by); ctx.stroke();
             if (p1 > 0.5) drawArrowOnBeam(lx, ly, cx, cy, COLOR_INC); ctx.restore();
 
-            // 2. 굴절/반사광선 (오렌지)
             if (beamProgress > 1) {
                 const p2 = beamProgress - 1;
-                const beamLen = 400; let endX, endY;
+                const beamLen = 450; let endX, endY;
                 if (isReflectingOnly) {
                     endX = cx - laserPos.x; endY = cy + laserPos.y;
-                    document.getElementById('ui-ref').innerText = "---";
                 } else {
                     const theta2 = Math.asin(sinTheta2);
                     const signX = laserPos.x > 0 ? -1 : 1, signY = isTop ? 1 : -1;
                     endX = cx + Math.sin(theta2) * beamLen * signX; endY = cy + Math.cos(theta2) * beamLen * signY;
-                    document.getElementById('ui-ref').innerText = (theta2 * 180 / Math.PI).toFixed(1) + "°";
                 }
                 ctx.save(); ctx.strokeStyle = COLOR_REF; ctx.lineWidth = beamThickness; ctx.lineCap = "round";
                 ctx.shadowBlur = 4; ctx.shadowColor = COLOR_REF;
                 ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx + (endX - cx) * p2, cy + (endY - cy) * p2); ctx.stroke();
                 if (p2 > 0.5) drawArrowOnBeam(cx, cy, endX, endY, COLOR_REF); ctx.restore();
             }
-            document.getElementById('ui-inc').innerText = (theta1 * 180 / Math.PI).toFixed(1) + "°";
-        } else {
-            document.getElementById('ui-inc').innerText = "-"; document.getElementById('ui-ref').innerText = "-";
         }
         requestAnimationFrame(draw);
     }
