@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>중등 곡면 거울 가상 실험 v1.0</title>
+    <style>
+        :root {
+            --bg-color: #ffffff;
+            --panel-bg: #f8f9fa;
+            --border-color: #dee2e6;
+            --accent-blue: #0284c7;
+            --ray-red: #ef4444;
+            --ray-green: #059669;
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { 
+            font-family: 'Pretendard', -apple-system, sans-serif; 
+            margin: 0; display: flex; height: 100vh; 
+            background: var(--bg-color); color: #333; overflow: hidden; 
+            touch-action: none;
+        }
+
+        /* 헤더 섹션: 가이드 박스 삭제 */
+        #header {
+            position: absolute; top: 25px; left: 25px;
+            z-index: 10; pointer-events: none;
+        }
+        h1 { margin: 0; font-size: 28px; color: var(--accent-blue); font-weight: 800; }
+
+        /* 우측 컨트롤 패널 */
+        #controls {
+            width: 340px; background: var(--panel-bg); border-left: 1px solid var(--border-color);
+            padding: 20px; display: flex; flex-direction: column; gap: 15px; z-index: 10;
+            overflow-y: auto;
+        }
+        
+        .mirror-view-container {
+            width: 100%; display: flex; flex-direction: column; align-items: center; gap: 10px;
+            padding: 15px; background: #fff; border-radius: 16px; border: 1px solid #e2e8f0;
+        }
+        #mirrorViewCanvas {
+            width: 180px; height: 180px; border-radius: 50%;
+            background: #e2e8f0; border: 6px solid #94a3b8;
+        }
+        .view-label { font-size: 14px; font-weight: 800; color: #475569; }
+
+        .control-group { display: flex; flex-direction: column; gap: 8px; }
+        label { font-size: 12px; font-weight: 800; color: #64748b; text-transform: uppercase; }
+        
+        button {
+            min-height: 50px; border: 1px solid #e2e8f0; border-radius: 10px; font-size: 15px; font-weight: 600;
+            cursor: pointer; transition: 0.2s; background: #fff;
+        }
+        button.active { background: var(--accent-blue); color: #fff; border-color: var(--accent-blue); }
+
+        .edu-section {
+            background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 15px;
+        }
+        .edu-section b { color: var(--accent-blue); display: block; margin-bottom: 8px; }
+        
+        /* 텍스트 줄바꿈 방지 설정 */
+        .edu-section p, .edu-section li { 
+            margin: 0; font-size: 13.2px; line-height: 1.7; color: #475569; 
+            white-space: nowrap; letter-spacing: -0.5px; 
+            overflow: hidden;
+        }
+        .edu-section ol { margin: 0; padding-left: 15px; list-style-position: outside; }
+
+        /* 메인 실험 영역 */
+        #experiment-area { flex: 1; position: relative; display: flex; align-items: center; justify-content: center; background: white; }
+        canvas { cursor: crosshair; touch-action: none; }
+
+        /* 하단 고정 저작권 표시 */
+        .global-copyright {
+            position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+            width: 100%; text-align: center; font-size: 11px; color: #94a3b8;
+            line-height: 1.5; pointer-events: none; z-index: 100;
+            background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(8px); 
+            padding: 12px 0; border-top: 1px solid #f1f5f9; word-break: keep-all;
+        }
+    </style>
+</head>
+<body>
+
+<div id="header">
+    <h1 id="top-title">곡면 거울 가상 실험실</h1>
+</div>
+
+<div id="experiment-area">
+    <canvas id="simCanvas"></canvas>
+</div>
+
+<aside id="controls">
+    <div class="mirror-view-container">
+        <span class="view-label">거울 너머 실제 모습</span>
+        <canvas id="mirrorViewCanvas" width="200" height="200"></canvas>
+    </div>
+
+    <div class="control-group">
+        <label>거울 종류 선택</label>
+        <button onclick="setMirror('convex')" id="m-convex" class="active">볼록 거울</button>
+        <button onclick="setMirror('concave')" id="m-concave">오목 거울</button>
+    </div>
+
+    <div class="edu-section">
+        <b>📝 실험 방법:</b>
+        <ol>
+            <li>실험할 거울의 종류를 선택합니다.</li>
+            <li>촛불을 거울에 아주 가깝게 둡니다.</li>
+            <li>촛불을 거울에서 천천히 멀리 옮깁니다.</li>
+        </ol>
+    </div>
+
+    <div class="edu-section" style="background: #e0f2fe; border-color: #bae6fd;">
+        <b>🔍 점선의 의미:</b>
+        <p>빛이 모이지 않고 넓게 퍼져 나갈 때,</p>
+        <p>눈은 빛이 거슬러 올라간 한 점을 찾습니다.</p>
+        <p>그 경로를 거꾸로 이은 가상의 선입니다.</p>
+        <p>점선이 모인 곳에 실제 물체는 없지만,</p>
+        <p>눈엔 마치 물체가 있는 것처럼 보입니다.</p>
+    </div>
+</aside>
+
+<div class="global-copyright">
+    © 2026. <b>LEE HANEUL</b> All rights reserved.<br>
+    Physics Simulation: Curved Mirror v1.0 (2026-04-23)<br>
+    본 프로그램은 아이패드 및 태블릿 환경에서의 터치 조작을 지원합니다.
+</div>
+
+<script>
+    const canvas = document.getElementById('simCanvas');
+    const ctx = canvas.getContext('2d');
+    const mViewCanvas = document.getElementById('mirrorViewCanvas');
+    const mViewCtx = mViewCanvas.getContext('2d');
+
+    let width, height, centerX, centerY;
+    let isDragging = false;
+    
+    const state = {
+        mirrorType: 'convex',
+        objX: -220, 
+        f: -180, 
+        eyePos: { x: 0, y: 0 }
+    };
+
+    function init() {
+        resize();
+        render();
+    }
+
+    function resize() {
+        width = window.innerWidth - (window.innerWidth > 768 ? 340 : 0);
+        height = window.innerHeight;
+        canvas.width = width;
+        canvas.height = height;
+        centerX = width / 2 + 30;
+        centerY = height / 2;
+        state.eyePos = { x: centerX - 480, y: centerY - 150 };
+    }
+
+    window.addEventListener('resize', init);
+
+    function getInputPos(e) {
+        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+        const rect = canvas.getBoundingClientRect();
+        return { x: clientX - rect.left, y: clientY - rect.top };
+    }
+
+    canvas.addEventListener('mousedown', (e) => {
+        const pos = getInputPos(e);
+        if (Math.abs(pos.x - (centerX + state.objX)) < 120) isDragging = true;
+    });
+
+    window.addEventListener('mousemove', (e) => {
+        if (!isDragging) return;
+        const pos = getInputPos(e);
+        state.objX = Math.min(-35, pos.x - centerX);
+        render();
+    });
+
+    window.addEventListener('mouseup', () => isDragging = false);
+    canvas.addEventListener('touchstart', (e) => {
+        const pos = getInputPos(e);
+        if (Math.abs(pos.x - (centerX + state.objX)) < 140) isDragging = true;
+    }, {passive: false});
+    canvas.addEventListener('touchmove', (e) => {
+        if (!isDragging) return;
+        const pos = getInputPos(e);
+        state.objX = Math.min(-35, pos.x - centerX);
+        render();
+        e.preventDefault();
+    }, {passive: false});
+    window.addEventListener('touchend', () => isDragging = false);
+
+    function setMirror(type) {
+        state.mirrorType = type;
+        state.f = (type === 'concave') ? 180 : -180;
+        document.getElementById('m-concave').classList.toggle('active', type === 'concave');
+        document.getElementById('m-convex').classList.toggle('active', type === 'convex');
+        render();
+    }
+
+    function drawEye(x, y) {
+        ctx.save(); ctx.translate(x, y);
+        ctx.strokeStyle = "#334155"; ctx.lineWidth = 3; ctx.lineCap = "round";
+        ctx.beginPath(); ctx.arc(0, -15, 35, Math.PI * 1.1, Math.PI * 1.9); ctx.stroke();
+        ctx.fillStyle = "#fff"; ctx.strokeStyle = "#1e293b"; ctx.lineWidth = 2.5;
+        ctx.beginPath(); ctx.moveTo(-40, 0); ctx.quadraticCurveTo(0, -28, 40, 0); ctx.quadraticCurveTo(0, 28, -40, 0); ctx.fill(); ctx.stroke();
+        ctx.fillStyle = "#475569"; ctx.beginPath(); ctx.arc(12, 0, 14, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = "#000"; ctx.beginPath(); ctx.arc(14, 0, 7, 0, Math.PI * 2); ctx.fill();
+        ctx.restore();
+    }
+
+    function drawCandle(targetCtx, x, y, scale) {
+        targetCtx.save();
+        targetCtx.translate(x, y);
+        targetCtx.scale(Math.abs(scale), scale);
+        targetCtx.lineWidth = 3; targetCtx.lineJoin = "round"; targetCtx.strokeStyle = "#334155";
+        targetCtx.fillStyle = "#FFEDD5"; targetCtx.fillRect(-15, -30, 30, 95); targetCtx.strokeRect(-15, -30, 30, 95);
+        targetCtx.fillStyle = "#F97316"; targetCtx.beginPath(); targetCtx.moveTo(0, -65); targetCtx.quadraticCurveTo(18, -48, 0, -30); targetCtx.quadraticCurveTo(-18, -48, 0, -65); targetCtx.fill();
+        targetCtx.restore();
+    }
+
+    function drawArrowHead(x, y, angle, color) {
+        ctx.save(); ctx.translate(x, y); ctx.rotate(angle);
+        ctx.beginPath(); ctx.moveTo(-10, -6); ctx.lineTo(0, 0); ctx.lineTo(-10, 6);
+        ctx.strokeStyle = color; ctx.lineWidth = 2.5; ctx.stroke(); ctx.restore();
+    }
+
+    function renderMirrorView(m, isAtSpecialDistance) {
+        const cx = 100, cy = 110;
+        mViewCtx.clearRect(0, 0, 200, 200);
+        const grad = mViewCtx.createRadialGradient(cx, cy, 10, cx, cy, 100);
+        grad.addColorStop(0, "#f8fafc"); grad.addColorStop(1, "#cbd5e1");
+        mViewCtx.fillStyle = grad;
+        mViewCtx.beginPath(); mViewCtx.arc(cx, cy, 100, 0, Math.PI*2); mViewCtx.fill();
+        
+        if (isAtSpecialDistance) {
+            mViewCtx.fillStyle = "#64748b"; mViewCtx.font = "bold 14px Pretendard"; mViewCtx.textAlign = "center";
+            mViewCtx.fillText("모습이 보이지 않음", cx, cy);
+        } else {
+            const viewScale = Math.min(Math.abs(m) * 0.8, 2.5);
+            const orientation = m > 0 ? 1 : -1;
+            drawCandle(mViewCtx, cx, cy + (orientation === -1 ? -20 : 10), viewScale * orientation);
+        }
+    }
+
+    function render() {
+        ctx.clearRect(0, 0, width, height);
+
+        const f_val = state.f;
+        const R = Math.abs(f_val) * 2;
+        const do_val = Math.abs(state.objX);
+        const isAtSpecialDistance = Math.abs(do_val - Math.abs(f_val)) < 3;
+        
+        let di = 1 / (1/f_val - 1/do_val);
+        let m = -di / do_val;
+        
+        const objTopY = centerY - 60;
+        const imgX = centerX + di;
+        const imgTopY = centerY - 60 * m;
+
+        // 수평 기준선
+        ctx.strokeStyle = "#e2e8f0"; ctx.lineWidth = 2; ctx.beginPath();
+        ctx.moveTo(0, centerY); ctx.lineTo(width, centerY); ctx.stroke();
+
+        ctx.fillStyle = "#94a3b8"; ctx.font = "bold 15px Pretendard"; ctx.textAlign = "center";
+        ctx.fillText("거울 안쪽", centerX + 180, centerY + 240);
+
+        // 거울 그리기
+        const arcRadius = R;
+        const arcCenterX = (state.mirrorType === 'concave') ? centerX - arcRadius : centerX + arcRadius;
+        ctx.lineWidth = 12; ctx.strokeStyle = "#94a3b8"; ctx.beginPath();
+        if (state.mirrorType === 'concave') ctx.arc(arcCenterX, centerY, arcRadius, -0.65, 0.65);
+        else ctx.arc(arcCenterX, centerY, arcRadius, Math.PI - 0.65, Math.PI + 0.65);
+        ctx.stroke();
+
+        // 초점 표시
+        const drawPt = (x, txt) => {
+            ctx.fillStyle = "#adb5bd"; ctx.beginPath(); ctx.arc(x, centerY, 5, 0, Math.PI*2); ctx.fill();
+            if(txt) {
+                ctx.font = "bold 13px Pretendard"; ctx.textAlign = "center"; ctx.fillText(txt, x, centerY + 25);
+            }
+        };
+        drawPt(centerX - Math.abs(f_val), "초점");
+        drawPt(centerX + Math.abs(f_val), "");
+
+        // 광선 처리
+        if (isAtSpecialDistance && state.mirrorType === 'concave') {
+            const mx = arcCenterX + Math.sqrt(arcRadius**2 - (objTopY - centerY)**2);
+            ctx.strokeStyle = "#ef4444"; ctx.lineWidth = 2.5;
+            ctx.beginPath(); ctx.moveTo(centerX - do_val, objTopY); ctx.lineTo(mx, objTopY);
+            ctx.lineTo(mx - 500, objTopY + (objTopY - centerY) * 2.5); ctx.stroke();
+            drawArrowHead((centerX-do_val+mx)/2, objTopY, 0, "#ef4444");
+        } else if (isFinite(di)) {
+            // 빨간색 광선
+            let mx1 = (state.mirrorType === 'concave') ? arcCenterX + Math.sqrt(arcRadius**2 - (objTopY-centerY)**2) : arcCenterX - Math.sqrt(arcRadius**2 - (objTopY-centerY)**2);
+            drawPhysicalRay(centerX - do_val, objTopY, mx1, objTopY, imgX, imgTopY, "#ef4444");
+            // 초록색 광선
+            const target_f = (state.mirrorType === 'concave') ? centerX - R : centerX + R;
+            const slope = (objTopY - centerY) / ((centerX - do_val) - target_f);
+            let mx2 = (state.mirrorType === 'concave') ? arcCenterX + Math.sqrt(arcRadius**2 / (1 + slope**2)) : arcCenterX - Math.sqrt(arcRadius**2 / (1 + slope**2));
+            drawPhysicalRay(centerX - do_val, objTopY, mx2, centerY + slope * (mx2 - target_f), imgX, imgTopY, "#059669");
+            
+            ctx.globalAlpha = 0.5; drawCandle(ctx, imgX, centerY, m); ctx.globalAlpha = 1.0;
+        }
+
+        drawCandle(ctx, centerX - do_val, centerY, 1);
+        drawEye(state.eyePos.x, state.eyePos.y);
+        renderMirrorView(m, isAtSpecialDistance && state.mirrorType === 'concave');
+    }
+
+    function drawPhysicalRay(sx, sy, mx, my, ix, iy, color) {
+        ctx.strokeStyle = color; ctx.lineWidth = 2.5;
+        ctx.beginPath(); ctx.moveTo(sx, sy); ctx.lineTo(mx, my); ctx.stroke();
+        drawArrowHead((sx+mx)/2, (sy+my)/2, Math.atan2(my-sy, mx-sx), color);
+        
+        let endX, endY, angle = Math.atan2(iy - my, ix - mx);
+        if (ix < centerX) { endX = ix; endY = iy; } 
+        else { endX = mx - Math.cos(angle) * 450; endY = my - Math.sin(angle) * 450; }
+        ctx.beginPath(); ctx.moveTo(mx, my); ctx.lineTo(endX, endY); ctx.stroke();
+        drawArrowHead((mx + endX)/2, (my + endY)/2, Math.atan2(endY-my, endX-mx), color);
+        
+        ctx.save(); ctx.setLineDash([6, 6]); ctx.globalAlpha = 0.3;
+        ctx.beginPath(); ctx.moveTo(mx, my); ctx.lineTo(ix, iy); ctx.stroke(); ctx.restore();
+    }
+
+    init();
+</script>
+</body>
+</html>
