@@ -22,7 +22,7 @@
             touch-action: none;
         }
 
-        /* 헤더 섹션: 가이드 박스 삭제 */
+        /* 헤더 섹션 */
         #header {
             position: absolute; top: 25px; left: 25px;
             z-index: 10; pointer-events: none;
@@ -60,7 +60,6 @@
         }
         .edu-section b { color: var(--accent-blue); display: block; margin-bottom: 8px; }
         
-        /* 텍스트 줄바꿈 방지 설정 */
         .edu-section p, .edu-section li { 
             margin: 0; font-size: 13.2px; line-height: 1.7; color: #475569; 
             white-space: nowrap; letter-spacing: -0.5px; 
@@ -266,6 +265,13 @@
         // 수평 기준선
         ctx.strokeStyle = "#e2e8f0"; ctx.lineWidth = 2; ctx.beginPath();
         ctx.moveTo(0, centerY); ctx.lineTo(width, centerY); ctx.stroke();
+
+        // [추가] 거울 상단에 거울 종류 텍스트 표시
+        ctx.fillStyle = state.mirrorType === 'convex' ? "#0284c7" : "#ef4444";
+        ctx.font = "bold 24px Pretendard";
+        ctx.textAlign = "center";
+        const mirrorLabel = state.mirrorType === 'convex' ? "볼록 거울" : "오목 거울";
+        ctx.fillText(mirrorLabel, centerX, centerY - 210);
 
         ctx.fillStyle = "#94a3b8"; ctx.font = "bold 15px Pretendard"; ctx.textAlign = "center";
         ctx.fillText("거울 안쪽", centerX + 180, centerY + 240);
