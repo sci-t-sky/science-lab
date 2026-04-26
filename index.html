@@ -42,7 +42,7 @@
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 25px;
             width: 100%;
-            max-width: 900px;
+            max-width: 1000px;
         }
 
         .lab-card {
@@ -54,6 +54,9 @@
             border: 1px solid rgba(255, 255, 255, 0.1);
             text-decoration: none;
             color: inherit;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
 
         .lab-card:hover {
@@ -69,19 +72,19 @@
         }
 
         .lab-title {
-            font-size: 1.5rem;
+            font-size: 1.4rem;
             font-weight: bold;
             margin-bottom: 10px;
         }
 
         .lab-desc {
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             color: #94a3b8;
             line-height: 1.5;
         }
 
         footer {
-            margin-top: auto;
+            margin-top: 50px;
             padding: 40px;
             font-size: 0.8rem;
             color: #64748b;
@@ -96,27 +99,51 @@
     </header>
 
     <div class="container">
+        <!-- 1. 빛의 반사 -->
         <a href="./3-1-1-reflection/" class="lab-card">
             <span class="lab-icon">🔦</span>
             <div class="lab-title">빛의 반사</div>
             <div class="lab-desc">입사각과 반사각의 관계를<br>레이저를 이용해 측정합니다.</div>
         </a>
 
+        <!-- 2. 빛의 굴절 -->
         <a href="./3-1-2-refraction/" class="lab-card">
-            <span class="lab-icon">🌈</span>
+            <span class="lab-icon">💎</span>
             <div class="lab-title">빛의 굴절</div>
             <div class="lab-desc">매질에 따라 꺾이는 빛의<br>경로를 관찰합니다.</div>
         </a>
 
-        <a href="#" class="lab-card" style="opacity: 0.6; cursor: default;">
-            <span class="lab-icon">🧪</span>
-            <div class="lab-title">다음 실험</div>
-            <div class="lab-desc">새로운 실험이 곧<br>업데이트될 예정입니다.</div>
+        <!-- 3. 빛의 경로 -->
+        <a href="./3-1-3-lightpath/" class="lab-card">
+            <span class="lab-icon">🛤️</span>
+            <div class="lab-title">빛의 경로</div>
+            <div class="lab-desc">빛이 나아가는 길과<br>직진하는 성질을 탐구합니다.</div>
+        </a>
+
+        <!-- 4. 평면거울 -->
+        <a href="./3-1-4-flatmirror/" class="lab-card">
+            <span class="lab-icon">🪞</span>
+            <div class="lab-title">평면거울의 상</div>
+            <div class="lab-desc">거울에 비친 물체의 상이<br>생기는 원리를 알아봅니다.</div>
+        </a>
+
+        <!-- 5. 곡면거울 -->
+        <a href="./3-1-5-curvedmirror/" class="lab-card">
+            <span class="lab-icon">🥄</span>
+            <div class="lab-title">곡면거울 실험</div>
+            <div class="lab-desc">오목거울과 볼록거울에 의한<br>상의 변화를 관찰합니다.</div>
+        </a>
+
+        <!-- 6. 렌즈 -->
+        <a href="./3-1-5-lens/" class="lab-card">
+            <span class="lab-icon">🔍</span>
+            <div class="lab-title">렌즈 가상실험</div>
+            <div class="lab-desc">볼록렌즈와 오목렌즈를 통과하는<br>빛의 굴절을 확인합니다.</div>
         </a>
     </div>
 
     <footer>
-        &copy; 2026 SKY TEACHER's SCIENCE LALBATORY. All rights reserved.
+        &copy; 2026 SKY TEACHER's SCIENCE LABORATORY. All rights reserved.
     </footer>
 
 </body>
