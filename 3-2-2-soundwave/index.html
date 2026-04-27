@@ -27,8 +27,7 @@
             color: var(--text-color);
             display: flex;
             flex-direction: column;
-            height: 100vh;
-            overflow: hidden;
+            min-height: 100vh;
         }
 
         header {
@@ -37,62 +36,59 @@
             text-align: center;
             background: white;
             box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            z-index: 10;
+            flex-shrink: 0;
         }
 
         header h1 { margin: 0; font-size: 1.5rem; color: #34495e; }
 
-        /* 메인 레이아웃: 좌측(방법), 중앙(캔버스), 우측(컨트롤) */
+        /* 메인 레이아웃: 좌(방법), 중(파형), 우(조작) */
         main {
             flex: 1;
             display: grid;
-            grid-template-columns: 280px 1fr 320px;
-            gap: 20px;
+            grid-template-columns: 260px 1fr 300px;
+            gap: 15px;
             padding: 20px;
             max-width: 1400px;
             margin: 0 auto;
             width: 100%;
+            padding-bottom: 100px; /* 푸터 공간 확보 */
+        }
+
+        .panel {
+            background: var(--panel-color);
+            border-radius: var(--border-radius);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            padding: 20px;
         }
 
         /* 좌측 패널: 실험 방법 */
-        .info-panel {
-            background: var(--panel-color);
-            padding: 25px;
-            border-radius: var(--border-radius);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
         .info-panel h3 {
             margin-top: 0;
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             color: var(--primary-color);
             border-bottom: 2px solid #eee;
-            padding-bottom: 10px;
-            margin-bottom: 10px;
+            padding-bottom: 8px;
         }
 
         .info-panel ol {
             padding-left: 20px;
             margin: 0;
-            font-size: 1rem;
-            line-height: 1.8;
+            font-size: 0.95rem;
+            line-height: 1.7;
             font-weight: 500;
         }
 
-        .info-panel li { margin-bottom: 15px; }
+        .info-panel li { margin-bottom: 12px; }
 
-        /* 중앙 패널: 파형 캔버스 및 피드백 */
+        /* 중앙 패널: 파형 전시 (설명 박스 삭제 후 캔버스 확장) */
         .display-panel {
             display: flex;
             flex-direction: column;
-            gap: 15px;
         }
 
         #canvas-container {
             flex: 1;
+            min-height: 450px; /* 설명창이 사라진 만큼 높이 확보 */
             background: #111;
             border-radius: var(--border-radius);
             position: relative;
@@ -102,47 +98,25 @@
 
         canvas { width: 100%; height: 100%; border-radius: 12px; }
 
-        #educational-info {
-            background: #fff;
-            padding: 15px;
-            border-radius: var(--border-radius);
-            text-align: center;
-            font-weight: 700;
-            font-size: 1.1rem;
-            min-height: 60px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-bottom: 4px solid var(--primary-color);
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-        }
-
-        /* 우측 패널: 컨트롤 */
+        /* 우측 패널: 조작부 */
         .control-panel {
-            background: var(--panel-color);
-            padding: 25px;
-            border-radius: var(--border-radius);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
             display: flex;
             flex-direction: column;
-            gap: 30px;
+            gap: 20px;
         }
 
         .control-group {
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 10px;
         }
 
-        .slider-label { font-weight: bold; font-size: 1rem; color: #555; text-align: center; }
-
-        /* 3단계 슬라이더 */
-        .step-slider-container { width: 100%; }
+        .slider-label { font-weight: bold; font-size: 0.95rem; color: #555; text-align: center; }
 
         input[type=range] {
             -webkit-appearance: none;
             width: 100%;
-            height: 14px;
+            height: 12px;
             background: #dee2e6;
             border-radius: 10px;
             outline: none;
@@ -150,33 +124,32 @@
 
         input[type=range]::-webkit-slider-thumb {
             -webkit-appearance: none;
-            width: 38px;
-            height: 38px;
+            width: 34px;
+            height: 34px;
             background: var(--primary-color);
             border-radius: 50%;
             cursor: pointer;
-            border: 4px solid white;
+            border: 3px solid white;
             box-shadow: 0 2px 5px rgba(0,0,0,0.2);
         }
 
         .step-marks {
             display: flex;
             justify-content: space-between;
-            padding: 8px 5px 0;
-            font-size: 0.95rem;
+            padding: 5px 2px 0;
+            font-size: 0.85rem;
             color: #7f8c8d;
             font-weight: bold;
         }
 
-        /* 버튼 그룹 */
         .btn-group {
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 10px;
         }
 
         button {
-            padding: 18px;
+            padding: 15px;
             font-size: 1.1rem;
             font-weight: bold;
             border: none;
@@ -198,7 +171,7 @@
         #play-btn {
             background: var(--accent-color);
             color: white;
-            margin-top: 10px;
+            margin-top: 5px;
             box-shadow: 0 4px 0 #d35400;
         }
 
@@ -207,28 +180,32 @@
             box-shadow: 0 4px 0 #1a252f;
         }
 
-        /* Footer */
         footer {
             position: fixed;
             bottom: 0;
             width: 100%;
-            background: #fff;
+            background: rgba(255, 255, 255, 0.95);
             padding: 12px;
             text-align: center;
             font-size: 0.85rem;
             color: #95a5a6;
             border-top: 1px solid #eee;
-            z-index: 10;
+            z-index: 100;
         }
 
         @media (max-width: 1024px) {
             main {
-                grid-template-columns: 1fr 1.2fr;
-                overflow-y: auto;
+                grid-template-columns: 1fr 1fr;
+                padding-bottom: 120px;
             }
             .info-panel { grid-row: 2; grid-column: 1; }
             .control-panel { grid-row: 2; grid-column: 2; }
             .display-panel { grid-column: span 2; height: 350px; }
+        }
+
+        @media (max-width: 600px) {
+            main { grid-template-columns: 1fr; }
+            .info-panel, .control-panel, .display-panel { grid-column: span 1; grid-row: auto; }
         }
     </style>
 </head>
@@ -239,8 +216,8 @@
 </header>
 
 <main>
-    <!-- 좌측 패널: 실험 방법 -->
-    <aside class="info-panel">
+    <!-- 좌측: 실험 방법 -->
+    <aside class="panel info-panel">
         <h3>실험 방법</h3>
         <ol>
             <li>[소리 재생 시작] 버튼을 눌러 소리를 켭니다.</li>
@@ -250,32 +227,25 @@
         </ol>
     </aside>
 
-    <!-- 중앙 패널: 오실로스코프 및 피드백 -->
+    <!-- 중앙: 파형 화면 (설명박스 삭제됨) -->
     <section class="display-panel">
         <div id="canvas-container">
             <canvas id="oscilloscope"></canvas>
         </div>
-        <div id="educational-info">
-            실험을 시작하려면 소리 재생 버튼을 누르세요.
-        </div>
     </section>
 
-    <!-- 우측 패널: 조작 실린더 및 버튼 -->
-    <aside class="control-panel">
+    <!-- 우측: 조작부 -->
+    <aside class="panel control-panel">
         <div class="control-group">
             <div class="slider-label">🔊 소리의 세기 (진폭)</div>
-            <div class="step-slider-container">
-                <input type="range" id="amp-slider" min="1" max="3" step="1" value="2">
-                <div class="step-marks"><span>작게</span><span>중간</span><span>크게</span></div>
-            </div>
+            <input type="range" id="amp-slider" min="1" max="3" step="1" value="2">
+            <div class="step-marks"><span>작게</span><span>중간</span><span>크게</span></div>
         </div>
         
         <div class="control-group">
             <div class="slider-label">🎼 소리의 높낮이 (진동수)</div>
-            <div class="step-slider-container">
-                <input type="range" id="freq-slider" min="1" max="3" step="1" value="2">
-                <div class="step-marks"><span>낮게</span><span>중간</span><span>높게</span></div>
-            </div>
+            <input type="range" id="freq-slider" min="1" max="3" step="1" value="2">
+            <div class="step-marks"><span>낮게</span><span>중간</span><span>높게</span></div>
         </div>
 
         <div class="btn-group">
@@ -304,14 +274,11 @@
     const ctx = canvas.getContext('2d');
     const ampSlider = document.getElementById('amp-slider');
     const freqSlider = document.getElementById('freq-slider');
-    const eduInfo = document.getElementById('educational-info');
     const playBtn = document.getElementById('play-btn');
 
     // 3단계 설정 매핑
     const ampMap = { "1": 0.06, "2": 0.18, "3": 0.45 };
     const freqMap = { "1": 261.63, "2": 440, "3": 783.99 };
-    const ampText = { "1": "작은", "2": "중간", "3": "큰" };
-    const freqText = { "1": "낮은", "2": "중간", "3": "높은" };
 
     function resize() {
         canvas.width = canvas.parentElement.clientWidth;
@@ -337,16 +304,12 @@
     function startSound() {
         oscillator = audioCtx.createOscillator();
         gainNode = audioCtx.createGain();
-        
-        // 맵시 맵핑: 칼림바(사인파) / 리코더(톱니파)
         oscillator.type = (currentWaveType === 'kalimba') ? 'sine' : 'sawtooth';
-        
         oscillator.frequency.setValueAtTime(freqMap[freqSlider.value], audioCtx.currentTime);
         gainNode.gain.setValueAtTime(ampMap[ampSlider.value], audioCtx.currentTime);
         oscillator.connect(gainNode);
         gainNode.connect(audioCtx.destination);
         oscillator.start();
-        updateFeedback();
     }
 
     function stopSound() {
@@ -362,42 +325,31 @@
             btn.classList.add('active');
             currentWaveType = btn.dataset.type;
             if (isPlaying) { stopSound(); startSound(); }
-            else { updateFeedback(); }
         });
     });
 
-    function updateFeedback() {
-        const a = ampSlider.value;
-        const f = freqSlider.value;
-        const instName = currentWaveType === 'kalimba' ? '칼림바' : '리코더';
-        
-        eduInfo.innerHTML = `현재 <span style="color:var(--accent-color);">[${instName}]</span> 소리: 
-            진폭이 <span style="color:var(--primary-color)">${ampText[a]} 소리</span>, 
-            진동수가 <span style="color:var(--primary-color)">${freqText[f]} 소리</span>입니다.`;
-
+    // 슬라이더 조절 시 소리 즉시 반영
+    function updateAudioParams() {
         if (oscillator && isPlaying) {
-            oscillator.frequency.setTargetAtTime(freqMap[f], audioCtx.currentTime, 0.1);
-            gainNode.gain.setTargetAtTime(ampMap[a], audioCtx.currentTime, 0.1);
+            oscillator.frequency.setTargetAtTime(freqMap[freqSlider.value], audioCtx.currentTime, 0.1);
+            gainNode.gain.setTargetAtTime(ampMap[ampSlider.value], audioCtx.currentTime, 0.1);
         }
     }
 
-    ampSlider.addEventListener('input', updateFeedback);
-    freqSlider.addEventListener('input', updateFeedback);
+    ampSlider.addEventListener('input', updateAudioParams);
+    freqSlider.addEventListener('input', updateAudioParams);
 
     let offset = 0;
     function draw() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        
-        // 가이드선
-        ctx.strokeStyle = '#2c3e50';
+        ctx.strokeStyle = '#333';
         ctx.lineWidth = 1;
         ctx.beginPath();
         ctx.moveTo(0, canvas.height/2); ctx.lineTo(canvas.width, canvas.height/2);
         ctx.stroke();
 
-        // 파형 그리기
         ctx.beginPath();
-        ctx.lineWidth = 5;
+        ctx.lineWidth = 4;
         ctx.lineJoin = 'round';
         ctx.strokeStyle = (currentWaveType === 'kalimba') ? '#2ecc71' : '#f1c40f';
 
@@ -410,7 +362,7 @@
             if (currentWaveType === 'kalimba') {
                 y = Math.sin(t);
             } else {
-                for(let i=1; i<=8; i++) y += (Math.sin(t * i) / i);
+                for(let i=1; i<=6; i++) y += (Math.sin(t * i) / i);
                 y *= 0.7;
             }
             const drawY = (canvas.height / 2) + y * displayAmp;
