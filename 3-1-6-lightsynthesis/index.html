@@ -5,19 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>빛의 합성 관찰하기 v1.2</title>
     <style>
+        @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+
         :root {
+            --sidebar-width: 300px;
             --bg-ui: #ffffff;
-            --bg-stage: #000000;
             --text-main: #2c3e50;
-            --text-sub: #7f8c8d;
-            --border: #ececec;
+            --text-sub: #5d6d7e;
             --accent: #d35400;
             --info-blue: #2980b9;
+            --btn-gray: #f1f3f5;
         }
 
         body {
-            margin: 0;
-            padding: 0;
+            margin: 0; padding: 0;
             background-color: var(--bg-ui);
             color: var(--text-main);
             font-family: 'Pretendard', -apple-system, sans-serif;
@@ -25,47 +26,155 @@
             touch-action: none;
             display: flex;
             flex-direction: column;
-            align-items: center;
+            height: 100vh;
         }
 
-        /* 헤더 */
         #header {
-            width: 100%;
-            padding: 25px 0;
-            text-align: center;
-            border-bottom: 1px solid var(--border);
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-bottom: 1px solid #ececec;
             background: #fff;
             z-index: 10;
         }
+        h1 { margin: 0; font-size: 1.4rem; font-weight: 800; letter-spacing: -0.5px; }
 
-        h1 { margin: 0; font-size: 1.6rem; font-weight: 800; letter-spacing: -0.5px; }
-
-        /* 실험 스테이지 */
-        #stage-container {
+        #main-container {
             position: relative;
-            width: 100vw;
-            height: calc(100vh - 180px);
-            background-color: var(--bg-stage);
+            flex: 1;
             overflow: hidden;
         }
 
-        canvas { display: block; }
-
-        /* 저작권 푸터 */
-        footer {
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-            padding: 15px 0;
-            background-color: var(--bg-ui);
-            border-top: 1px solid var(--border);
-            text-align: center;
-            z-index: 20;
+        canvas {
+            position: absolute;
+            top: 0; left: 0;
+            display: block;
+            z-index: 1;
         }
 
-        .footer-text { font-size: 0.85rem; color: var(--text-main); font-weight: 600; margin-bottom: 4px; }
-        .footer-sub { font-size: 0.75rem; color: var(--text-sub); }
-        .device-support { font-size: 0.7rem; color: #bdc3c7; margin-top: 5px; }
+        #sidebar-overlay {
+            position: absolute;
+            top: 0; right: 0;
+            width: var(--sidebar-width);
+            height: 100%;
+            pointer-events: none; 
+            padding: 25px 20px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            z-index: 2;
+        }
+
+        .pointer-auto { pointer-events: auto; }
+
+        .section-title {
+            color: var(--accent);
+            font-size: 1.1rem;
+            font-weight: 800;
+            margin-bottom: 18px;
+            text-align: center;
+            letter-spacing: 1px;
+        }
+
+        .guide-container {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 15px 12px;
+            border-radius: 12px;
+            border: 1px solid #f0f0f0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+        }
+
+        .guide-item {
+            display: flex;
+            margin-bottom: 12px;
+            line-height: 1.5;
+            font-size: 0.9rem;
+            text-align: justify;
+            word-break: keep-all;
+        }
+
+        .guide-item:last-child { margin-bottom: 0; }
+        .step-num { font-weight: 800; color: var(--accent); margin-right: 8px; min-width: 18px; }
+        .step-text { color: #34495e; flex: 1; }
+
+        .drag-guide {
+            margin-top: 40px;
+            text-align: center;
+            font-size: 0.85rem;
+            color: #bdc3c7;
+            font-weight: 700;
+        }
+
+        .btn-container {
+            margin-top: 460px; 
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .reset-btn {
+            background-color: var(--btn-gray);
+            color: var(--text-main);
+            border: 1px solid #dee2e6;
+            padding: 11px 25px;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .reset-btn:hover {
+            background-color: #e9ecef;
+            border-color: #adb5bd;
+            transform: translateY(-1px);
+        }
+
+        .reset-btn:active { transform: translateY(0); background-color: #dee2e6; }
+
+        .principle-box {
+            margin-top: auto;
+            background-color: #f8fafd;
+            padding: 18px 15px;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .principle-title {
+            color: var(--info-blue);
+            font-size: 0.95rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .principle-content {
+            font-size: 0.88rem;
+            line-height: 1.6;
+            color: var(--text-sub);
+            text-align: justify;
+            word-break: keep-all;
+        }
+
+        /* 푸터 스타일 수정 */
+        footer {
+            height: 80px; /* 높이 약간 증가 */
+            background-color: #fff;
+            border-top: 1px solid #ececec;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+        }
+        .footer-text { font-size: 0.8rem; font-weight: 600; margin-bottom: 3px; }
+        .footer-sub { font-size: 0.75rem; color: var(--text-sub); margin-bottom: 3px; }
+        .device-support { font-size: 0.7rem; color: #bdc3c7; }
     </style>
 </head>
 <body>
@@ -74,8 +183,42 @@
         <h1>빛의 합성 관찰하기</h1>
     </div>
 
-    <div id="stage-container">
+    <div id="main-container">
         <canvas id="mainCanvas"></canvas>
+
+        <div id="sidebar-overlay">
+            <div class="top-ui">
+                <div class="section-title">실험 방법</div>
+                <div class="guide-container pointer-auto">
+                    <div class="guide-item">
+                        <span class="step-num">1.</span>
+                        <span class="step-text"><b>조명 손잡이(R, G, B)</b>를 드래그하여 빛을 여러 가지로 조합해 보세요.</span>
+                    </div>
+                    <div class="guide-item">
+                        <span class="step-num">2.</span>
+                        <span class="step-text">오른쪽의 <b>물체</b>를 왼쪽의 조명이 비치는 어두운 영역으로 끌어다 놓으세요.</span>
+                    </div>
+                    <div class="guide-item">
+                        <span class="step-num">3.</span>
+                        <span class="step-text">조명 색의 조합에 따라 물체가 어떤 색으로 반사되어 보이는지 관찰하세요.</span>
+                    </div>
+                </div>
+                <div class="drag-guide">▼ 아래 물체를 드래그 하세요</div>
+                
+                <div class="btn-container">
+                    <button class="reset-btn pointer-auto" onclick="resetAll()">
+                        🔄 원래대로
+                    </button>
+                </div>
+            </div>
+
+            <div class="principle-box pointer-auto">
+                <div class="principle-title">[ 물체의 색깔이 보이는 원리 ]</div>
+                <div class="principle-content">
+                    물체는 자신이 가진 색과 <b>동일한 색의 빛</b>만 반사하여 우리 눈에 전달합니다. 조명에 그 색이 포함되어 있지 않으면 물체는 빛을 반사하지 못해 <b>검은색</b>으로 보입니다.
+                </div>
+            </div>
+        </div>
     </div>
 
     <footer>
@@ -87,19 +230,20 @@
     <script>
         const canvas = document.getElementById('mainCanvas');
         const ctx = canvas.getContext('2d');
+        const container = document.getElementById('main-container');
         
-        // 정교한 실루엣 마스킹을 위한 오프스크린 캔버스
         const tempCanvas = document.createElement('canvas');
         const tempCtx = tempCanvas.getContext('2d');
 
-        // 빛 설정 (R: 왼쪽, G: 오른쪽, B: 상단 중앙)
+        let dpr = window.devicePixelRatio || 1;
+        const SIDEBAR_WIDTH = 300;
+
         let lights = [
             { id: 'R', x: 0, y: 0, r: 255, g: 0, b: 0, color: 'rgb(255,0,0)', angle: Math.PI * 0.75 }, 
             { id: 'G', x: 0, y: 0, r: 0, g: 255, b: 0, color: 'rgb(0,255,0)', angle: Math.PI * 0.25 },
             { id: 'B', x: 0, y: 0, r: 0, g: 0, b: 255, color: 'rgb(0,0,255)', angle: Math.PI * 1.50 }  
         ];
 
-        // 물체 설정 (반사율)
         let items = [
             { name: '장미', emoji: '🌹', x: 0, y: 0, homeX: 0, homeY: 0, ref: {r:1, g:0.1, b:0.1} },
             { name: '바나나', emoji: '🍌', x: 0, y: 0, homeX: 0, homeY: 0, ref: {r:1, g:1, b:0.1} },
@@ -107,9 +251,7 @@
         ];
 
         const LIGHT_RADIUS = 150;     
-        const HANDLE_DISTANCE = 300; 
-        const SIDEBAR_WIDTH = 240; 
-        const METHOD_SECTION_HEIGHT = 200; // 실험 방법 텍스트 영역 높이
+        const HANDLE_DISTANCE = 280; 
         let isDragging = false;
         let activeObj = null;
         let dragOffset = { x: 0, y: 0 };
@@ -122,26 +264,31 @@
         }
 
         function resize() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight - 180;
-            tempCanvas.width = 160;
-            tempCanvas.height = 160;
+            const w = window.innerWidth;
+            const h = container.clientHeight;
+            canvas.width = w * dpr;
+            canvas.height = h * dpr;
+            canvas.style.width = w + 'px';
+            canvas.style.height = h + 'px';
+            ctx.scale(dpr, dpr);
+            tempCanvas.width = 160 * dpr;
+            tempCanvas.height = 160 * dpr;
+            tempCtx.scale(dpr, dpr);
+            setInitialPositions();
         }
 
         function setInitialPositions() {
-            const stageW = canvas.width - SIDEBAR_WIDTH;
+            const stageW = window.innerWidth - SIDEBAR_WIDTH;
             const cx = stageW / 2;
-            const cy = canvas.height / 2;
+            const cy = container.clientHeight / 2;
             
-            // 조명 초기 위치
-            lights[0].x = cx - 120; lights[0].y = cy + 50;  
-            lights[1].x = cx + 120; lights[1].y = cy + 50;  
-            lights[2].x = cx;       lights[2].y = cy - 100; 
+            lights[0].x = cx - 110; lights[0].y = cy + 80;  
+            lights[1].x = cx + 110; lights[1].y = cy + 80;  
+            lights[2].x = cx;       lights[2].y = cy - 70; 
 
-            // 물체 위치: 실험 방법과 드래그 가이드라인보다 더 아래에 배치 (y=340부터 시작)
             items.forEach((item, i) => {
-                item.homeX = canvas.width - (SIDEBAR_WIDTH / 2);
-                item.homeY = 340 + (i * 95); 
+                item.homeX = window.innerWidth - (SIDEBAR_WIDTH / 2);
+                item.homeY = 420 + (i * 80); 
                 if (!isDragging) {
                     item.x = item.homeX;
                     item.y = item.homeY;
@@ -149,89 +296,37 @@
             });
         }
 
-        function drawScene() {
-            ctx.globalCompositeOperation = 'source-over';
-            ctx.fillStyle = "#000000";
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-            // 사이드바 배경
-            ctx.fillStyle = "#ffffff";
-            ctx.fillRect(canvas.width - SIDEBAR_WIDTH, 0, SIDEBAR_WIDTH, canvas.height);
-            ctx.strokeStyle = "#ececec";
-            ctx.lineWidth = 1;
-            ctx.beginPath();
-            ctx.moveTo(canvas.width - SIDEBAR_WIDTH, 0);
-            ctx.lineTo(canvas.width - SIDEBAR_WIDTH, canvas.height);
-            ctx.stroke();
-
-            drawSidebarUI();
-            lights.forEach(drawLightSystem);
-            items.forEach(drawItemWithSilhouette);
-            ctx.globalCompositeOperation = 'source-over';
-            lights.forEach(drawFlashlightBody);
+        function resetAll() {
+            setInitialPositions();
         }
 
-        function drawSidebarUI() {
-            const sidebarX = canvas.width - SIDEBAR_WIDTH;
-            const centerX = canvas.width - (SIDEBAR_WIDTH / 2);
-            const startX = sidebarX + 25; 
-            
-            // 1. 실험 방법 (상단 고정)
-            ctx.textAlign = "center";
-            ctx.fillStyle = "#d35400";
-            ctx.font = "bold 15px sans-serif";
-            ctx.fillText("실험 방법", centerX, 45);
-            
-            ctx.textAlign = "left";
-            ctx.fillStyle = "#34495e";
-            ctx.font = "11.5px sans-serif";
-            const lines = [
-                "1. 빛을 여러 가지로 조합하여",
-                "   비추어 보세요.",
-                "",
-                "2. 겹쳐진 부분이 어떤 색으로",
-                "   보이는지 관찰해 보세요.",
-                "",
-                "3. 물체를 왼쪽 빛 아래로 옮겨",
-                "   색의 변화를 확인하세요."
-            ];
-            lines.forEach((line, i) => ctx.fillText(line, startX, 85 + (i * 18)));
+        function drawScene() {
+            const w = window.innerWidth;
+            const h = container.clientHeight;
+            const stageW = w - SIDEBAR_WIDTH;
 
-            // 2. 구분선 (방법 영역 바로 아래)
-            ctx.setLineDash([4, 3]);
-            ctx.strokeStyle = "#dee2e6";
-            ctx.beginPath();
-            ctx.moveTo(sidebarX + 20, 245);
-            ctx.lineTo(canvas.width - 20, 245);
-            ctx.stroke();
-            ctx.setLineDash([]);
+            ctx.clearRect(0, 0, w, h);
+            ctx.fillStyle = "#000000";
+            ctx.fillRect(0, 0, stageW, h);
+            ctx.fillStyle = "#ffffff";
+            ctx.fillRect(stageW, 0, SIDEBAR_WIDTH, h);
+            ctx.strokeStyle = "#ececec";
+            ctx.lineWidth = 1;
+            ctx.beginPath(); ctx.moveTo(stageW, 0); ctx.lineTo(stageW, h); ctx.stroke();
 
-            // 3. 물체 드래그 가이드 (구분선과 물체 사이)
-            ctx.textAlign = "center";
-            ctx.fillStyle = "#bdc3c7";
-            ctx.font = "bold 10px sans-serif";
-            ctx.fillText("▼ 물체를 왼쪽으로 드래그 하세요", centerX, 280);
+            items.forEach(item => {
+                ctx.setLineDash([4, 4]);
+                ctx.strokeStyle = "#f2f2f2";
+                ctx.beginPath();
+                ctx.arc(item.homeX, item.homeY, 35, 0, Math.PI * 2);
+                ctx.stroke();
+                ctx.setLineDash([]);
+            });
 
-            // 4. 물체의 색깔이 보이는 원리 (하단 고정)
-            const infoY = canvas.height - 120;
-            ctx.fillStyle = "#f8f9fa";
-            ctx.fillRect(sidebarX + 10, infoY, SIDEBAR_WIDTH - 20, 100);
-            
-            ctx.textAlign = "center";
-            ctx.fillStyle = "#2980b9";
-            ctx.font = "bold 13px sans-serif";
-            ctx.fillText("[ 물체의 색깔이 보이는 원리 ]", centerX, infoY + 25);
-            
-            ctx.textAlign = "left";
-            ctx.fillStyle = "#7f8c8d";
-            ctx.font = "11px sans-serif";
-            const principle = [
-                "물체의 색은 물체가 반사한",
-                "빛의 색입니다. 비춘 빛 중에",
-                "물체가 반사할 수 있는 색이",
-                "없으면 검게 보입니다."
-            ];
-            principle.forEach((text, i) => ctx.fillText(text, sidebarX + 25, infoY + 48 + (i * 16)));
+            lights.forEach(drawLightSystem);
+            items.forEach(item => drawItem(item, stageW));
+            ctx.globalCompositeOperation = 'source-over';
+            lights.forEach(drawFlashlightBody);
         }
 
         function drawLightSystem(l) {
@@ -246,7 +341,7 @@
             ctx.globalCompositeOperation = 'lighter';
             const targetAngle = Math.atan2(l.y - headTipY, l.x - headTipX);
             const grad = ctx.createLinearGradient(headTipX, headTipY, l.x, l.y);
-            grad.addColorStop(0, l.color.replace('rgb', 'rgba').replace(')', ', 0.45)'));
+            grad.addColorStop(0, l.color.replace('rgb', 'rgba').replace(')', ', 0.5)'));
             grad.addColorStop(1, 'rgba(0,0,0,0)');
             
             ctx.fillStyle = grad;
@@ -264,11 +359,11 @@
             ctx.restore();
         }
 
-        function drawItemWithSilhouette(item) {
-            if (item.x > canvas.width - SIDEBAR_WIDTH) {
-                // 사이드바 내부 (원래 색상)
+        function drawItem(item, stageW) {
+            const isInside = item.x < stageW - 20;
+            if (!isInside) {
                 ctx.save();
-                ctx.font = "62px Arial";
+                ctx.font = "55px Arial";
                 ctx.textAlign = "center";
                 ctx.textBaseline = "middle";
                 ctx.fillText(item.emoji, item.x, item.y);
@@ -276,7 +371,6 @@
                 return;
             }
 
-            // 스테이지 내부 (반사광 합성)
             let rIn = 30, gIn = 30, bIn = 30; 
             lights.forEach(l => {
                 if (Math.hypot(l.x - item.x, l.y - item.y) < LIGHT_RADIUS) {
@@ -287,22 +381,28 @@
             const fG = Math.min(255, gIn * item.ref.g);
             const fB = Math.min(255, bIn * item.ref.b);
 
+            tempCtx.save();
+            tempCtx.setTransform(1, 0, 0, 1, 0, 0);
             tempCtx.clearRect(0, 0, tempCanvas.width, tempCanvas.height);
-            tempCtx.font = "62px Arial";
+            tempCtx.restore();
+
+            tempCtx.font = "60px Arial";
             tempCtx.textAlign = "center";
             tempCtx.textBaseline = "middle";
             tempCtx.globalCompositeOperation = 'source-over';
-            tempCtx.fillText(item.emoji, tempCanvas.width / 2, tempCanvas.height / 2);
+            tempCtx.fillText(item.emoji, 80, 80);
             tempCtx.globalCompositeOperation = 'source-in';
             tempCtx.fillStyle = `rgb(${fR}, ${fG}, ${fB})`;
-            tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+            tempCtx.fillRect(0, 0, 160, 160);
             tempCtx.globalCompositeOperation = 'multiply';
-            tempCtx.fillText(item.emoji, tempCanvas.width / 2, tempCanvas.height / 2);
+            tempCtx.fillText(item.emoji, 80, 80);
 
             ctx.save();
-            ctx.shadowBlur = 15;
-            ctx.shadowColor = `rgb(${fR}, ${fG}, ${fB})`;
-            ctx.drawImage(tempCanvas, item.x - tempCanvas.width / 2, item.y - tempCanvas.height / 2);
+            if(fR + fG + fB > 100) {
+                ctx.shadowBlur = 20;
+                ctx.shadowColor = `rgb(${fR}, ${fG}, ${fB})`;
+            }
+            ctx.drawImage(tempCanvas, 0, 0, 160*dpr, 160*dpr, item.x - 80, item.y - 80, 160, 160);
             ctx.restore();
         }
 
@@ -310,16 +410,16 @@
             ctx.save();
             ctx.translate(l.hX, l.hY);
             ctx.rotate(l.angle + Math.PI/2);
-            ctx.fillStyle = "#333333";
-            ctx.fillRect(-15, 5, 30, 60);
+            ctx.fillStyle = "#333";
+            ctx.fillRect(-15, 5, 30, 50);
             ctx.fillStyle = "#95a5a6";
             ctx.fillRect(-22, -12, 44, 22);
             ctx.fillStyle = l.color;
             ctx.fillRect(-18, -16, 36, 6);
-            ctx.fillStyle = "#ffffff";
-            ctx.font = "bold 15px sans-serif";
+            ctx.fillStyle = "#fff";
+            ctx.font = "bold 14px sans-serif";
             ctx.textAlign = "center";
-            ctx.fillText(l.id, 0, 45);
+            ctx.fillText(l.id, 0, 40);
             ctx.restore();
         }
 
@@ -331,13 +431,13 @@
         function getPointerPos(e) {
             const rect = canvas.getBoundingClientRect();
             const ev = e.touches ? e.touches[0] : e;
-            return { x: ev.clientX - rect.left, y: ev.clientY - rect.top };
+            return { x: (ev.clientX - rect.left), y: (ev.clientY - rect.top) };
         }
 
         function onStart(e) {
             const p = getPointerPos(e);
             for (let item of items) {
-                if (Math.hypot(item.x - p.x, item.y - p.y) < 45) {
+                if (Math.hypot(item.x - p.x, item.y - p.y) < 50) {
                     isDragging = true;
                     activeObj = { type: 'item', data: item };
                     dragOffset.x = p.x - item.x;
@@ -357,7 +457,7 @@
         }
 
         function onMove(e) {
-            if (!isDragging) return;
+            if (!isDragging || !activeObj) return;
             const p = getPointerPos(e);
             activeObj.data.x = p.x - dragOffset.x;
             activeObj.data.y = p.y - dragOffset.y;
@@ -366,20 +466,20 @@
         function onEnd() { 
             if (isDragging && activeObj && activeObj.type === 'item') {
                 const item = activeObj.data;
-                if (item.x > canvas.width - SIDEBAR_WIDTH - 40) {
+                const stageW = window.innerWidth - SIDEBAR_WIDTH;
+                if (item.x > stageW - 50) {
                     item.x = item.homeX;
                     item.y = item.homeY;
                 }
             }
-            isDragging = false; 
-            activeObj = null; 
+            isDragging = false; activeObj = null; 
         }
 
         canvas.addEventListener('mousedown', onStart);
         window.addEventListener('mousemove', onMove);
         window.addEventListener('mouseup', onEnd);
-        canvas.addEventListener('touchstart', (e) => { e.preventDefault(); onStart(e); }, {passive: false});
-        window.addEventListener('touchmove', (e) => { if(isDragging) e.preventDefault(); onMove(e); }, {passive: false});
+        canvas.addEventListener('touchstart', (e) => { if(e.target === canvas) onStart(e); }, {passive: false});
+        window.addEventListener('touchmove', (e) => { if(isDragging) { e.preventDefault(); onMove(e); } }, {passive: false});
         window.addEventListener('touchend', onEnd);
 
         init();
