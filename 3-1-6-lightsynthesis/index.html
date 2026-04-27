@@ -26,10 +26,11 @@
             touch-action: none;
             display: flex;
             flex-direction: column;
-            height: 100vh;
+            height: 100vh; /* 전체 높이 고정 */
         }
 
         #header {
+            flex-shrink: 0; /* 크기 유지 */
             height: 50px;
             display: flex;
             align-items: center;
@@ -40,9 +41,10 @@
         }
         h1 { margin: 0; font-size: 1.2rem; font-weight: 800; }
 
-        #main-container {
+        #main-wrapper {
+            flex: 1; /* 가용 공간 모두 차지 */
             position: relative;
-            flex: 1;
+            display: flex;
             overflow: hidden;
             background: #000;
         }
@@ -65,6 +67,8 @@
             display: flex;
             flex-direction: column;
             z-index: 2;
+            background: rgba(255, 255, 255, 1); /* 사이드바 배경 확실히 분리 */
+            border-left: 1px solid #ececec;
         }
 
         .pointer-auto { pointer-events: auto; }
@@ -78,46 +82,45 @@
         }
 
         .guide-container {
-            background: rgba(255, 255, 255, 0.95);
-            padding: 12px;
+            background: #fdfdfd;
+            padding: 10px;
             border-radius: 10px;
             border: 1px solid #eee;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
 
         .guide-item {
             display: flex;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
             line-height: 1.4;
-            font-size: 0.85rem;
+            font-size: 0.82rem;
+            word-break: keep-all;
         }
 
-        .guide-item:last-child { margin-bottom: 0; }
         .step-num { font-weight: 800; color: var(--accent); margin-right: 5px; }
         .step-text { color: #34495e; flex: 1; }
 
         .drag-guide {
-            margin-top: 15px;
+            margin-top: 10px;
             text-align: center;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             color: #bdc3c7;
             font-weight: 700;
         }
 
-        /* 버튼 컨테이너: 절대 위치 대신 유연하게 배치 */
-        #reset-btn-wrap {
-            position: absolute;
-            width: calc(100% - 30px);
+        /* 버튼 영역: 물체와 원리 설명 사이에 고정 */
+        #btn-area {
+            flex: 1; /* 물체 배치를 위해 공간 확보 */
             display: flex;
+            align-items: flex-end; /* 아래쪽(원리 설명 위)에 배치 */
             justify-content: center;
-            z-index: 3;
+            padding-bottom: 15px;
         }
 
         .reset-btn {
             background-color: var(--btn-gray);
             color: var(--text-main);
             border: 1px solid #dee2e6;
-            padding: 8px 20px;
+            padding: 8px 24px;
             border-radius: 30px;
             font-size: 0.85rem;
             font-weight: 800;
@@ -127,41 +130,40 @@
         }
 
         .principle-box {
-            margin-top: auto; /* 항상 아래쪽으로 밀어냄 */
             background-color: #f8fafd;
             padding: 12px;
             border-radius: 10px;
             border: 1px solid #e2e8f0;
-            margin-bottom: 10px;
         }
 
         .principle-title {
             color: var(--info-blue);
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             font-weight: 800;
             margin-bottom: 5px;
             text-align: center;
         }
 
         .principle-content {
-            font-size: 0.8rem;
+            font-size: 0.78rem;
             line-height: 1.5;
             color: var(--text-sub);
             word-break: keep-all;
         }
 
         footer {
-            height: 75px;
+            flex-shrink: 0;
+            height: 90px;
             background-color: #fff;
             border-top: 1px solid #ececec;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            z-index: 10;
+            z-index: 20;
         }
-        .footer-text { font-size: 0.75rem; font-weight: 600; margin-bottom: 2px; }
-        .footer-sub { font-size: 0.7rem; color: #7f8c8d; margin-bottom: 2px; }
+        .footer-text { font-size: 0.75rem; font-weight: 600; margin-bottom: 4px; color: #2c3e50; }
+        .footer-sub { font-size: 0.7rem; color: #7f8c8d; margin-bottom: 4px; }
         .device-support { font-size: 0.65rem; color: #bdc3c7; }
     </style>
 </head>
@@ -171,7 +173,7 @@
         <h1>빛의 합성 관찰하기</h1>
     </div>
 
-    <div id="main-container">
+    <div id="main-wrapper">
         <canvas id="mainCanvas"></canvas>
         <div id="sidebar-overlay">
             <div class="top-ui">
@@ -179,14 +181,13 @@
                 <div class="guide-container pointer-auto">
                     <div class="guide-item"><span class="step-num">1.</span><span class="step-text"><b>조명(R, G, B)</b>을 드래그하여 빛을 합성해 보세요.</span></div>
                     <div class="guide-item"><span class="step-num">2.</span><span class="step-text">오른쪽 <b>물체</b>를 조명이 비치는 곳으로 옮기세요.</span></div>
-                    <div class="guide-item"><span class="step-num">3.</span><span class="step-text">빛의 색에 따라 물체의 색이 어떻게 변하는지 관찰하세요.</span></div>
+                    <div class="guide-item"><span class="step-num">3.</span><span class="step-text">빛의 색에 따라 물체 색이 변하는지 관찰하세요.</span></div>
                 </div>
                 <div class="drag-guide">▼ 아래 물체를 드래그 하세요</div>
             </div>
 
-            <!-- 다이내믹하게 위치가 결정될 버튼 -->
-            <div id="reset-btn-wrap">
-                <button class="reset-btn" onclick="resetAll()">🔄 원래대로</button>
+            <div id="btn-area">
+                <button class="reset-btn pointer-auto" onclick="resetAll()">🔄 원래대로</button>
             </div>
 
             <div class="principle-box pointer-auto">
@@ -200,14 +201,14 @@
 
     <footer>
         <div class="footer-text">© 2026. LEE HANEUL All rights reserved.</div>
-        <div class="footer-sub">빛의 합성 실험 v1.2 (2026-04-26)</div>
+        <div class="footer-sub">빛의 합성 실험 v1.3 (2026-04-26)</div>
         <div class="device-support">본 프로그램은 아이패드 및 태블릿 환경에서의 터치 조작을 지원합니다.</div>
     </footer>
 
     <script>
         const canvas = document.getElementById('mainCanvas');
         const ctx = canvas.getContext('2d');
-        const container = document.getElementById('main-container');
+        const wrapper = document.getElementById('main-wrapper');
         const tempCanvas = document.createElement('canvas');
         const tempCtx = tempCanvas.getContext('2d');
 
@@ -226,8 +227,8 @@
             { name: '잎사귀', emoji: '🌿', x: 0, y: 0, homeX: 0, homeY: 0, ref: {r:0.1, g:1, b:0.1} }
         ];
 
-        const LIGHT_RADIUS = 140;     
-        const HANDLE_DISTANCE = 250; 
+        const LIGHT_RADIUS = 130;     
+        const HANDLE_DISTANCE = 240; 
         let isDragging = false;
         let activeObj = null;
         let dragOffset = { x: 0, y: 0 };
@@ -241,48 +242,42 @@
 
         function resize() {
             const w = window.innerWidth;
-            const h = container.clientHeight;
+            const h = wrapper.clientHeight;
             canvas.width = w * dpr;
             canvas.height = h * dpr;
             canvas.style.width = w + 'px';
             canvas.style.height = h + 'px';
-            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-
-            // 임시 캔버스 고해상도 대응
-            tempCanvas.width = 120 * dpr;
-            tempCanvas.height = 120 * dpr;
-            tempCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+            
+            tempCanvas.width = 100 * dpr;
+            tempCanvas.height = 100 * dpr;
             
             setInitialPositions();
         }
 
         function setInitialPositions() {
             const stageW = window.innerWidth - SIDEBAR_WIDTH;
-            const h = container.clientHeight;
+            const h = wrapper.clientHeight;
             const cx = stageW / 2;
             const cy = h / 2;
             
-            lights[0].x = cx - 100; lights[0].y = cy + 60;  
-            lights[1].x = cx + 100; lights[1].y = cy + 60;  
-            lights[2].x = cx;       lights[2].y = cy - 80; 
+            lights[0].x = cx - 90; lights[0].y = cy + 50;  
+            lights[1].x = cx + 90; lights[1].y = cy + 50;  
+            lights[2].x = cx;      lights[2].y = cy - 70; 
 
-            // 버튼 및 물체 위치 계산 (화면 높이에 따라 가변적)
             const sidebarCenterX = window.innerWidth - (SIDEBAR_WIDTH / 2);
-            const startY = 280; // 실험 방법 박스 아래 시작점
-            const spaceY = (h - startY - 180) / 3; // 가용 공간 분할
-            
+            // 물체 배치 영역: 실험방법(180px 지점) ~ 버튼 영역(h-100px) 사이
+            const startY = 210;
+            const endY = h - 130;
+            const gapY = (endY - startY) / 2;
+
             items.forEach((item, i) => {
                 item.homeX = sidebarCenterX;
-                item.homeY = startY + (i * Math.max(spaceY, 65)); 
+                item.homeY = startY + (i * gapY); 
                 if (!isDragging) {
                     item.x = item.homeX;
                     item.y = item.homeY;
                 }
             });
-
-            // 버튼 위치 업데이트
-            const btnWrap = document.getElementById('reset-btn-wrap');
-            btnWrap.style.top = (items[2].homeY + 60) + "px";
         }
 
         function resetAll() {
@@ -293,30 +288,31 @@
 
         function drawScene() {
             const w = window.innerWidth;
-            const h = container.clientHeight;
+            const h = wrapper.clientHeight;
             const stageW = w - SIDEBAR_WIDTH;
 
-            ctx.clearRect(0, 0, w, h);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.save();
+            ctx.scale(dpr, dpr);
+
+            // 1. 실험 영역 (검정)
             ctx.fillStyle = "#000";
             ctx.fillRect(0, 0, stageW, h);
-            ctx.fillStyle = "#fff";
-            ctx.fillRect(stageW, 0, SIDEBAR_WIDTH, h);
-            ctx.strokeStyle = "#ececec";
-            ctx.lineWidth = 1;
-            ctx.beginPath(); ctx.moveTo(stageW, 0); ctx.lineTo(stageW, h); ctx.stroke();
 
-            // 가이드 원
+            // 2. 가이드 원 (사이드바 내부)
             items.forEach(item => {
                 ctx.setLineDash([4, 4]);
-                ctx.strokeStyle = "#f0f0f0";
+                ctx.strokeStyle = "#e0e0e0";
                 ctx.beginPath(); ctx.arc(item.homeX, item.homeY, 30, 0, Math.PI * 2); ctx.stroke();
                 ctx.setLineDash([]);
             });
 
             lights.forEach(drawLightSystem);
             items.forEach(item => drawItem(item, stageW));
+            
             ctx.globalCompositeOperation = 'source-over';
             lights.forEach(drawFlashlightBody);
+            ctx.restore();
         }
 
         function drawLightSystem(l) {
@@ -348,24 +344,23 @@
         }
 
         function drawItem(item, stageW) {
-            const isInside = item.x < stageW - 15;
+            const isInside = item.x < stageW - 10;
             if (!isInside) {
                 ctx.save();
-                ctx.font = "50px Arial";
+                ctx.font = "45px Arial";
                 ctx.textAlign = "center";
                 ctx.textBaseline = "middle";
+                ctx.fillStyle = "#000";
                 ctx.fillText(item.emoji, item.x, item.y);
                 ctx.restore();
                 return;
             }
 
             // 색상 계산
-            let rIn = 20, gIn = 20, bIn = 20; 
+            let rIn = 30, gIn = 30, bIn = 30; 
             lights.forEach(l => {
-                const dist = Math.hypot(l.x - item.x, l.y - item.y);
-                if (dist < LIGHT_RADIUS) {
-                    const factor = 1.0; // 거리별 감쇄 없이 명확한 색상 표현
-                    rIn += l.r * factor; gIn += l.g * factor; bIn += l.b * factor;
+                if (Math.hypot(l.x - item.x, l.y - item.y) < LIGHT_RADIUS) {
+                    rIn += l.r; gIn += l.g; bIn += l.b;
                 }
             });
 
@@ -373,26 +368,26 @@
             const fG = Math.floor(Math.min(255, gIn * item.ref.g));
             const fB = Math.floor(Math.min(255, bIn * item.ref.b));
 
-            // 아이패드 호환성을 위한 렌더링 방식 (tempCanvas 활용)
+            // 아이패드 호환 렌더링: 픽셀 데이터를 직접 다루는 대신 가장 안전한 합성 순서 사용
             tempCtx.save();
-            tempCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
-            tempCtx.clearRect(0, 0, 120, 120);
+            tempCtx.clearRect(0, 0, tempCanvas.width, tempCanvas.height);
+            tempCtx.scale(dpr, dpr);
             
-            // 1. 이모지 먼저 그리기
-            tempCtx.font = "60px Arial";
+            // 1. 이모지 그리기
+            tempCtx.font = "55px Arial";
             tempCtx.textAlign = "center";
             tempCtx.textBaseline = "middle";
             tempCtx.fillStyle = "#000";
-            tempCtx.fillText(item.emoji, 60, 60);
+            tempCtx.fillText(item.emoji, 50, 50);
 
-            // 2. 색상 입히기 (source-in 모드)
+            // 2. 색상 채우기 (source-in은 이미 그려진 영역에만 덧칠함)
             tempCtx.globalCompositeOperation = "source-in";
             tempCtx.fillStyle = `rgb(${fR},${fG},${fB})`;
-            tempCtx.fillRect(0, 0, 120, 120);
+            tempCtx.fillRect(0, 0, 100, 100);
             
-            // 3. 디테일 유지를 위해 원본을 multiply로 살짝 얹음
+            // 3. 입체감 (multiply)
             tempCtx.globalCompositeOperation = "multiply";
-            tempCtx.fillText(item.emoji, 60, 60);
+            tempCtx.fillText(item.emoji, 50, 50);
             tempCtx.restore();
 
             ctx.save();
@@ -400,7 +395,7 @@
                 ctx.shadowBlur = 15;
                 ctx.shadowColor = `rgb(${fR},${fG},${fB})`;
             }
-            ctx.drawImage(tempCanvas, item.x - 60, item.y - 60, 120, 120);
+            ctx.drawImage(tempCanvas, (item.x - 50), (item.y - 50), 100, 100);
             ctx.restore();
         }
 
@@ -408,11 +403,11 @@
             ctx.save();
             ctx.translate(l.hX, l.hY);
             ctx.rotate(l.angle + Math.PI/2);
-            ctx.fillStyle = "#333"; ctx.fillRect(-12, 5, 24, 40);
-            ctx.fillStyle = "#95a5a6"; ctx.fillRect(-18, -10, 36, 18);
-            ctx.fillStyle = l.color; ctx.fillRect(-14, -14, 28, 5);
-            ctx.fillStyle = "#fff"; ctx.font = "bold 12px sans-serif";
-            ctx.textAlign = "center"; ctx.fillText(l.id, 0, 32);
+            ctx.fillStyle = "#333"; ctx.fillRect(-10, 5, 20, 35);
+            ctx.fillStyle = "#95a5a6"; ctx.fillRect(-16, -10, 32, 16);
+            ctx.fillStyle = l.color; ctx.fillRect(-12, -13, 24, 4);
+            ctx.fillStyle = "#fff"; ctx.font = "bold 11px sans-serif";
+            ctx.textAlign = "center"; ctx.fillText(l.id, 0, 28);
             ctx.restore();
         }
 
@@ -429,16 +424,18 @@
 
         function onStart(e) {
             const p = getPointerPos(e);
+            // 아이템 우선 선택
             for (let item of items) {
-                if (Math.hypot(item.x - p.x, item.y - p.y) < 45) {
+                if (Math.hypot(item.x - p.x, item.y - p.y) < 40) {
                     isDragging = true;
                     activeObj = { type: 'item', data: item };
                     dragOffset.x = p.x - item.x; dragOffset.y = p.y - item.y;
                     return;
                 }
             }
+            // 조명 선택
             for (let l of lights) {
-                if (Math.hypot(l.hX - p.x, l.hY - p.y) < 55) {
+                if (Math.hypot(l.hX - p.x, l.hY - p.y) < 50) {
                     isDragging = true;
                     activeObj = { type: 'light', data: l };
                     dragOffset.x = p.x - l.x; dragOffset.y = p.y - l.y;
@@ -458,7 +455,7 @@
             if (isDragging && activeObj && activeObj.type === 'item') {
                 const item = activeObj.data;
                 const stageW = window.innerWidth - SIDEBAR_WIDTH;
-                if (item.x > stageW - 40) {
+                if (item.x > stageW - 30) {
                     item.x = item.homeX; item.y = item.homeY;
                 }
             }
@@ -469,7 +466,11 @@
         window.addEventListener('mousemove', onMove);
         window.addEventListener('mouseup', onEnd);
         canvas.addEventListener('touchstart', (e) => { 
-            if(e.target === canvas) { onStart(e); e.preventDefault(); }
+            const p = getPointerPos(e);
+            if(p.x < window.innerWidth - SIDEBAR_WIDTH || p.y > 180) { // UI 영역 외 터치 차단 방지
+                onStart(e); 
+                if(isDragging) e.preventDefault(); 
+            }
         }, {passive: false});
         window.addEventListener('touchmove', (e) => { if(isDragging) { onMove(e); e.preventDefault(); } }, {passive: false});
         window.addEventListener('touchend', onEnd);
