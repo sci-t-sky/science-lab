@@ -80,7 +80,7 @@
         }
 
         .guide-container {
-            background: rgba(255, 255, 255, 0.9);
+            background: rgba(255, 255, 255, 0.95);
             padding: 10px;
             border-radius: 10px;
             border: 1px solid #eee;
@@ -105,12 +105,12 @@
             font-weight: 700;
         }
 
-        /* 원래대로 버튼 영역: 위치를 원리 설명 상자 바로 위로 조정 */
+        /* 원래대로 버튼 영역 */
         #btn-area {
             margin-top: auto;
             display: flex;
             justify-content: center;
-            padding-bottom: 15px;
+            padding-bottom: 10px;
         }
 
         .reset-btn {
@@ -126,11 +126,9 @@
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
 
-        .reset-btn:active { background-color: #dee2e6; }
-
         .principle-box {
             background-color: rgba(248, 250, 253, 0.95);
-            padding: 12px;
+            padding: 10px;
             border-radius: 10px;
             border: 1px solid #e2e8f0;
             margin-bottom: 5px;
@@ -179,9 +177,9 @@
             <div class="top-ui">
                 <div class="section-title">실험 방법</div>
                 <div class="guide-container pointer-auto">
-                    <div class="guide-item"><span class="step-num">1.</span><span class="step-text"><b>조명(R, G, B)</b>을 드래그하여 빛을 합성해 보세요.</span></div>
-                    <div class="guide-item"><span class="step-num">2.</span><span class="step-text">오른쪽 <b>물체</b>를 조명이 비치는 곳으로 옮기세요.</span></div>
-                    <div class="guide-item"><span class="step-num">3.</span><span class="step-text">빛의 색에 따라 물체 색이 변하는지 관찰하세요.</span></div>
+                    <div class="guide-item"><span class="step-num">1.</span><span class="step-text"><b>조명(R, G, B)</b>을 드래그하여 빛을 여러 가지로 조합해 보세요.</span></div>
+                    <div class="guide-item"><span class="step-num">2.</span><span class="step-text">오른쪽 <b>물체</b>를 조명이 비치는 어두운 영역으로 끌어다 놓으세요.</span></div>
+                    <div class="guide-item"><span class="step-num">3.</span><span class="step-text">조명 색의 조합에 따라 물체가 어떤 색으로 반사되는지 관찰하세요.</span></div>
                 </div>
                 <div class="drag-guide">▼ 아래 물체를 드래그 하세요</div>
             </div>
@@ -193,7 +191,7 @@
             <div class="principle-box pointer-auto">
                 <div class="principle-title">[ 물체의 색깔이 보이는 원리 ]</div>
                 <div class="principle-content">
-                    물체는 자신이 가진 색과 <b>동일한 색의 빛</b>만 반사합니다. 조명에 그 색이 없으면 물체는 빛을 반사하지 못해 <b>검은색</b>으로 보입니다.
+                    물체는 자신이 가진 색과 <b>동일한 색의 빛</b>만 반사합니다. 조명에 그 색이 포함되어 있지 않으면 물체는 빛을 반사하지 못해 <b>검은색</b>으로 보입니다.
                 </div>
             </div>
         </div>
@@ -247,8 +245,11 @@
             canvas.height = h * dpr;
             canvas.style.width = w + 'px';
             canvas.style.height = h + 'px';
-            tempCanvas.width = 100 * dpr;
-            tempCanvas.height = 100 * dpr;
+            
+            // 임시 캔버스도 고해상도 대응
+            tempCanvas.width = 120 * dpr;
+            tempCanvas.height = 120 * dpr;
+            
             setInitialPositions();
         }
 
@@ -263,9 +264,9 @@
             lights[2].x = cx;      lights[2].y = cy - 70; 
 
             const sidebarCenterX = window.innerWidth - (SIDEBAR_WIDTH / 2);
-            // 물체 시작 위치를 아래로 2cm(약 80~90px) 이동: 220 -> 310
-            const itemStartY = 310; 
-            const itemGapY = 75;
+            // 물체 시작 위치를 설명글 아래(약 320px)로 이동
+            const itemStartY = 320; 
+            const itemGapY = 70;
 
             items.forEach((item, i) => {
                 item.homeX = sidebarCenterX;
@@ -292,15 +293,16 @@
             ctx.save();
             ctx.scale(dpr, dpr);
 
+            // 배경 및 사이드바 그리기
             ctx.fillStyle = "#000";
             ctx.fillRect(0, 0, stageW, h);
-
             ctx.fillStyle = "#fff";
             ctx.fillRect(stageW, 0, SIDEBAR_WIDTH, h);
             ctx.strokeStyle = "#ececec";
             ctx.lineWidth = 1;
             ctx.strokeRect(stageW, 0, SIDEBAR_WIDTH, h);
 
+            // 가이드 원
             items.forEach(item => {
                 ctx.setLineDash([4, 4]);
                 ctx.strokeStyle = "#e0e0e0";
@@ -354,6 +356,7 @@
                 return;
             }
 
+            // 합성된 빛의 양 계산
             let rIn = 35, gIn = 35, bIn = 35; 
             lights.forEach(l => {
                 if (Math.hypot(l.x - item.x, l.y - item.y) < LIGHT_RADIUS) {
@@ -365,25 +368,32 @@
             const fG = Math.floor(Math.min(255, gIn * item.ref.g));
             const fB = Math.floor(Math.min(255, bIn * item.ref.b));
 
+            // [아이패드 완벽 호환 렌더링 로직]
             tempCtx.save();
             tempCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
-            tempCtx.clearRect(0, 0, 100, 100);
+            tempCtx.clearRect(0, 0, 120, 120);
+            
+            // 1. 먼저 색상을 가득 채웁니다.
+            tempCtx.fillStyle = `rgb(${fR},${fG},${fB})`;
+            tempCtx.fillRect(0, 0, 120, 120);
+
+            // 2. destination-in 모드를 사용하여 다음에 그릴 이모지 모양으로 자릅니다.
+            // (이 방식이 아이패드 Safari에서 가장 오류가 적습니다)
+            tempCtx.globalCompositeOperation = "destination-in";
             tempCtx.font = "55px Arial";
             tempCtx.textAlign = "center"; tempCtx.textBaseline = "middle";
-            tempCtx.fillStyle = "#000";
-            tempCtx.fillText(item.emoji, 50, 50);
-            tempCtx.globalCompositeOperation = "source-atop";
-            tempCtx.fillStyle = `rgb(${fR},${fG},${fB})`;
-            tempCtx.fillRect(0, 0, 100, 100);
+            tempCtx.fillText(item.emoji, 60, 60);
+
+            // 3. 다시 multiply 모드로 이모지를 그려서 그림자와 형태를 살립니다.
             tempCtx.globalCompositeOperation = "multiply";
-            tempCtx.fillText(item.emoji, 50, 50);
+            tempCtx.fillText(item.emoji, 60, 60);
             tempCtx.restore();
 
             ctx.save();
             if (fR + fG + fB > 50) {
                 ctx.shadowBlur = 15; ctx.shadowColor = `rgb(${fR},${fG},${fB})`;
             }
-            ctx.drawImage(tempCanvas, (item.x - 50), (item.y - 50), 100, 100);
+            ctx.drawImage(tempCanvas, (item.x - 60), (item.y - 60), 120, 120);
             ctx.restore();
         }
 
@@ -431,7 +441,8 @@
         function onEnd() { 
             if (isDragging && activeObj && activeObj.type === 'item') {
                 const item = activeObj.data;
-                if (item.x > (window.innerWidth - SIDEBAR_WIDTH - 20)) {
+                const stageW = window.innerWidth - SIDEBAR_WIDTH;
+                if (item.x > stageW - 20) {
                     item.x = item.homeX; item.y = item.homeY;
                 }
             }
@@ -441,8 +452,16 @@
         canvas.addEventListener('mousedown', onStart);
         window.addEventListener('mousemove', onMove);
         window.addEventListener('mouseup', onEnd);
-        canvas.addEventListener('touchstart', (e) => { onStart(e); if(isDragging) e.preventDefault(); }, {passive: false});
-        window.addEventListener('touchmove', (e) => { if(isDragging) { onMove(e); e.preventDefault(); } }, {passive: false});
+        canvas.addEventListener('touchstart', (e) => { 
+            onStart(e); 
+            if(isDragging) e.preventDefault(); 
+        }, {passive: false});
+        window.addEventListener('touchmove', (e) => { 
+            if(isDragging) {
+                onMove(e);
+                e.preventDefault();
+            }
+        }, {passive: false});
         window.addEventListener('touchend', onEnd);
         init();
     </script>
