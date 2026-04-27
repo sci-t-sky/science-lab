@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>소리의 3요소 탐구 실험실</title>
+    <style>
+        :root {
+            --bg-color: #f8f9fa;
+            --panel-color: #ffffff;
+            --primary-color: #4a90e2;
+            --accent-color: #e67e22;
+            --text-color: #2c3e50;
+            --border-radius: 15px;
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: 'Pretendard', -apple-system, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        header {
+            width: 100%;
+            padding: 15px 0;
+            text-align: center;
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            z-index: 10;
+        }
+
+        header h1 { margin: 0; font-size: 1.5rem; color: #34495e; }
+
+        /* 메인 레이아웃: 좌측(방법), 중앙(캔버스), 우측(컨트롤) */
+        main {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 280px 1fr 320px;
+            gap: 20px;
+            padding: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        /* 좌측 패널: 실험 방법 */
+        .info-panel {
+            background: var(--panel-color);
+            padding: 25px;
+            border-radius: var(--border-radius);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .info-panel h3 {
+            margin-top: 0;
+            font-size: 1.2rem;
+            color: var(--primary-color);
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+            margin-bottom: 10px;
+        }
+
+        .info-panel ol {
+            padding-left: 20px;
+            margin: 0;
+            font-size: 1rem;
+            line-height: 1.8;
+            font-weight: 500;
+        }
+
+        .info-panel li { margin-bottom: 15px; }
+
+        /* 중앙 패널: 파형 캔버스 및 피드백 */
+        .display-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        #canvas-container {
+            flex: 1;
+            background: #111;
+            border-radius: var(--border-radius);
+            position: relative;
+            box-shadow: inset 0 0 30px rgba(0,0,0,0.8);
+            border: 4px solid #333;
+        }
+
+        canvas { width: 100%; height: 100%; border-radius: 12px; }
+
+        #educational-info {
+            background: #fff;
+            padding: 15px;
+            border-radius: var(--border-radius);
+            text-align: center;
+            font-weight: 700;
+            font-size: 1.1rem;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-bottom: 4px solid var(--primary-color);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        /* 우측 패널: 컨트롤 */
+        .control-panel {
+            background: var(--panel-color);
+            padding: 25px;
+            border-radius: var(--border-radius);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .slider-label { font-weight: bold; font-size: 1rem; color: #555; text-align: center; }
+
+        /* 3단계 슬라이더 */
+        .step-slider-container { width: 100%; }
+
+        input[type=range] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 14px;
+            background: #dee2e6;
+            border-radius: 10px;
+            outline: none;
+        }
+
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 38px;
+            height: 38px;
+            background: var(--primary-color);
+            border-radius: 50%;
+            cursor: pointer;
+            border: 4px solid white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .step-marks {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 5px 0;
+            font-size: 0.95rem;
+            color: #7f8c8d;
+            font-weight: bold;
+        }
+
+        /* 버튼 그룹 */
+        .btn-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        button {
+            padding: 18px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: 0.2s;
+            box-shadow: 0 4px 0 #ccc;
+        }
+
+        button:active { transform: translateY(3px); box-shadow: none; }
+
+        .instrument-btn { background: #f1f3f5; color: #7f8c8d; }
+        .instrument-btn.active { 
+            background: var(--primary-color); 
+            color: white; 
+            box-shadow: 0 4px 0 #2980b9;
+        }
+
+        #play-btn {
+            background: var(--accent-color);
+            color: white;
+            margin-top: 10px;
+            box-shadow: 0 4px 0 #d35400;
+        }
+
+        #play-btn.playing {
+            background: #2c3e50;
+            box-shadow: 0 4px 0 #1a252f;
+        }
+
+        /* Footer */
+        footer {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            background: #fff;
+            padding: 12px;
+            text-align: center;
+            font-size: 0.85rem;
+            color: #95a5a6;
+            border-top: 1px solid #eee;
+            z-index: 10;
+        }
+
+        @media (max-width: 1024px) {
+            main {
+                grid-template-columns: 1fr 1.2fr;
+                overflow-y: auto;
+            }
+            .info-panel { grid-row: 2; grid-column: 1; }
+            .control-panel { grid-row: 2; grid-column: 2; }
+            .display-panel { grid-column: span 2; height: 350px; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>소리의 3요소 탐구 실험실</h1>
+</header>
+
+<main>
+    <!-- 좌측 패널: 실험 방법 -->
+    <aside class="info-panel">
+        <h3>실험 방법</h3>
+        <ol>
+            <li>[소리 재생 시작] 버튼을 눌러 소리를 켭니다.</li>
+            <li>[세기] 슬라이더를 조절하며 파동의 <b>높이(진폭)</b> 변화를 관찰합니다.</li>
+            <li>[높낮이] 슬라이더를 조절하며 파동의 <b>간격(진동수)</b> 변화를 관찰합니다.</li>
+            <li>악기를 변경하며 파동의 <b>모양(맵시)</b> 변화를 관찰합니다.</li>
+        </ol>
+    </aside>
+
+    <!-- 중앙 패널: 오실로스코프 및 피드백 -->
+    <section class="display-panel">
+        <div id="canvas-container">
+            <canvas id="oscilloscope"></canvas>
+        </div>
+        <div id="educational-info">
+            실험을 시작하려면 소리 재생 버튼을 누르세요.
+        </div>
+    </section>
+
+    <!-- 우측 패널: 조작 실린더 및 버튼 -->
+    <aside class="control-panel">
+        <div class="control-group">
+            <div class="slider-label">🔊 소리의 세기 (진폭)</div>
+            <div class="step-slider-container">
+                <input type="range" id="amp-slider" min="1" max="3" step="1" value="2">
+                <div class="step-marks"><span>작게</span><span>중간</span><span>크게</span></div>
+            </div>
+        </div>
+        
+        <div class="control-group">
+            <div class="slider-label">🎼 소리의 높낮이 (진동수)</div>
+            <div class="step-slider-container">
+                <input type="range" id="freq-slider" min="1" max="3" step="1" value="2">
+                <div class="step-marks"><span>낮게</span><span>중간</span><span>높게</span></div>
+            </div>
+        </div>
+
+        <div class="btn-group">
+            <div class="slider-label">🎹 악기 선택 (맵시)</div>
+            <button class="instrument-btn active" data-type="kalimba">칼림바</button>
+            <button class="instrument-btn" data-type="recorder">리코더</button>
+        </div>
+
+        <button id="play-btn">소리 재생 시작</button>
+    </aside>
+</main>
+
+<footer>
+    <div>© 2026. LEE HANEUL All rights reserved. [소리의 3요소 탐구 가상 실험실] [v1.0] (2026-04-27)</div>
+    <div>본 프로그램은 아이패드 및 태블릿 환경에서의 터치 조작을 지원합니다.</div>
+</footer>
+
+<script>
+    let audioCtx = null;
+    let oscillator = null;
+    let gainNode = null;
+    let isPlaying = false;
+    let currentWaveType = 'kalimba';
+
+    const canvas = document.getElementById('oscilloscope');
+    const ctx = canvas.getContext('2d');
+    const ampSlider = document.getElementById('amp-slider');
+    const freqSlider = document.getElementById('freq-slider');
+    const eduInfo = document.getElementById('educational-info');
+    const playBtn = document.getElementById('play-btn');
+
+    // 3단계 설정 매핑
+    const ampMap = { "1": 0.06, "2": 0.18, "3": 0.45 };
+    const freqMap = { "1": 261.63, "2": 440, "3": 783.99 };
+    const ampText = { "1": "작은", "2": "중간", "3": "큰" };
+    const freqText = { "1": "낮은", "2": "중간", "3": "높은" };
+
+    function resize() {
+        canvas.width = canvas.parentElement.clientWidth;
+        canvas.height = canvas.parentElement.clientHeight;
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    playBtn.addEventListener('click', () => {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if (!isPlaying) {
+            startSound();
+            playBtn.textContent = "소리 정지";
+            playBtn.classList.add('playing');
+        } else {
+            stopSound();
+            playBtn.textContent = "소리 재생 시작";
+            playBtn.classList.remove('playing');
+        }
+        isPlaying = !isPlaying;
+    });
+
+    function startSound() {
+        oscillator = audioCtx.createOscillator();
+        gainNode = audioCtx.createGain();
+        
+        // 맵시 맵핑: 칼림바(사인파) / 리코더(톱니파)
+        oscillator.type = (currentWaveType === 'kalimba') ? 'sine' : 'sawtooth';
+        
+        oscillator.frequency.setValueAtTime(freqMap[freqSlider.value], audioCtx.currentTime);
+        gainNode.gain.setValueAtTime(ampMap[ampSlider.value], audioCtx.currentTime);
+        oscillator.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+        oscillator.start();
+        updateFeedback();
+    }
+
+    function stopSound() {
+        if (oscillator) {
+            oscillator.stop();
+            oscillator.disconnect();
+        }
+    }
+
+    document.querySelectorAll('.instrument-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.instrument-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            currentWaveType = btn.dataset.type;
+            if (isPlaying) { stopSound(); startSound(); }
+            else { updateFeedback(); }
+        });
+    });
+
+    function updateFeedback() {
+        const a = ampSlider.value;
+        const f = freqSlider.value;
+        const instName = currentWaveType === 'kalimba' ? '칼림바' : '리코더';
+        
+        eduInfo.innerHTML = `현재 <span style="color:var(--accent-color);">[${instName}]</span> 소리: 
+            진폭이 <span style="color:var(--primary-color)">${ampText[a]} 소리</span>, 
+            진동수가 <span style="color:var(--primary-color)">${freqText[f]} 소리</span>입니다.`;
+
+        if (oscillator && isPlaying) {
+            oscillator.frequency.setTargetAtTime(freqMap[f], audioCtx.currentTime, 0.1);
+            gainNode.gain.setTargetAtTime(ampMap[a], audioCtx.currentTime, 0.1);
+        }
+    }
+
+    ampSlider.addEventListener('input', updateFeedback);
+    freqSlider.addEventListener('input', updateFeedback);
+
+    let offset = 0;
+    function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        // 가이드선
+        ctx.strokeStyle = '#2c3e50';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(0, canvas.height/2); ctx.lineTo(canvas.width, canvas.height/2);
+        ctx.stroke();
+
+        // 파형 그리기
+        ctx.beginPath();
+        ctx.lineWidth = 5;
+        ctx.lineJoin = 'round';
+        ctx.strokeStyle = (currentWaveType === 'kalimba') ? '#2ecc71' : '#f1c40f';
+
+        const displayAmp = ampSlider.value * 50;
+        const displayFreq = freqSlider.value * 0.025;
+        
+        for (let x = 0; x < canvas.width; x++) {
+            let y = 0;
+            const t = (x + offset) * displayFreq;
+            if (currentWaveType === 'kalimba') {
+                y = Math.sin(t);
+            } else {
+                for(let i=1; i<=8; i++) y += (Math.sin(t * i) / i);
+                y *= 0.7;
+            }
+            const drawY = (canvas.height / 2) + y * displayAmp;
+            if (x === 0) ctx.moveTo(x, drawY);
+            else ctx.lineTo(x, drawY);
+        }
+        ctx.stroke();
+        if (isPlaying) offset += (freqSlider.value * 2.5);
+        requestAnimationFrame(draw);
+    }
+    draw();
+</script>
+</body>
+</html>
