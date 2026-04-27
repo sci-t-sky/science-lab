@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>파동 관찰 가상 실험실 v1.8</title>
+    <style>
+        :root {
+            --primary-blue: #3498db;
+            --deep-blue: #2980b9;
+            --ball-orange: #ff9800;
+            --wood: #8d6e63;
+            --bg-gray: #f8f9fa;
+            --text-dark: #2c3e50;
+        }
+
+        body {
+            margin: 0; padding: 0;
+            font-family: 'Pretendard', -apple-system, sans-serif;
+            background-color: var(--bg-gray);
+            display: flex; flex-direction: column; align-items: center;
+            color: var(--text-dark);
+            overflow-x: hidden; touch-action: none;
+        }
+
+        #header { width: 100%; padding: 15px; text-align: center; background: #fff; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        h1 { margin: 0; font-size: 1.3rem; }
+
+        /* 수조 디자인 */
+        #canvas-container {
+            position: relative; 
+            margin: 15px 0;
+            padding: 8px;
+            background: #fff; 
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border: 1px solid #dcdde1;
+        }
+
+        canvas { display: block; border-radius: 4px; background: #fdfdfd; }
+
+        /* 조작 패널 */
+        #ui-panel {
+            width: 90%; max-width: 850px;
+            background: #fff; padding: 20px; border-radius: 20px;
+            display: flex; flex-direction: column; gap: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        .btn-row { display: flex; justify-content: center; }
+        .control-row {
+            display: flex; justify-content: space-around; flex-wrap: wrap; gap: 15px;
+            border-top: 1px solid #eee; padding-top: 15px;
+        }
+
+        .control-group { display: flex; flex-direction: column; align-items: center; gap: 5px; }
+        label { font-weight: bold; color: #5d6d7e; font-size: 0.9rem; }
+
+        button {
+            padding: 14px 40px; font-size: 1.1rem; font-weight: bold;
+            border-radius: 50px; border: none; color: white;
+            cursor: pointer; transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            min-width: 200px;
+            background-color: #2ecc71; box-shadow: 0 5px 0 #27ae60;
+        }
+        button.active { background-color: #e74c3c; box-shadow: 0 5px 0 #c0392b; }
+        button:active { transform: translateY(3px); box-shadow: none !important; }
+
+        input[type=range] { -webkit-appearance: none; width: 150px; height: 8px; background: #eee; border-radius: 5px; }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none; width: 28px; height: 28px;
+            background: var(--primary-blue); border-radius: 50%; border: 3px solid #fff;
+            cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        /* 실험 가이드 */
+        #info-panel {
+            width: 90%; max-width: 850px;
+            margin: 15px 0 100px 0;
+            display: grid; grid-template-columns: 1fr 1fr; gap: 15px;
+        }
+        .info-box {
+            background: #fff; padding: 15px; border-radius: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+            border-left: 5px solid var(--primary-blue);
+        }
+        .info-box h3 { margin-top: 0; font-size: 1rem; color: var(--primary-blue); }
+        .info-box ul { margin: 0; padding-left: 20px; font-size: 0.85rem; line-height: 1.6; color: #444; }
+
+        footer {
+            position: fixed; bottom: 0; width: 100%; padding: 12px 0;
+            background: #2c3e50; color: #bdc3c7; font-size: 0.8rem; text-align: center;
+            z-index: 100;
+        }
+
+        @media (max-width: 600px) {
+            #info-panel { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<div id="header">
+    <h1>🌊 파동의 발생과 전파 가상 실험실</h1>
+</div>
+
+<div id="canvas-container">
+    <canvas id="waveCanvas"></canvas>
+</div>
+
+<div id="ui-panel">
+    <div class="btn-row">
+        <button id="btn-toggle">막대로 누르기: OFF</button>
+    </div>
+
+    <div class="control-row">
+        <div class="control-group">
+            <label>[막대를 누르는 힘]</label>
+            <input type="range" id="slider-amp" min="10" max="75" value="40">
+        </div>
+        <div class="control-group">
+            <label>[막대를 누르는 속도]</label>
+            <input type="range" id="slider-freq" min="0.002" max="0.03" step="0.001" value="0.008">
+        </div>
+        <div class="control-group">
+            <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
+                <input type="checkbox" id="check-guide" checked> 가이드선 보기
+            </label>
+        </div>
+    </div>
+</div>
+
+<div id="info-panel">
+    <div class="info-box">
+        <h3>🔬 실험 방법</h3>
+        <ul>
+            <li><b>[막대로 누르기]</b> 버튼을 눌러 파동을 발생시킵니다.</li>
+            <li><b>[누르는 힘]</b> 슬라이더로 물결의 높이를 조절합니다.</li>
+            <li><b>[누르는 속도]</b> 슬라이더로 물결의 간격을 조절하며 관찰합니다.</li>
+        </ul>
+    </div>
+    <div class="info-box" style="border-left-color: var(--ball-orange);">
+        <h3>💡 핵심 관찰 포인트</h3>
+        <ul>
+            <li><b>탁구공의 움직임:</b> 파동(물결)이 진행될 때, 주황색 탁구공이 파동을 따라 옆으로 이동하는지, 아니면 제자리에서 위아래로만 진동하는지 주의 깊게 관찰해보세요.</li>
+        </ul>
+    </div>
+</div>
+
+<footer>
+    © 2026. LEE HANEUL All rights reserved. 파동 관찰 실험실 v1.8 (2026-04-27)<br>
+    본 프로그램은 아이패드 및 태블릿 환경에서의 터치 조작을 지원합니다.
+</footer>
+
+<script>
+    const canvas = document.getElementById('waveCanvas');
+    const ctx = canvas.getContext('2d');
+    
+    const btnToggle = document.getElementById('btn-toggle');
+    const sliderAmp = document.getElementById('slider-amp');
+    const sliderFreq = document.getElementById('slider-freq');
+    const checkGuide = document.getElementById('check-guide');
+
+    let canvasW, canvasH, centerY;
+    const rodXRatio = 0.25; 
+    let rodX;
+    const ballXRatio = 0.72;
+    let ballX;
+
+    let isAuto = false;
+    let autoTime = 0;
+    let rodY = 0;
+    let activeAmp = 0; 
+
+    let waveLeft = [];
+    let waveRight = [];
+
+    function init() {
+        canvasW = Math.min(window.innerWidth * 0.92, 850);
+        canvasH = 350;
+        canvas.width = canvasW;
+        canvas.height = canvasH;
+        centerY = canvas.height / 2 + 10;
+        rodX = canvasW * rodXRatio;
+        ballX = canvasW * ballXRatio;
+        
+        waveLeft = new Array(Math.floor(rodX)).fill(0);
+        waveRight = new Array(Math.floor(canvasW - rodX)).fill(0);
+    }
+
+    window.addEventListener('resize', init);
+    init();
+
+    btnToggle.addEventListener('click', () => {
+        isAuto = !isAuto;
+        btnToggle.textContent = isAuto ? "막대로 누르기: ON" : "막대로 누르기: OFF";
+        btnToggle.classList.toggle('active', isAuto);
+    });
+
+    function update() {
+        const targetAmp = parseInt(sliderAmp.value);
+        const freq = parseFloat(sliderFreq.value);
+
+        if (isAuto) {
+            activeAmp += (targetAmp - activeAmp) * 0.08;
+            autoTime += freq * 8;
+            rodY = Math.sin(autoTime) * activeAmp;
+        } else {
+            activeAmp += (0 - activeAmp) * 0.08;
+            if (activeAmp > 0.1) {
+                autoTime += freq * 8;
+                rodY = Math.sin(autoTime) * activeAmp;
+            } else {
+                rodY = 0;
+                activeAmp = 0;
+            }
+        }
+
+        waveLeft.unshift(rodY);
+        waveLeft.pop();
+        waveRight.unshift(rodY);
+        waveRight.pop();
+    }
+
+    function draw() {
+        update();
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        ctx.fillStyle = "#fff";
+        ctx.fillRect(0, 0, canvasW, canvasH);
+        
+        if (checkGuide.checked) {
+            ctx.setLineDash([6, 6]);
+            ctx.strokeStyle = '#eee';
+            ctx.beginPath();
+            ctx.moveTo(ballX, 40); ctx.lineTo(ballX, canvasH - 40);
+            ctx.stroke();
+            ctx.setLineDash([]);
+        }
+
+        const waterGrad = ctx.createLinearGradient(0, centerY - 60, 0, canvasH);
+        waterGrad.addColorStop(0, "rgba(52, 152, 219, 0.2)");
+        waterGrad.addColorStop(1, "rgba(41, 128, 185, 0.45)");
+
+        ctx.beginPath();
+        ctx.fillStyle = waterGrad;
+        ctx.strokeStyle = "#3498db";
+        ctx.lineWidth = 3;
+        
+        ctx.moveTo(0, centerY + waveLeft[waveLeft.length - 1]);
+        for (let i = waveLeft.length - 1; i >= 0; i--) {
+            ctx.lineTo(rodX - i, centerY + waveLeft[i]);
+        }
+        for (let i = 0; i < waveRight.length; i++) {
+            ctx.lineTo(rodX + i, centerY + waveRight[i]);
+        }
+        
+        ctx.lineTo(canvasW, canvasH);
+        ctx.lineTo(0, canvasH);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.strokeStyle = "#bdc3c7";
+        ctx.lineWidth = 4;
+        ctx.strokeRect(0, 0, canvasW, canvasH);
+
+        const ballIdx = Math.floor(ballX - rodX);
+        const ballY = centerY + (waveRight[ballIdx] || 0);
+
+        ctx.beginPath();
+        ctx.arc(ballX, ballY - 14, 14, 0, Math.PI * 2);
+        ctx.fillStyle = '#ff9800';
+        ctx.fill();
+        ctx.strokeStyle = '#e67e22';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        
+        ctx.beginPath();
+        ctx.arc(ballX - 4, ballY - 19, 4, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+        ctx.fill();
+
+        ctx.fillStyle = '#8d6e63';
+        ctx.fillRect(rodX - 10, 0, 20, centerY + rodY);
+        ctx.fillStyle = '#5d4037';
+        ctx.fillRect(rodX - 25, centerY + rodY - 6, 50, 12);
+
+        requestAnimationFrame(draw);
+    }
+
+    draw();
+</script>
+
+</body>
+</html>
