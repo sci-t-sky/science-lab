@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>빛의 합성 관찰하기 v1.3</title>
     <style>
         @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
@@ -10,7 +10,7 @@
         :root {
             --sidebar-width: 280px;
             --header-h: 50px;
-            --footer-h: 100px;
+            --footer-h: 85px; /* 푸터 높이 최적화 */
             --bg-ui: #ffffff;
             --text-main: #2c3e50;
             --text-sub: #7f8c8d;
@@ -27,7 +27,9 @@
             touch-action: none;
             display: flex;
             flex-direction: column;
+            /* 아이패드 바 잘림 방지용 dvh 및 필링 설정 */
             height: 100vh;
+            height: 100dvh; 
         }
 
         #header {
@@ -43,7 +45,7 @@
         h1 { margin: 0; font-size: 1.2rem; font-weight: 800; }
 
         #main-wrapper {
-            flex: 1;
+            flex: 1; /* 중앙 영역이 남은 공간을 모두 차지함 */
             position: relative;
             display: flex;
             overflow: hidden;
@@ -76,22 +78,22 @@
             color: var(--accent);
             font-size: 1rem;
             font-weight: 800;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             text-align: center;
         }
 
         .guide-container {
             background: rgba(255, 255, 255, 0.95);
-            padding: 12px;
+            padding: 10px;
             border-radius: 10px;
             border: 1px solid #eee;
         }
 
         .guide-item {
             display: flex;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
             line-height: 1.4;
-            font-size: 0.82rem;
+            font-size: 0.8rem;
             word-break: keep-all;
         }
 
@@ -99,14 +101,14 @@
         .step-text { color: #34495e; flex: 1; }
 
         .drag-guide {
-            margin-top: 10px;
+            margin-top: 8px;
             text-align: center;
             font-size: 0.75rem;
             color: #bdc3c7;
             font-weight: 700;
         }
 
-        /* 원래대로 버튼: 동적 위치 지정 */
+        /* 원래대로 버튼 영역 */
         #reset-btn-wrap {
             position: absolute;
             width: calc(var(--sidebar-width) - 30px);
@@ -119,9 +121,9 @@
             background-color: #f1f3f5;
             color: var(--text-main);
             border: 1px solid #dee2e6;
-            padding: 10px 24px;
+            padding: 8px 20px;
             border-radius: 30px;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             font-weight: 800;
             cursor: pointer;
             pointer-events: auto;
@@ -129,29 +131,30 @@
         }
 
         .principle-box {
-            margin-top: auto; 
+            margin-top: auto; /* 하단으로 밀착 */
             background-color: rgba(248, 250, 253, 0.95);
-            padding: 12px;
+            padding: 10px;
             border-radius: 10px;
             border: 1px solid #e2e8f0;
-            margin-bottom: 5px;
+            margin-bottom: 10px;
         }
 
         .principle-title {
             color: var(--info-blue);
             font-size: 0.85rem;
             font-weight: 800;
-            margin-bottom: 5px;
+            margin-bottom: 3px;
             text-align: center;
         }
 
         .principle-content {
-            font-size: 0.78rem;
-            line-height: 1.5;
+            font-size: 0.75rem;
+            line-height: 1.4;
             color: var(--text-sub);
             word-break: keep-all;
         }
 
+        /* 푸터 영역 조정 */
         footer {
             flex-shrink: 0;
             height: var(--footer-h);
@@ -161,11 +164,12 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
+            padding-bottom: env(safe-area-inset-bottom); /* 아이패드 하단 홈 바 여백 대응 */
             z-index: 20;
         }
-        .footer-text { font-size: 0.75rem; font-weight: 600; margin-bottom: 4px; color: #2c3e50; }
-        .footer-sub { font-size: 0.7rem; color: #7f8c8d; margin-bottom: 4px; }
-        .device-support { font-size: 0.65rem; color: #bdc3c7; }
+        .footer-text { font-size: 0.75rem; font-weight: 600; margin-bottom: 2px; color: #2c3e50; }
+        .footer-sub { font-size: 0.65rem; color: #7f8c8d; margin-bottom: 2px; }
+        .device-support { font-size: 0.6rem; color: #bdc3c7; }
     </style>
 </head>
 <body>
@@ -180,9 +184,9 @@
             <div class="top-ui">
                 <div class="section-title">실험 방법</div>
                 <div class="guide-container pointer-auto">
-                    <div class="guide-item"><span class="step-num">1.</span><span class="step-text"><b>조명 손잡이(R, G, B)</b>를 드래그하여 빛을 여러 가지로 조합해 보세요.</span></div>
-                    <div class="guide-item"><span class="step-num">2.</span><span class="step-text">오른쪽 <b>물체</b>를 조명이 비치는 어두운 영역으로 끌어다 놓으세요.</span></div>
-                    <div class="guide-item"><span class="step-num">3.</span><span class="step-text">조명 색의 조합에 따라 물체가 어떤 색으로 반사되어 보이는지 관찰하세요.</span></div>
+                    <div class="guide-item"><span class="step-num">1.</span><span class="step-text"><b>조명 손잡이(R, G, B)</b>를 드래그하여 빛을 합성해 보세요.</span></div>
+                    <div class="guide-item"><span class="step-num">2.</span><span class="step-text">오른쪽 <b>물체</b>를 조명이 비치는 영역으로 끌어다 놓으세요.</span></div>
+                    <div class="guide-item"><span class="step-num">3.</span><span class="step-text">조명 색의 조합에 따라 물체의 색이 변하는지 관찰하세요.</span></div>
                 </div>
                 <div class="drag-guide">▼ 아래 물체를 드래그 하세요</div>
             </div>
@@ -194,7 +198,7 @@
             <div class="principle-box pointer-auto">
                 <div class="principle-title">[ 물체의 색깔이 보이는 원리 ]</div>
                 <div class="principle-content">
-                    물체는 자신이 가진 색과 <b>동일한 색의 빛</b>만 반사하여 우리 눈에 전달합니다. 조명에 그 색이 포함되어 있지 않으면 물체는 빛을 반사하지 못해 <b>검은색</b>으로 보입니다.
+                    물체는 자신이 가진 색과 <b>동일한 색의 빛</b>만 반사합니다. 조명에 그 색이 없으면 물체는 빛을 반사하지 못해 <b>검은색</b>으로 보입니다.
                 </div>
             </div>
         </div>
@@ -228,8 +232,8 @@
             { name: '잎사귀', emoji: '🌿', x: 0, y: 0, homeX: 0, homeY: 0, ref: {r:0.1, g:1, b:0.1} }
         ];
 
-        const LIGHT_RADIUS = 135;     
-        const HANDLE_DISTANCE = 240; 
+        const LIGHT_RADIUS = 130;     
+        const HANDLE_DISTANCE = 230; 
         let isDragging = false;
         let activeObj = null;
         let dragOffset = { x: 0, y: 0 };
@@ -248,11 +252,8 @@
             canvas.height = h * dpr;
             canvas.style.width = w + 'px';
             canvas.style.height = h + 'px';
-            
-            // 임시 캔버스는 계산용이므로 고정 크기 (DPR 미적용하여 픽셀 조작 단순화)
             tempCanvas.width = 100;
             tempCanvas.height = 100;
-            
             setInitialPositions();
         }
 
@@ -262,14 +263,13 @@
             const cx = stageW / 2;
             const cy = h / 2;
             
-            lights[0].x = cx - 90; lights[0].y = cy + 50;  
-            lights[1].x = cx + 90; lights[1].y = cy + 50;  
+            lights[0].x = cx - 85; lights[0].y = cy + 45;  
+            lights[1].x = cx + 85; lights[1].y = cy + 45;  
             lights[2].x = cx;      lights[2].y = cy - 70; 
 
             const sidebarCenterX = window.innerWidth - (SIDEBAR_WIDTH / 2);
-            // 물체 시작 위치를 2cm(약 80px) 더 아래로 이동: 220 -> 310
-            const itemStartY = 310; 
-            const itemGapY = 75;
+            const itemStartY = 285; 
+            const itemGapY = 68;
 
             items.forEach((item, i) => {
                 item.homeX = sidebarCenterX;
@@ -280,9 +280,8 @@
                 }
             });
 
-            // 원래대로 버튼 위치 업데이트
             const btnWrap = document.getElementById('reset-btn-wrap');
-            btnWrap.style.top = (items[2].homeY + 70) + "px";
+            btnWrap.style.top = (items[2].homeY + 58) + "px";
         }
 
         function resetAll() {
@@ -299,15 +298,13 @@
             ctx.save();
             ctx.scale(dpr, dpr);
 
-            // 배경
             ctx.fillStyle = "#000"; ctx.fillRect(0, 0, stageW, h);
             ctx.fillStyle = "#fff"; ctx.fillRect(stageW, 0, SIDEBAR_WIDTH, h);
             ctx.strokeStyle = "#ececec"; ctx.lineWidth = 1; ctx.strokeRect(stageW, 0, SIDEBAR_WIDTH, h);
 
-            // 홈 가이드 원
             items.forEach(item => {
                 ctx.setLineDash([4, 4]); ctx.strokeStyle = "#e0e0e0";
-                ctx.beginPath(); ctx.arc(item.homeX, item.homeY, 30, 0, Math.PI * 2); ctx.stroke();
+                ctx.beginPath(); ctx.arc(item.homeX, item.homeY, 28, 0, Math.PI * 2); ctx.stroke();
                 ctx.setLineDash([]);
             });
 
@@ -346,19 +343,17 @@
             ctx.restore();
         }
 
-        // [핵심] 아이패드 완벽 호환을 위한 픽셀 조작 함수
         function drawItem(item, stageW) {
             const isInside = item.x < stageW - 10;
             if (!isInside) {
                 ctx.save();
-                ctx.font = "45px Arial";
+                ctx.font = "42px Arial";
                 ctx.textAlign = "center"; ctx.textBaseline = "middle";
                 ctx.fillStyle = "#000"; ctx.fillText(item.emoji, item.x, item.y);
                 ctx.restore();
                 return;
             }
 
-            // 빛 합성 계산
             let rIn = 35, gIn = 35, bIn = 35; 
             lights.forEach(l => {
                 if (Math.hypot(l.x - item.x, l.y - item.y) < LIGHT_RADIUS) {
@@ -366,25 +361,20 @@
                 }
             });
 
-            // 반사 결과 색상
             const fR = Math.floor(Math.min(255, rIn * item.ref.r));
             const fG = Math.floor(Math.min(255, gIn * item.ref.g));
             const fB = Math.floor(Math.min(255, bIn * item.ref.b));
 
-            // 아이패드 세이프 렌더링 엔진 (Pixel Data 직접 조작)
             tempCtx.clearRect(0, 0, 100, 100);
             tempCtx.font = "55px Arial";
             tempCtx.textAlign = "center"; tempCtx.textBaseline = "middle";
             tempCtx.fillStyle = "#000";
             tempCtx.fillText(item.emoji, 50, 50);
 
-            // 픽셀 데이터를 가져와서 모든 유색 픽셀을 강제로 fR, fG, fB로 변경
             const imgData = tempCtx.getImageData(0, 0, 100, 100);
             const pixels = imgData.data;
             for (let i = 0; i < pixels.length; i += 4) {
-                // 알파 값이 일정 수준 이상인(불투명한) 픽셀만 색상을 입힘
                 if (pixels[i + 3] > 20) {
-                    // 이모지의 형태감을 남기기 위해 원래 픽셀의 밝기를 가중치로 활용
                     const brightness = (pixels[i] + pixels[i+1] + pixels[i+2]) / 765;
                     pixels[i] = fR * (1 - brightness);
                     pixels[i+1] = fG * (1 - brightness);
@@ -404,11 +394,11 @@
         function drawFlashlightBody(l) {
             ctx.save();
             ctx.translate(l.hX, l.hY); ctx.rotate(l.angle + Math.PI/2);
-            ctx.fillStyle = "#333"; ctx.fillRect(-10, 5, 20, 35);
-            ctx.fillStyle = "#95a5a6"; ctx.fillRect(-16, -10, 32, 16);
-            ctx.fillStyle = l.color; ctx.fillRect(-12, -13, 24, 4);
-            ctx.fillStyle = "#fff"; ctx.font = "bold 11px sans-serif";
-            ctx.textAlign = "center"; ctx.fillText(l.id, 0, 28);
+            ctx.fillStyle = "#333"; ctx.fillRect(-10, 5, 20, 32);
+            ctx.fillStyle = "#95a5a6"; ctx.fillRect(-15, -10, 30, 15);
+            ctx.fillStyle = l.color; ctx.fillRect(-12, -13, 24, 3);
+            ctx.fillStyle = "#fff"; ctx.font = "bold 10px sans-serif";
+            ctx.textAlign = "center"; ctx.fillText(l.id, 0, 26);
             ctx.restore();
         }
 
@@ -423,13 +413,13 @@
         function onStart(e) {
             const p = getPointerPos(e);
             for (let item of items) {
-                if (Math.hypot(item.x - p.x, item.y - p.y) < 45) {
+                if (Math.hypot(item.x - p.x, item.y - p.y) < 40) {
                     isDragging = true; activeObj = { type: 'item', data: item };
                     dragOffset.x = p.x - item.x; dragOffset.y = p.y - item.y; return;
                 }
             }
             for (let l of lights) {
-                if (Math.hypot(l.hX - p.x, l.hY - p.y) < 55) {
+                if (Math.hypot(l.hX - p.x, l.hY - p.y) < 50) {
                     isDragging = true; activeObj = { type: 'light', data: l };
                     dragOffset.x = p.x - l.x; dragOffset.y = p.y - l.y; return;
                 }
@@ -446,7 +436,7 @@
             if (isDragging && activeObj && activeObj.type === 'item') {
                 const item = activeObj.data;
                 const stageW = window.innerWidth - SIDEBAR_WIDTH;
-                if (item.x > stageW - 20) {
+                if (item.x > stageW - 15) {
                     item.x = item.homeX; item.y = item.homeY;
                 }
             }
