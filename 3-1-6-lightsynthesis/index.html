@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>빛의 합성 관찰하기 v1.3</title>
+    <title>빛의 합성 관찰하기 v1.6</title>
     <style>
         @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
 
         :root {
             --sidebar-width: 280px;
             --header-h: 50px;
-            --footer-h: 85px; /* 푸터 높이 최적화 */
+            --footer-h: 70px; /* 기존 90px에서 70px로 축소 */
             --bg-ui: #ffffff;
             --text-main: #2c3e50;
             --text-sub: #7f8c8d;
@@ -27,7 +27,6 @@
             touch-action: none;
             display: flex;
             flex-direction: column;
-            /* 아이패드 바 잘림 방지용 dvh 및 필링 설정 */
             height: 100vh;
             height: 100dvh; 
         }
@@ -45,7 +44,7 @@
         h1 { margin: 0; font-size: 1.2rem; font-weight: 800; }
 
         #main-wrapper {
-            flex: 1; /* 중앙 영역이 남은 공간을 모두 차지함 */
+            flex: 1;
             position: relative;
             display: flex;
             overflow: hidden;
@@ -65,7 +64,7 @@
             width: var(--sidebar-width);
             height: 100%;
             pointer-events: none; 
-            padding: 15px;
+            padding: 12px 15px;
             box-sizing: border-box;
             display: flex;
             flex-direction: column;
@@ -76,9 +75,9 @@
 
         .section-title {
             color: var(--accent);
-            font-size: 1rem;
+            font-size: 0.95rem;
             font-weight: 800;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
             text-align: center;
         }
 
@@ -91,7 +90,7 @@
 
         .guide-item {
             display: flex;
-            margin-bottom: 6px;
+            margin-bottom: 4px;
             line-height: 1.4;
             font-size: 0.8rem;
             word-break: keep-all;
@@ -108,7 +107,6 @@
             font-weight: 700;
         }
 
-        /* 원래대로 버튼 영역 */
         #reset-btn-wrap {
             position: absolute;
             width: calc(var(--sidebar-width) - 30px);
@@ -121,7 +119,7 @@
             background-color: #f1f3f5;
             color: var(--text-main);
             border: 1px solid #dee2e6;
-            padding: 8px 20px;
+            padding: 8px 22px;
             border-radius: 30px;
             font-size: 0.8rem;
             font-weight: 800;
@@ -131,19 +129,19 @@
         }
 
         .principle-box {
-            margin-top: auto; /* 하단으로 밀착 */
+            margin-top: auto; 
             background-color: rgba(248, 250, 253, 0.95);
             padding: 10px;
             border-radius: 10px;
             border: 1px solid #e2e8f0;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
 
         .principle-title {
             color: var(--info-blue);
-            font-size: 0.85rem;
+            font-size: 0.82rem;
             font-weight: 800;
-            margin-bottom: 3px;
+            margin-bottom: 4px;
             text-align: center;
         }
 
@@ -154,7 +152,7 @@
             word-break: keep-all;
         }
 
-        /* 푸터 영역 조정 */
+        /* 슬림해진 푸터 스타일 */
         footer {
             flex-shrink: 0;
             height: var(--footer-h);
@@ -164,11 +162,11 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding-bottom: env(safe-area-inset-bottom); /* 아이패드 하단 홈 바 여백 대응 */
+            padding-bottom: env(safe-area-inset-bottom);
             z-index: 20;
         }
-        .footer-text { font-size: 0.75rem; font-weight: 600; margin-bottom: 2px; color: #2c3e50; }
-        .footer-sub { font-size: 0.65rem; color: #7f8c8d; margin-bottom: 2px; }
+        .footer-text { font-size: 0.7rem; font-weight: 600; margin-bottom: 1px; color: #2c3e50; }
+        .footer-sub { font-size: 0.65rem; color: #7f8c8d; margin-bottom: 1px; }
         .device-support { font-size: 0.6rem; color: #bdc3c7; }
     </style>
 </head>
@@ -184,9 +182,9 @@
             <div class="top-ui">
                 <div class="section-title">실험 방법</div>
                 <div class="guide-container pointer-auto">
-                    <div class="guide-item"><span class="step-num">1.</span><span class="step-text"><b>조명 손잡이(R, G, B)</b>를 드래그하여 빛을 합성해 보세요.</span></div>
-                    <div class="guide-item"><span class="step-num">2.</span><span class="step-text">오른쪽 <b>물체</b>를 조명이 비치는 영역으로 끌어다 놓으세요.</span></div>
-                    <div class="guide-item"><span class="step-num">3.</span><span class="step-text">조명 색의 조합에 따라 물체의 색이 변하는지 관찰하세요.</span></div>
+                    <div class="guide-item"><span class="step-num">1.</span><span class="step-text"><b>조명(R,G,B)</b>을 드래그하여 빛을 합성해 보세요.</span></div>
+                    <div class="guide-item"><span class="step-num">2.</span><span class="step-text">오른쪽 <b>물체</b>를 조명이 비치는 곳으로 옮기세요.</span></div>
+                    <div class="guide-item"><span class="step-num">3.</span><span class="step-text">빛의 색에 따라 물체 색 변화를 관찰하세요.</span></div>
                 </div>
                 <div class="drag-guide">▼ 아래 물체를 드래그 하세요</div>
             </div>
@@ -198,7 +196,7 @@
             <div class="principle-box pointer-auto">
                 <div class="principle-title">[ 물체의 색깔이 보이는 원리 ]</div>
                 <div class="principle-content">
-                    물체는 자신이 가진 색과 <b>동일한 색의 빛</b>만 반사합니다. 조명에 그 색이 없으면 물체는 빛을 반사하지 못해 <b>검은색</b>으로 보입니다.
+                    물체는 자신이 가진 색과 <b>동일한 색의 빛</b>만 반사합니다. 조명에 그 색이 없으면 빛을 반사하지 못해 <b>검은색</b>으로 보입니다.
                 </div>
             </div>
         </div>
@@ -206,8 +204,8 @@
 
     <footer>
         <div class="footer-text">© 2026. LEE HANEUL All rights reserved.</div>
-        <div class="footer-sub">빛의 합성 실험 v1.2 (2026-04-26)</div>
-        <div class="device-support">본 프로그램은 아이패드 및 태블릿 환경에서의 터치 조작을 지원합니다.</div>
+        <div class="footer-sub">빛의 합성 실험 v1.3 (2026-04-26)</div>
+        <div class="device-support">아이패드 및 태블릿 환경에서의 터치 조작을 지원합니다.</div>
     </footer>
 
     <script>
@@ -227,12 +225,12 @@
         ];
 
         let items = [
-            { name: '장미', emoji: '🌹', x: 0, y: 0, homeX: 0, homeY: 0, ref: {r:1, g:0.1, b:0.1} },
-            { name: '바나나', emoji: '🍌', x: 0, y: 0, homeX: 0, homeY: 0, ref: {r:1, g:1, b:0.1} },
-            { name: '잎사귀', emoji: '🌿', x: 0, y: 0, homeX: 0, homeY: 0, ref: {r:0.1, g:1, b:0.1} }
+            { name: '장미', emoji: '🌹', x: 0, y: 0, homeX: 0, homeY: 0, ref: {r:1.0, g:0.15, b:0.15} },
+            { name: '바나나', emoji: '🍌', x: 0, y: 0, homeX: 0, homeY: 0, ref: {r:1.0, g:0.9, b:0.15} },
+            { name: '잎사귀', emoji: '🌿', x: 0, y: 0, homeX: 0, homeY: 0, ref: {r:0.15, g:1.0, b:0.15} }
         ];
 
-        const LIGHT_RADIUS = 130;     
+        const LIGHT_RADIUS = 135;     
         const HANDLE_DISTANCE = 230; 
         let isDragging = false;
         let activeObj = null;
@@ -268,8 +266,9 @@
             lights[2].x = cx;      lights[2].y = cy - 70; 
 
             const sidebarCenterX = window.innerWidth - (SIDEBAR_WIDTH / 2);
-            const itemStartY = 285; 
-            const itemGapY = 68;
+            // 물체 시작 위치 (방법 안내문 아래)
+            const itemStartY = 280; 
+            const itemGapY = 65;
 
             items.forEach((item, i) => {
                 item.homeX = sidebarCenterX;
@@ -280,8 +279,9 @@
                 }
             });
 
+            // 원래대로 버튼 위치 업데이트
             const btnWrap = document.getElementById('reset-btn-wrap');
-            btnWrap.style.top = (items[2].homeY + 58) + "px";
+            btnWrap.style.top = (items[2].homeY + 55) + "px";
         }
 
         function resetAll() {
@@ -304,7 +304,7 @@
 
             items.forEach(item => {
                 ctx.setLineDash([4, 4]); ctx.strokeStyle = "#e0e0e0";
-                ctx.beginPath(); ctx.arc(item.homeX, item.homeY, 28, 0, Math.PI * 2); ctx.stroke();
+                ctx.beginPath(); ctx.arc(item.homeX, item.homeY, 25, 0, Math.PI * 2); ctx.stroke();
                 ctx.setLineDash([]);
             });
 
@@ -327,7 +327,7 @@
             ctx.globalCompositeOperation = 'lighter';
             const targetAngle = Math.atan2(l.y - headTipY, l.x - headTipX);
             const grad = ctx.createLinearGradient(headTipX, headTipY, l.x, l.y);
-            grad.addColorStop(0, l.color.replace('rgb', 'rgba').replace(')', ', 0.4)'));
+            grad.addColorStop(0, l.color.replace('rgb', 'rgba').replace(')', ', 0.45)'));
             grad.addColorStop(1, 'rgba(0,0,0,0)');
             
             ctx.fillStyle = grad;
@@ -354,7 +354,7 @@
                 return;
             }
 
-            let rIn = 35, gIn = 35, bIn = 35; 
+            let rIn = 15, gIn = 15, bIn = 15; 
             lights.forEach(l => {
                 if (Math.hypot(l.x - item.x, l.y - item.y) < LIGHT_RADIUS) {
                     rIn += l.r; gIn += l.g; bIn += l.b;
@@ -376,9 +376,10 @@
             for (let i = 0; i < pixels.length; i += 4) {
                 if (pixels[i + 3] > 20) {
                     const brightness = (pixels[i] + pixels[i+1] + pixels[i+2]) / 765;
-                    pixels[i] = fR * (1 - brightness);
-                    pixels[i+1] = fG * (1 - brightness);
-                    pixels[i+2] = fB * (1 - brightness);
+                    const shade = 1.2 - (brightness * 0.5); 
+                    pixels[i] = Math.min(255, fR * shade);
+                    pixels[i+1] = Math.min(255, fG * shade);
+                    pixels[i+2] = Math.min(255, fB * shade);
                 }
             }
             tempCtx.putImageData(imgData, 0, 0);
@@ -436,7 +437,7 @@
             if (isDragging && activeObj && activeObj.type === 'item') {
                 const item = activeObj.data;
                 const stageW = window.innerWidth - SIDEBAR_WIDTH;
-                if (item.x > stageW - 15) {
+                if (item.x > stageW - 20) {
                     item.x = item.homeX; item.y = item.homeY;
                 }
             }
