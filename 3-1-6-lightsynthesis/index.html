@@ -9,12 +9,13 @@
 
         :root {
             --sidebar-width: 280px;
+            --header-h: 50px;
+            --footer-h: 100px;
             --bg-ui: #ffffff;
             --text-main: #2c3e50;
             --text-sub: #7f8c8d;
             --accent: #d35400;
             --info-blue: #2980b9;
-            --btn-gray: #f1f3f5;
         }
 
         body {
@@ -31,7 +32,7 @@
 
         #header {
             flex-shrink: 0;
-            height: 50px;
+            height: var(--header-h);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -75,20 +76,20 @@
             color: var(--accent);
             font-size: 1rem;
             font-weight: 800;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
             text-align: center;
         }
 
         .guide-container {
             background: rgba(255, 255, 255, 0.95);
-            padding: 10px;
+            padding: 12px;
             border-radius: 10px;
             border: 1px solid #eee;
         }
 
         .guide-item {
             display: flex;
-            margin-bottom: 5px;
+            margin-bottom: 8px;
             line-height: 1.4;
             font-size: 0.82rem;
             word-break: keep-all;
@@ -105,16 +106,17 @@
             font-weight: 700;
         }
 
-        /* 원래대로 버튼 영역 */
-        #btn-area {
-            margin-top: auto;
+        /* 원래대로 버튼: 동적 위치 지정 */
+        #reset-btn-wrap {
+            position: absolute;
+            width: calc(var(--sidebar-width) - 30px);
             display: flex;
             justify-content: center;
-            padding-bottom: 15px;
+            pointer-events: none;
         }
 
         .reset-btn {
-            background-color: var(--btn-gray);
+            background-color: #f1f3f5;
             color: var(--text-main);
             border: 1px solid #dee2e6;
             padding: 10px 24px;
@@ -127,6 +129,7 @@
         }
 
         .principle-box {
+            margin-top: auto; 
             background-color: rgba(248, 250, 253, 0.95);
             padding: 12px;
             border-radius: 10px;
@@ -151,7 +154,7 @@
 
         footer {
             flex-shrink: 0;
-            height: 90px;
+            height: var(--footer-h);
             background-color: #fff;
             border-top: 1px solid #ececec;
             display: flex;
@@ -184,8 +187,8 @@
                 <div class="drag-guide">▼ 아래 물체를 드래그 하세요</div>
             </div>
 
-            <div id="btn-area">
-                <button class="reset-btn pointer-auto" onclick="resetAll()">🔄 원래대로</button>
+            <div id="reset-btn-wrap">
+                <button class="reset-btn" onclick="resetAll()">🔄 원래대로</button>
             </div>
 
             <div class="principle-box pointer-auto">
@@ -225,7 +228,7 @@
             { name: '잎사귀', emoji: '🌿', x: 0, y: 0, homeX: 0, homeY: 0, ref: {r:0.1, g:1, b:0.1} }
         ];
 
-        const LIGHT_RADIUS = 130;     
+        const LIGHT_RADIUS = 135;     
         const HANDLE_DISTANCE = 240; 
         let isDragging = false;
         let activeObj = null;
@@ -246,8 +249,9 @@
             canvas.style.width = w + 'px';
             canvas.style.height = h + 'px';
             
-            tempCanvas.width = 120 * dpr;
-            tempCanvas.height = 120 * dpr;
+            // 임시 캔버스는 계산용이므로 고정 크기 (DPR 미적용하여 픽셀 조작 단순화)
+            tempCanvas.width = 100;
+            tempCanvas.height = 100;
             
             setInitialPositions();
         }
@@ -263,8 +267,9 @@
             lights[2].x = cx;      lights[2].y = cy - 70; 
 
             const sidebarCenterX = window.innerWidth - (SIDEBAR_WIDTH / 2);
-            const itemStartY = 310; // 설명글 아래 위치
-            const itemGapY = 70;
+            // 물체 시작 위치를 2cm(약 80px) 더 아래로 이동: 220 -> 310
+            const itemStartY = 310; 
+            const itemGapY = 75;
 
             items.forEach((item, i) => {
                 item.homeX = sidebarCenterX;
@@ -274,11 +279,14 @@
                     item.y = item.homeY;
                 }
             });
+
+            // 원래대로 버튼 위치 업데이트
+            const btnWrap = document.getElementById('reset-btn-wrap');
+            btnWrap.style.top = (items[2].homeY + 70) + "px";
         }
 
         function resetAll() {
-            isDragging = false;
-            activeObj = null;
+            isDragging = false; activeObj = null;
             setInitialPositions();
         }
 
@@ -291,32 +299,21 @@
             ctx.save();
             ctx.scale(dpr, dpr);
 
-            // 1. 왼쪽 검정 배경
-            ctx.fillStyle = "#000";
-            ctx.fillRect(0, 0, stageW, h);
+            // 배경
+            ctx.fillStyle = "#000"; ctx.fillRect(0, 0, stageW, h);
+            ctx.fillStyle = "#fff"; ctx.fillRect(stageW, 0, SIDEBAR_WIDTH, h);
+            ctx.strokeStyle = "#ececec"; ctx.lineWidth = 1; ctx.strokeRect(stageW, 0, SIDEBAR_WIDTH, h);
 
-            // 2. 오른쪽 흰색 사이드바 배경
-            ctx.fillStyle = "#fff";
-            ctx.fillRect(stageW, 0, SIDEBAR_WIDTH, h);
-            ctx.strokeStyle = "#ececec";
-            ctx.lineWidth = 1;
-            ctx.strokeRect(stageW, 0, SIDEBAR_WIDTH, h);
-
-            // 3. 물체 가이드 원
+            // 홈 가이드 원
             items.forEach(item => {
-                ctx.setLineDash([4, 4]);
-                ctx.strokeStyle = "#e0e0e0";
+                ctx.setLineDash([4, 4]); ctx.strokeStyle = "#e0e0e0";
                 ctx.beginPath(); ctx.arc(item.homeX, item.homeY, 30, 0, Math.PI * 2); ctx.stroke();
                 ctx.setLineDash([]);
             });
 
-            // 4. 조명 광선
             lights.forEach(drawLightSystem);
-            
-            // 5. 물체 (이모지) - 사이드바와 실험실 영역 구분하여 그리기
             items.forEach(item => drawItem(item, stageW));
             
-            // 6. 조명기구 몸체
             ctx.globalCompositeOperation = 'source-over';
             lights.forEach(drawFlashlightBody);
             ctx.restore();
@@ -349,20 +346,19 @@
             ctx.restore();
         }
 
+        // [핵심] 아이패드 완벽 호환을 위한 픽셀 조작 함수
         function drawItem(item, stageW) {
-            // 사이드바 영역에 있는 경우
-            if (item.x >= stageW - 5) {
+            const isInside = item.x < stageW - 10;
+            if (!isInside) {
                 ctx.save();
                 ctx.font = "45px Arial";
-                ctx.textAlign = "center";
-                ctx.textBaseline = "middle";
-                ctx.fillStyle = "#000";
-                ctx.fillText(item.emoji, item.x, item.y);
+                ctx.textAlign = "center"; ctx.textBaseline = "middle";
+                ctx.fillStyle = "#000"; ctx.fillText(item.emoji, item.x, item.y);
                 ctx.restore();
                 return;
             }
 
-            // 실험실(검은 영역)에 있는 경우 색상 합성 계산
+            // 빛 합성 계산
             let rIn = 35, gIn = 35, bIn = 35; 
             lights.forEach(l => {
                 if (Math.hypot(l.x - item.x, l.y - item.y) < LIGHT_RADIUS) {
@@ -370,37 +366,38 @@
                 }
             });
 
+            // 반사 결과 색상
             const fR = Math.floor(Math.min(255, rIn * item.ref.r));
             const fG = Math.floor(Math.min(255, gIn * item.ref.g));
             const fB = Math.floor(Math.min(255, bIn * item.ref.b));
 
-            // [아이패드 완벽 호환 마스킹 렌더링]
-            tempCtx.save();
-            tempCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
-            tempCtx.clearRect(0, 0, 120, 120);
-            
-            // 1. 목표 색상을 먼저 칠함
-            tempCtx.fillStyle = `rgb(${fR},${fG},${fB})`;
-            tempCtx.fillRect(0, 0, 120, 120);
-
-            // 2. destination-in 모드로 이모지 모양대로 깎음 (가장 호환성 높음)
-            tempCtx.globalCompositeOperation = "destination-in";
+            // 아이패드 세이프 렌더링 엔진 (Pixel Data 직접 조작)
+            tempCtx.clearRect(0, 0, 100, 100);
             tempCtx.font = "55px Arial";
-            tempCtx.textAlign = "center";
-            tempCtx.textBaseline = "middle";
-            tempCtx.fillText(item.emoji, 60, 60);
+            tempCtx.textAlign = "center"; tempCtx.textBaseline = "middle";
+            tempCtx.fillStyle = "#000";
+            tempCtx.fillText(item.emoji, 50, 50);
 
-            // 3. multiply 모드로 원래 형태 보강
-            tempCtx.globalCompositeOperation = "multiply";
-            tempCtx.fillText(item.emoji, 60, 60);
-            tempCtx.restore();
+            // 픽셀 데이터를 가져와서 모든 유색 픽셀을 강제로 fR, fG, fB로 변경
+            const imgData = tempCtx.getImageData(0, 0, 100, 100);
+            const pixels = imgData.data;
+            for (let i = 0; i < pixels.length; i += 4) {
+                // 알파 값이 일정 수준 이상인(불투명한) 픽셀만 색상을 입힘
+                if (pixels[i + 3] > 20) {
+                    // 이모지의 형태감을 남기기 위해 원래 픽셀의 밝기를 가중치로 활용
+                    const brightness = (pixels[i] + pixels[i+1] + pixels[i+2]) / 765;
+                    pixels[i] = fR * (1 - brightness);
+                    pixels[i+1] = fG * (1 - brightness);
+                    pixels[i+2] = fB * (1 - brightness);
+                }
+            }
+            tempCtx.putImageData(imgData, 0, 0);
 
             ctx.save();
             if (fR + fG + fB > 50) {
-                ctx.shadowBlur = 15;
-                ctx.shadowColor = `rgb(${fR},${fG},${fB})`;
+                ctx.shadowBlur = 15; ctx.shadowColor = `rgb(${fR},${fG},${fB})`;
             }
-            ctx.drawImage(tempCanvas, (item.x - 60), (item.y - 60), 120, 120);
+            ctx.drawImage(tempCanvas, (item.x - 50), (item.y - 50), 100, 100);
             ctx.restore();
         }
 
@@ -415,10 +412,7 @@
             ctx.restore();
         }
 
-        function animate() {
-            drawScene();
-            requestAnimationFrame(animate);
-        }
+        function animate() { drawScene(); requestAnimationFrame(animate); }
 
         function getPointerPos(e) {
             const rect = canvas.getBoundingClientRect();
@@ -429,19 +423,15 @@
         function onStart(e) {
             const p = getPointerPos(e);
             for (let item of items) {
-                if (Math.hypot(item.x - p.x, item.y - p.y) < 40) {
-                    isDragging = true;
-                    activeObj = { type: 'item', data: item };
-                    dragOffset.x = p.x - item.x; dragOffset.y = p.y - item.y;
-                    return;
+                if (Math.hypot(item.x - p.x, item.y - p.y) < 45) {
+                    isDragging = true; activeObj = { type: 'item', data: item };
+                    dragOffset.x = p.x - item.x; dragOffset.y = p.y - item.y; return;
                 }
             }
             for (let l of lights) {
-                if (Math.hypot(l.hX - p.x, l.hY - p.y) < 50) {
-                    isDragging = true;
-                    activeObj = { type: 'light', data: l };
-                    dragOffset.x = p.x - l.x; dragOffset.y = p.y - l.y;
-                    return;
+                if (Math.hypot(l.hX - p.x, l.hY - p.y) < 55) {
+                    isDragging = true; activeObj = { type: 'light', data: l };
+                    dragOffset.x = p.x - l.x; dragOffset.y = p.y - l.y; return;
                 }
             }
         }
@@ -449,15 +439,13 @@
         function onMove(e) {
             if (!isDragging || !activeObj) return;
             const p = getPointerPos(e);
-            activeObj.data.x = p.x - dragOffset.x;
-            activeObj.data.y = p.y - dragOffset.y;
+            activeObj.data.x = p.x - dragOffset.x; activeObj.data.y = p.y - dragOffset.y;
         }
 
         function onEnd() { 
             if (isDragging && activeObj && activeObj.type === 'item') {
                 const item = activeObj.data;
                 const stageW = window.innerWidth - SIDEBAR_WIDTH;
-                // 사이드바 영역 근처에 놓으면 홈 위치로 복귀
                 if (item.x > stageW - 20) {
                     item.x = item.homeX; item.y = item.homeY;
                 }
@@ -469,14 +457,10 @@
         window.addEventListener('mousemove', onMove);
         window.addEventListener('mouseup', onEnd);
         canvas.addEventListener('touchstart', (e) => { 
-            onStart(e);
-            if(isDragging) e.preventDefault(); 
+            onStart(e); if(isDragging) e.preventDefault(); 
         }, {passive: false});
         window.addEventListener('touchmove', (e) => { 
-            if(isDragging) {
-                onMove(e);
-                e.preventDefault();
-            }
+            if(isDragging) { onMove(e); e.preventDefault(); }
         }, {passive: false});
         window.addEventListener('touchend', onEnd);
 
