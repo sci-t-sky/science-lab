@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>파동 관찰 가상 실험실 v1.0</title>
+    <title>파동 관찰 가상 실험실 v1.9 (반응형 수정)</title>
     <style>
         :root {
             --primary-blue: #3498db;
@@ -26,7 +26,6 @@
         #header { width: 100%; padding: 15px; text-align: center; background: #fff; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
         h1 { margin: 0; font-size: 1.3rem; }
 
-        /* 수조 디자인 */
         #canvas-container {
             position: relative; 
             margin: 15px 0;
@@ -39,7 +38,6 @@
 
         canvas { display: block; border-radius: 4px; background: #fdfdfd; }
 
-        /* 조작 패널 */
         #ui-panel {
             width: 90%; max-width: 850px;
             background: #fff; padding: 20px; border-radius: 20px;
@@ -56,15 +54,21 @@
         .control-group { display: flex; flex-direction: column; align-items: center; gap: 5px; }
         label { font-weight: bold; color: #5d6d7e; font-size: 0.9rem; }
 
+        /* 버튼 디자인 개선 - 상태 구분을 명확히 함 */
         button {
-            padding: 14px 40px; font-size: 1.1rem; font-weight: bold;
+            padding: 16px 45px; font-size: 1.2rem; font-weight: bold;
             border-radius: 50px; border: none; color: white;
-            cursor: pointer; transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            min-width: 200px;
-            background-color: #2ecc71; box-shadow: 0 5px 0 #27ae60;
+            cursor: pointer; transition: all 0.2s ease;
+            min-width: 240px;
+            background-color: #2ecc71; 
+            box-shadow: 0 6px 0 #27ae60;
         }
-        button.active { background-color: #e74c3c; box-shadow: 0 5px 0 #c0392b; }
-        button:active { transform: translateY(3px); box-shadow: none !important; }
+        button.active { 
+            background-color: #e74c3c; 
+            box-shadow: 0 6px 0 #c0392b; 
+        }
+        button:active { transform: translateY(3px); box-shadow: 0 2px 0 #27ae60; }
+        button.active:active { box-shadow: 0 2px 0 #c0392b; }
 
         input[type=range] { -webkit-appearance: none; width: 150px; height: 8px; background: #eee; border-radius: 5px; }
         input[type=range]::-webkit-slider-thumb {
@@ -73,7 +77,6 @@
             cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
 
-        /* 실험 가이드 */
         #info-panel {
             width: 90%; max-width: 850px;
             margin: 15px 0 100px 0;
@@ -93,9 +96,7 @@
             z-index: 100;
         }
 
-        @media (max-width: 600px) {
-            #info-panel { grid-template-columns: 1fr; }
-        }
+        @media (max-width: 600px) { #info-panel { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
@@ -148,7 +149,7 @@
 </div>
 
 <footer>
-    © 2026. LEE HANEUL All rights reserved. 파동 관찰 실험실 v1.0 (2026-04-27)<br>
+    © 2026. LEE HANEUL All rights reserved. 파동 관찰 실험실 v1.9 (2026-04-27)<br>
     본 프로그램은 아이패드 및 태블릿 환경에서의 터치 조작을 지원합니다.
 </footer>
 
@@ -191,10 +192,16 @@
     window.addEventListener('resize', init);
     init();
 
+    // 버튼 작동 신뢰성 강화
     btnToggle.addEventListener('click', () => {
         isAuto = !isAuto;
-        btnToggle.textContent = isAuto ? "막대로 누르기: ON" : "막대로 누르기: OFF";
-        btnToggle.classList.toggle('active', isAuto);
+        if (isAuto) {
+            btnToggle.textContent = "막대로 누르기: ON";
+            btnToggle.classList.add('active');
+        } else {
+            btnToggle.textContent = "막대로 누르기: OFF";
+            btnToggle.classList.remove('active');
+        }
     });
 
     function update() {
@@ -202,20 +209,27 @@
         const freq = parseFloat(sliderFreq.value);
 
         if (isAuto) {
-            activeAmp += (targetAmp - activeAmp) * 0.08;
+            // 시작 반응 가속
+            activeAmp += (targetAmp - activeAmp) * 0.15;
+        } else {
+            // 중지 반응 가속 (freq에 비례하되, 최소 멈춤 속도 보장)
+            // freq * 15를 통해 속도가 아주 느려도 2~3회 진동 이내에 확실히 멈추도록 설정
+            const stopSpeed = freq * 15.0; 
+            if (activeAmp > 0) {
+                activeAmp -= stopSpeed;
+            } 
+            if (activeAmp < 0.5) activeAmp = 0; // 잔여 진폭 즉시 제거
+        }
+
+        // 박자 유지: 진폭이 줄어드는 중에도 위상 진행 속도는 일정함
+        if (activeAmp > 0) {
             autoTime += freq * 8;
             rodY = Math.sin(autoTime) * activeAmp;
         } else {
-            activeAmp += (0 - activeAmp) * 0.08;
-            if (activeAmp > 0.1) {
-                autoTime += freq * 8;
-                rodY = Math.sin(autoTime) * activeAmp;
-            } else {
-                rodY = 0;
-                activeAmp = 0;
-            }
+            rodY = 0;
         }
 
+        // 파동 전파 (멈춘 상태에서도 물결은 끝까지 흘러감)
         waveLeft.unshift(rodY);
         waveLeft.pop();
         waveRight.unshift(rodY);
