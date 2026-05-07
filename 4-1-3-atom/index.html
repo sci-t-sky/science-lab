@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>원자 모형 만들기 가상 실험 (수소~칼슘)</title>
+    <style>
+        :root {
+            --bg-color: #f1f3f5;
+            --panel-bg: #ffffff;
+            --proton-color: #ff4d4d;
+            --neutron-color: #adb5bd;
+            --electron-color: #4dabf7;
+            --text-color: #343a40;
+            --accent-color: #4c6ef5;
+            --guide-bg: #fff9db;
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body {
+            margin: 0;
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        header {
+            padding: 12px 25px;
+            background: white;
+            border-bottom: 1px solid #dee2e6;
+            z-index: 10;
+        }
+
+        h1 { margin: 0; font-size: 1.2rem; color: #212529; text-align: center; }
+
+        main {
+            flex: 1;
+            display: flex;
+            flex-direction: row;
+            overflow: hidden;
+        }
+
+        /* 왼쪽 안내 패널 */
+        #left-sidebar {
+            width: 300px;
+            background: var(--guide-bg);
+            border-right: 1px solid #ffe066;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .guide-section { font-size: 0.9rem; line-height: 1.6; }
+        .guide-title { font-weight: bold; color: #e67700; margin-bottom: 8px; display: flex; align-items: center; gap: 5px; font-size: 1rem; }
+        .warning-title { color: #1864ab; }
+        
+        .list-item { margin-bottom: 10px; padding-left: 10px; border-left: 3px solid #ffec99; }
+        .warning-item { border-left: 3px solid #a5d8ff; color: #495057; font-size: 0.85rem; }
+
+        /* 중앙 시뮬레이션 영역 */
+        #canvas-container {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: white;
+            position: relative;
+        }
+        canvas { max-width: 100%; max-height: 100%; }
+
+        /* 오른쪽 조작 패널 */
+        #right-sidebar {
+            width: 320px;
+            background: var(--panel-bg);
+            border-left: 1px solid #dee2e6;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            box-shadow: -2px 0 10px rgba(0,0,0,0.03);
+        }
+
+        .info-card {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 15px;
+            text-align: center;
+            border: 1px solid #e9ecef;
+        }
+
+        .element-name { font-size: 1.8rem; font-weight: bold; color: var(--accent-color); }
+        .element-symbol { font-size: 1.2rem; font-weight: bold; color: #495057; margin: 5px 0; }
+        .charge-status { 
+            margin-top: 5px; 
+            padding: 4px 12px; 
+            border-radius: 20px; 
+            font-weight: bold; 
+            display: inline-block;
+            font-size: 0.85rem;
+        }
+
+        .control-group { background: #f8f9fa; padding: 12px; border-radius: 12px; border: 1px solid #eee; }
+        .control-label { display: flex; justify-content: space-between; align-items: center; font-weight: 700; margin-bottom: 10px; }
+        
+        .button-group { display: flex; align-items: center; gap: 12px; justify-content: center; }
+        .btn-round {
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            border: none;
+            background: white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            font-size: 1.6rem;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.1s;
+        }
+        .btn-round:active { transform: scale(0.9); background: #f1f3f5; }
+        .btn-proton { color: var(--proton-color); border: 3px solid var(--proton-color); }
+        .btn-electron { color: var(--electron-color); border: 3px solid var(--electron-color); }
+
+        .count-display { width: 45px; text-align: center; font-size: 1.4rem; font-weight: 800; }
+
+        footer {
+            padding: 8px;
+            text-align: center;
+            font-size: 0.75rem;
+            color: #adb5bd;
+            background: white;
+            border-top: 1px solid #eee;
+        }
+
+        @media (max-width: 1000px) {
+            main { flex-direction: column; overflow-y: auto; }
+            #left-sidebar, #right-sidebar { width: 100%; border: none; height: auto; }
+            #canvas-container { height: 450px; min-height: 450px; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>원자 모형 만들기</h1>
+</header>
+
+<main>
+    <aside id="left-sidebar">
+        <section class="guide-section">
+            <div class="guide-title">📘 실험 방법</div>
+            <div class="list-item">1. 우측 <b>양성자(+)</b> 버튼으로 원자 번호를 바꿔보세요 (최대 20번).</div>
+            <div class="list-item">2. <b>전자(-)</b>를 조절하며 각 껍질(K, L, M, N)이 채워지는 모습을 관찰하세요.</div>
+            <div class="list-item">3. 양성자와 전자 수에 따른 <b>전하량 변화</b>와 <b>이온 상태</b>를 확인합니다.</div>
+        </section>
+
+        <section class="guide-section">
+            <div class="guide-title warning-title">⚠️ 오개념 주의 안내</div>
+            <div class="list-item warning-item"><b>보어 모형:</b> 실제 전자는 일정한 궤도 없이 확률적인 구름 형태로 존재합니다. 본 실험은 학습을 돕기 위한 모형입니다.</div>
+            <div class="list-item warning-item"><b>원자핵:</b> 실제 핵은 매우 작으나, 관찰을 위해 크게 확대하였습니다. 모든 양성자는 <b>(+) 기호</b>를 가집니다.</div>
+            <div class="list-item warning-item"><b>중성자:</b> 핵의 안정된 시각화를 위해 자동으로 배치됩니다.</div>
+        </section>
+    </aside>
+
+    <section id="canvas-container">
+        <canvas id="atomCanvas"></canvas>
+    </section>
+
+    <aside id="right-sidebar">
+        <div class="info-card">
+            <div id="elName" class="element-name">수소</div>
+            <div id="elSymbol" class="element-symbol">H (번호 1)</div>
+            <div id="chargeTag" class="charge-status">중성</div>
+        </div>
+
+        <div class="control-group">
+            <div class="control-label">양성자 수 <span style="color:var(--proton-color)">+</span></div>
+            <div class="button-group">
+                <button class="btn-round btn-proton" onclick="updateCount('p', -1)">-</button>
+                <div class="count-display" id="pCount">1</div>
+                <button class="btn-round btn-proton" onclick="updateCount('p', 1)">+</button>
+            </div>
+        </div>
+
+        <div class="control-group">
+            <div class="control-label">전자 수 <span style="color:var(--electron-color)">-</span></div>
+            <div class="button-group">
+                <button class="btn-round btn-electron" onclick="updateCount('e', -1)">-</button>
+                <div class="count-display" id="eCount">1</div>
+                <button class="btn-round btn-electron" onclick="updateCount('e', 1)">+</button>
+            </div>
+        </div>
+    </aside>
+</main>
+
+<footer>
+    © 2026. LEE HANEUL All rights reserved. [원자 모형 만들기 가상 실험실] [v1.5] (2026-05-07)
+</footer>
+
+<script>
+    const canvas = document.getElementById('atomCanvas');
+    const ctx = canvas.getContext('2d');
+
+    let state = { p: 1, e: 1, angle: 0 };
+
+    const elements = [
+        { name: "입자 없음", symbol: "-" },
+        { name: "수소", symbol: "H" }, { name: "헬륨", symbol: "He" },
+        { name: "리튬", symbol: "Li" }, { name: "베릴륨", symbol: "Be" },
+        { name: "붕소", symbol: "B" }, { name: "탄소", symbol: "C" },
+        { name: "질소", symbol: "N" }, { name: "산소", symbol: "O" },
+        { name: "플루오린", symbol: "F" }, { name: "네온", symbol: "Ne" },
+        { name: "나트륨", symbol: "Na" }, { name: "마그네슘", symbol: "Mg" },
+        { name: "알루미늄", symbol: "Al" }, { name: "규소", symbol: "Si" },
+        { name: "인", symbol: "P" }, { name: "황", symbol: "S" },
+        { name: "염소", symbol: "Cl" }, { name: "아르곤", symbol: "Ar" },
+        { name: "칼륨", symbol: "K" }, { name: "칼슘", symbol: "Ca" }
+    ];
+
+    function updateCount(type, delta) {
+        state[type] = Math.max(0, Math.min(20, state[type] + delta));
+        document.getElementById(type + 'Count').innerText = state[type];
+        updateUI();
+    }
+
+    function updateUI() {
+        const pNum = state.p;
+        const el = elements[pNum] || { name: "미지", symbol: "?" };
+        document.getElementById('elName').innerText = el.name;
+        document.getElementById('elSymbol').innerText = pNum === 0 ? "" : `${el.symbol} (원자번호 ${pNum})`;
+
+        const charge = state.p - state.e;
+        const tag = document.getElementById('chargeTag');
+        if (pNum === 0 && state.e === 0) { tag.style.visibility = "hidden"; }
+        else {
+            tag.style.visibility = "visible";
+            if (charge === 0) { tag.innerText = "중성 (Neutral)"; tag.style.background = "#e9ecef"; tag.style.color = "#495057"; }
+            else if (charge > 0) { tag.innerText = `양이온 (+${charge})`; tag.style.background = "#fff5f5"; tag.style.color = "#ff4d4d"; }
+            else { tag.innerText = `음이온 (${charge})`; tag.style.background = "#e7f5ff"; tag.style.color = "#4dabf7"; }
+        }
+    }
+
+    function resize() {
+        const container = canvas.parentElement;
+        canvas.width = container.clientWidth;
+        canvas.height = container.clientHeight;
+    }
+
+    window.addEventListener('resize', resize);
+    resize();
+
+    function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        const centerX = canvas.width / 2;
+        const centerY = canvas.height / 2;
+
+        // 1. 껍질 그리기
+        const shellRadii = [60, 105, 150, 195];
+        ctx.strokeStyle = '#f1f3f5';
+        ctx.lineWidth = 1.5;
+        const activeShells = state.e <= 2 ? 1 : state.e <= 10 ? 2 : state.e <= 18 ? 3 : 4;
+        if(state.e > 0) {
+            for(let s=0; s < activeShells; s++) {
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, shellRadii[s], 0, Math.PI * 2);
+                ctx.stroke();
+            }
+        }
+
+        // 2. 원자핵 (중성자는 p와 동일하게 배치)
+        const n = (state.p <= 1) ? 0 : state.p;
+        const particles = [];
+        for(let i=0; i<state.p; i++) particles.push('p');
+        for(let i=0; i<n; i++) particles.push('n');
+        
+        particles.forEach((type, i) => {
+            const angle = (i * 137.5) * (Math.PI / 180);
+            const r = Math.sqrt(i) * 9;
+            const x = centerX + r * Math.cos(angle);
+            const y = centerY + r * Math.sin(angle);
+            
+            ctx.beginPath();
+            ctx.arc(x, y, 9, 0, Math.PI * 2);
+            ctx.fillStyle = type === 'p' ? '#ff4d4d' : '#adb5bd';
+            ctx.fill();
+            ctx.strokeStyle = 'rgba(0,0,0,0.1)';
+            ctx.stroke();
+            
+            // 수정사항: 모든 원자번호에서 양성자(+) 기호를 항상 그림
+            if(type === 'p') {
+                ctx.fillStyle = 'white';
+                ctx.font = 'bold 11px Arial';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText('+', x, y + 1); // 세로 위치 미세 조정
+            }
+        });
+
+        // 3. 전자 배치
+        state.angle += 0.015;
+        for (let i = 0; i < state.e; i++) {
+            let sIdx, shellMax, prevTotal;
+            if (i < 2) { sIdx = 0; shellMax = 2; prevTotal = 0; }
+            else if (i < 10) { sIdx = 1; shellMax = 8; prevTotal = 2; }
+            else if (i < 18) { sIdx = 2; shellMax = 8; prevTotal = 10; }
+            else { sIdx = 3; shellMax = 2; prevTotal = 18; }
+
+            const speed = 1 - (sIdx * 0.2);
+            const curAngle = (state.angle * speed) + ((i - prevTotal) * (Math.PI * 2 / shellMax));
+            const ex = centerX + shellRadii[sIdx] * Math.cos(curAngle);
+            const ey = centerY + shellRadii[sIdx] * Math.sin(curAngle);
+
+            ctx.beginPath();
+            ctx.arc(ex, ey, 7, 0, Math.PI * 2);
+            ctx.fillStyle = '#4dabf7';
+            ctx.fill();
+            ctx.fillStyle = 'white';
+            ctx.font = 'bold 11px Arial';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('-', ex, ey + 0.5);
+        }
+        requestAnimationFrame(draw);
+    }
+    updateUI();
+    draw();
+</script>
+</body>
+</html>
