@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>원소 기호 마스터 - 색상 구분 버전</title>
+    <style>
+        :root {
+            --bg-color: #f4f7f9;
+            --playing-symbol: #d1e9ff;
+            --playing-name: #ffdce5;
+            --primary: #5d5fef;
+            --success: #4caf50;
+            --danger: #ff6b6b;
+            --shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Pretendard', -apple-system, sans-serif;
+            background-color: var(--bg-color);
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            touch-action: manipulation;
+        }
+
+        header {
+            background: white;
+            padding: 15px 20px;
+            text-align: center;
+            box-shadow: var(--shadow);
+            z-index: 100;
+        }
+
+        header h1 { margin: 0 0 15px 0; font-size: 1.4rem; color: var(--primary); }
+
+        .dashboard {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .mode-selector {
+            display: flex;
+            gap: 5px;
+            background: #eee;
+            padding: 4px;
+            border-radius: 25px;
+            margin: 0 10px;
+        }
+
+        .btn-mode {
+            border: none;
+            padding: 6px 15px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            font-weight: bold;
+            background: transparent;
+            transition: 0.3s;
+        }
+
+        .btn-mode.active {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .badge {
+            background: #f8f9fa;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            border: 1px solid #dee2e6;
+            min-width: 70px;
+        }
+
+        .btn-reset {
+            background: var(--danger);
+            color: white;
+            border: none;
+            padding: 8px 18px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .content-wrapper {
+            display: flex;
+            flex: 1;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            gap: 20px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        #game-board {
+            flex: 3;
+            display: grid;
+            gap: 10px;
+            align-content: start;
+        }
+
+        .grid-12 { grid-template-columns: repeat(6, 1fr); }
+        .grid-24 { grid-template-columns: repeat(8, 1fr); }
+
+        .info-panel {
+            flex: 1;
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+            height: fit-content;
+            border-top: 5px solid var(--primary);
+        }
+
+        .info-panel h2 { font-size: 1.1rem; margin-top: 0; color: var(--primary); }
+        .info-panel ul { padding-left: 20px; font-size: 0.85rem; line-height: 1.6; color: #555; }
+        
+        .notice-box {
+            background: #f0f3ff;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            color: #444;
+            margin-top: 15px;
+            border-left: 4px solid var(--primary);
+        }
+
+        /* 카드 디자인 */
+        .card {
+            aspect-ratio: 1 / 1.3;
+            perspective: 1000px;
+            cursor: pointer;
+        }
+
+        .card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-style: preserve-3d;
+            border-radius: 8px;
+        }
+
+        .card.flipped .card-inner, .card.matched .card-inner {
+            transform: rotateY(180deg);
+        }
+
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            border: 2px solid white;
+            box-sizing: border-box;
+        }
+
+        .card-front {
+            background: linear-gradient(135deg, #2c3e50, #4ca1af);
+            color: white;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .card-back {
+            background-color: white;
+            transform: rotateY(180deg);
+            transition: background-color 0.3s;
+        }
+
+        /* 기본 선택 상태 색상 */
+        .card.type-symbol .card-back { background-color: var(--playing-symbol); }
+        .card.type-name .card-back { background-color: var(--playing-name); }
+        
+        /* [중요] 성공 시 짝끼리 동일한 색상 적용 */
+        .card.matched .card-back {
+            background-color: var(--pair-color) !important; /* JS에서 주입 */
+            border: 3px solid rgba(0,0,0,0.1);
+            opacity: 1;
+        }
+
+        .card-back .value { font-size: 1rem; font-weight: 800; color: #222; }
+        .card-back .label { font-size: 0.55rem; opacity: 0.6; margin-top: 2px; }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top:0; left:0; width:100%; height:100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+            width: 280px;
+        }
+
+        footer {
+            padding: 12px 0;
+            font-size: 11px;
+            color: #888;
+            text-align: center;
+            background: white;
+            border-top: 1px solid #eee;
+        }
+
+        @media (max-width: 900px) {
+            .content-wrapper { flex-direction: column; }
+            .info-panel { order: -1; }
+            .grid-24 { grid-template-columns: repeat(6, 1fr); }
+        }
+
+        @media (max-width: 600px) {
+            .grid-12 { grid-template-columns: repeat(4, 1fr); }
+            .grid-24 { grid-template-columns: repeat(4, 1fr); }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>원소 기호 마스터 - 챌린지</h1>
+    <div class="dashboard">
+        <div class="mode-selector">
+            <button class="btn-mode active" onclick="changeMode(12)">12종 랜덤</button>
+            <button class="btn-mode" onclick="changeMode(24)">24종 전체</button>
+        </div>
+        <div class="badge">쌍: <span id="pairs-left">0</span></div>
+        <div class="badge">시도: <span id="tries">0</span></div>
+        <div class="badge">시간: <span id="timer">00:00</span></div>
+        <button class="btn-reset" onclick="resetGame()">다시하기</button>
+    </div>
+</header>
+
+<div class="content-wrapper">
+    <main id="game-board" class="grid-12"></main>
+
+    <aside class="info-panel">
+        <h2>💡 사용 방법</h2>
+        <ul>
+            <li>모드를 선택하고 카드를 뒤집으세요.</li>
+            <li>기호와 이름이 맞으면 <strong>짝끼리 같은 색</strong>으로 변하며 고정됩니다.</li>
+            <li>색깔을 보며 어떤 원소들을 맞췄는지 확인해 보세요!</li>
+        </ul>
+        <div class="notice-box" id="mode-notice">
+            📢 <strong>안내:</strong><br>현재 <b>12종 랜덤 모드</b>입니다.
+        </div>
+    </aside>
+</div>
+
+<div class="modal" id="modal">
+    <div class="modal-content">
+        <h2 style="color:var(--success)">미션 클리어! 🏆</h2>
+        <div id="final-stats" style="margin: 15px 0; font-size: 1rem; line-height: 1.6;"></div>
+        <button class="btn-reset" style="background:var(--primary); padding: 10px 25px;" onclick="resetGame()">다시 도전</button>
+    </div>
+</div>
+
+<footer>
+    © 2026. LEE HANEUL All rights reserved. 원소 기호 메모리 카드 놀이 v1.0 (2026-05-06)<br>
+    본 프로그램은 아이패드 및 태블릿 환경에서의 터치 조작을 지원합니다.
+</footer>
+
+<script>
+    // 24가지 짝을 위한 고유 파스텔 팔레트
+    const pairColors = [
+        "#FFADAD", "#FFD6A5", "#FDFFB6", "#CAFFBF", "#9BF6FF", "#A0C4FF", "#BDB2FF", "#FFC6FF",
+        "#E2ECE9", "#D0F4DE", "#A9DEF9", "#E4C1F9", "#FCF6BD", "#DBCDF0", "#F2C6DE", "#F7D9C4",
+        "#C1D3FE", "#ABC4FF", "#E7C6FF", "#FFDDE1", "#DBE7E4", "#F0E6EF", "#EBCFB2", "#90DBF4"
+    ];
+
+    const allElements = [
+        { s: 'H', n: '수소' }, { s: 'He', n: '헬륨' }, { s: 'Li', n: '리튬' }, { s: 'Be', n: '베릴륨' },
+        { s: 'B', n: '붕소' }, { s: 'C', n: '탄소' }, { s: 'N', n: '질소' }, { s: 'O', n: '산소' },
+        { s: 'F', n: '플루오린' }, { s: 'Ne', n: '네온' }, { s: 'Na', n: '나트륨' }, { s: 'Mg', n: '마그네슘' },
+        { s: 'Al', n: '알루미늄' }, { s: 'Si', n: '규소' }, { s: 'P', n: '인' }, { s: 'S', n: '황' },
+        { s: 'Cl', n: '염소' }, { s: 'Ar', n: '아르곤' }, { s: 'K', n: '칼륨' }, { s: 'Ca', n: '칼슘' },
+        { s: 'Fe', n: '철' }, { s: 'Cu', n: '구리' }, { s: 'Ag', n: '은' }, { s: 'Au', n: '금' }
+    ];
+
+    let currentMode = 12;
+    let flippedCards = [];
+    let matchedPairs = 0;
+    let tries = 0;
+    let timerSeconds = 0;
+    let timerInterval = null;
+    let isStarted = false;
+
+    function changeMode(mode) {
+        currentMode = mode;
+        const btns = document.querySelectorAll('.btn-mode');
+        btns[0].classList.toggle('active', mode === 12);
+        btns[1].classList.toggle('active', mode === 24);
+        
+        const board = document.getElementById('game-board');
+        board.className = mode === 12 ? 'grid-12' : 'grid-24';
+        document.getElementById('mode-notice').innerHTML = mode === 12 ? 
+            `📢 <strong>안내:</strong><br>현재 <b>12종 랜덤 모드</b>입니다.` : 
+            `📢 <strong>안내:</strong><br>현재 <b>24종 전체 모드</b>입니다.`;
+        resetGame();
+    }
+
+    function initGame() {
+        const board = document.getElementById('game-board');
+        board.innerHTML = '';
+        
+        let selected = currentMode === 12 ? 
+            [...allElements].sort(() => Math.random() - 0.5).slice(0, 12) : [...allElements];
+
+        const deck = [];
+        selected.forEach((el, index) => {
+            // 각 쌍에게 고유 색상 배정 (index를 활용)
+            const color = pairColors[index % pairColors.length];
+            deck.push({ id: index, val: el.s, type: 'symbol', color: color });
+            deck.push({ id: index, val: el.n, type: 'name', color: color });
+        });
+
+        deck.sort(() => Math.random() - 0.5);
+
+        deck.forEach(item => {
+            const card = document.createElement('div');
+            card.className = `card type-${item.type}`;
+            card.dataset.id = item.id;
+            // CSS 변수로 고유 색상 주입
+            card.style.setProperty('--pair-color', item.color);
+
+            card.innerHTML = `
+                <div class="card-inner">
+                    <div class="card-front">?</div>
+                    <div class="card-back">
+                        <div class="label">${item.type === 'symbol' ? '기호' : '이름'}</div>
+                        <div class="value">${item.val}</div>
+                    </div>
+                </div>
+            `;
+            card.addEventListener('pointerdown', (e) => { e.preventDefault(); flip(card); });
+            board.appendChild(card);
+        });
+
+        document.getElementById('pairs-left').textContent = selected.length;
+    }
+
+    function flip(card) {
+        if (!isStarted) {
+            isStarted = true;
+            timerInterval = setInterval(updateTimer, 1000);
+        }
+        if (flippedCards.length === 2 || card.classList.contains('flipped') || card.classList.contains('matched')) return;
+
+        card.classList.add('flipped');
+        flippedCards.push(card);
+
+        if (flippedCards.length === 2) {
+            tries++;
+            document.getElementById('tries').textContent = tries;
+            checkMatch();
+        }
+    }
+
+    function checkMatch() {
+        const [c1, c2] = flippedCards;
+        if (c1.dataset.id === c2.dataset.id) {
+            setTimeout(() => {
+                c1.classList.replace('flipped', 'matched');
+                c2.classList.replace('flipped', 'matched');
+                matchedPairs++;
+                document.getElementById('pairs-left').textContent = currentMode - matchedPairs;
+                flippedCards = [];
+                if (matchedPairs === currentMode) endGame();
+            }, 400);
+        } else {
+            setTimeout(() => {
+                c1.classList.remove('flipped');
+                c2.classList.remove('flipped');
+                flippedCards = [];
+            }, 800);
+        }
+    }
+
+    function updateTimer() {
+        timerSeconds++;
+        const m = Math.floor(timerSeconds / 60).toString().padStart(2, '0');
+        const s = (timerSeconds % 60).toString().padStart(2, '0');
+        document.getElementById('timer').textContent = `${m}:${s}`;
+    }
+
+    function endGame() {
+        clearInterval(timerInterval);
+        document.getElementById('modal').style.display = 'flex';
+        document.getElementById('final-stats').innerHTML = `
+            <strong>모드:</strong> ${currentMode}종 챌린지<br>
+            <strong>시간:</strong> ${document.getElementById('timer').textContent}<br>
+            <strong>시도:</strong> ${tries}회
+        `;
+    }
+
+    function resetGame() {
+        clearInterval(timerInterval);
+        timerSeconds = 0; tries = 0; matchedPairs = 0; isStarted = false; flippedCards = [];
+        document.getElementById('timer').textContent = "00:00";
+        document.getElementById('tries').textContent = "0";
+        document.getElementById('modal').style.display = 'none';
+        initGame();
+    }
+
+    window.onload = initGame;
+</script>
+</body>
+</html>
