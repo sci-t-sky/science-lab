@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>원소 기호 마스터 - 색상 구분 버전</title>
+    <title>원소 기호 마스터</title>
     <style>
         :root {
             --bg-color: #f4f7f9;
@@ -124,13 +124,13 @@
         }
 
         .info-panel h2 { font-size: 1.1rem; margin-top: 0; color: var(--primary); }
-        .info-panel ul { padding-left: 20px; font-size: 0.85rem; line-height: 1.6; color: #555; }
+        .info-panel ul { padding-left: 20px; font-size: 0.9rem; line-height: 1.8; color: #444; }
         
         .notice-box {
             background: #f0f3ff;
             padding: 12px;
             border-radius: 8px;
-            font-size: 0.8rem;
+            font-size: 0.85rem;
             color: #444;
             margin-top: 15px;
             border-left: 4px solid var(--primary);
@@ -173,7 +173,7 @@
         .card-front {
             background: linear-gradient(135deg, #2c3e50, #4ca1af);
             color: white;
-            font-size: 1.5rem;
+            font-size: 2rem;
             font-weight: bold;
         }
 
@@ -183,19 +183,18 @@
             transition: background-color 0.3s;
         }
 
-        /* 기본 선택 상태 색상 */
         .card.type-symbol .card-back { background-color: var(--playing-symbol); }
         .card.type-name .card-back { background-color: var(--playing-name); }
         
-        /* [중요] 성공 시 짝끼리 동일한 색상 적용 */
         .card.matched .card-back {
-            background-color: var(--pair-color) !important; /* JS에서 주입 */
+            background-color: var(--pair-color) !important;
             border: 3px solid rgba(0,0,0,0.1);
             opacity: 1;
         }
 
-        .card-back .value { font-size: 1rem; font-weight: 800; color: #222; }
-        .card-back .label { font-size: 0.55rem; opacity: 0.6; margin-top: 2px; }
+        /* 글자 크기 1.5배 상향 (기존 1rem -> 1.5rem) */
+        .card-back .value { font-size: 1.5rem; font-weight: 800; color: #222; }
+        .card-back .label { font-size: 0.75rem; opacity: 0.6; margin-top: 4px; }
 
         .modal {
             display: none;
@@ -232,6 +231,7 @@
         @media (max-width: 600px) {
             .grid-12 { grid-template-columns: repeat(4, 1fr); }
             .grid-24 { grid-template-columns: repeat(4, 1fr); }
+            .card-back .value { font-size: 1.2rem; }
         }
     </style>
 </head>
@@ -255,14 +255,15 @@
     <main id="game-board" class="grid-12"></main>
 
     <aside class="info-panel">
-        <h2>💡 사용 방법</h2>
+        <h2>💡 학습 가이드</h2>
         <ul>
-            <li>모드를 선택하고 카드를 뒤집으세요.</li>
-            <li>기호와 이름이 맞으면 <strong>짝끼리 같은 색</strong>으로 변하며 고정됩니다.</li>
-            <li>색깔을 보며 어떤 원소들을 맞췄는지 확인해 보세요!</li>
+            <li>학습하고 싶은 <strong>게임 모드</strong>를 선택하세요.</li>
+            <li>카드를 뒤집어 <strong>원소 기호</strong>와 그에 맞는 <strong>이름</strong>을 찾아보세요.</li>
+            <li>기호와 이름이 일치하면 카드가 고정됩니다.</li>
+            <li>모든 원소의 짝을 맞추어 기록에 도전해 보세요!</li>
         </ul>
         <div class="notice-box" id="mode-notice">
-            📢 <strong>안내:</strong><br>현재 <b>12종 랜덤 모드</b>입니다.
+            📢 <strong>진행 상태:</strong><br>현재 <b>12종 랜덤 모드</b>가 설정되었습니다.
         </div>
     </aside>
 </div>
@@ -276,12 +277,11 @@
 </div>
 
 <footer>
-    © 2026. LEE HANEUL All rights reserved. 원소 기호 메모리 카드 놀이 v1.0 (2026-05-06)<br>
+    © 2026. LEE HANEUL All rights reserved. 원소 기호 메모리 카드 놀이 v1.1<br>
     본 프로그램은 아이패드 및 태블릿 환경에서의 터치 조작을 지원합니다.
 </footer>
 
 <script>
-    // 24가지 짝을 위한 고유 파스텔 팔레트
     const pairColors = [
         "#FFADAD", "#FFD6A5", "#FDFFB6", "#CAFFBF", "#9BF6FF", "#A0C4FF", "#BDB2FF", "#FFC6FF",
         "#E2ECE9", "#D0F4DE", "#A9DEF9", "#E4C1F9", "#FCF6BD", "#DBCDF0", "#F2C6DE", "#F7D9C4",
@@ -314,8 +314,8 @@
         const board = document.getElementById('game-board');
         board.className = mode === 12 ? 'grid-12' : 'grid-24';
         document.getElementById('mode-notice').innerHTML = mode === 12 ? 
-            `📢 <strong>안내:</strong><br>현재 <b>12종 랜덤 모드</b>입니다.` : 
-            `📢 <strong>안내:</strong><br>현재 <b>24종 전체 모드</b>입니다.`;
+            `📢 <strong>진행 상태:</strong><br>현재 <b>12종 랜덤 모드</b>가 설정되었습니다.` : 
+            `📢 <strong>진행 상태:</strong><br>현재 <b>24종 전체 모드</b>가 설정되었습니다.`;
         resetGame();
     }
 
@@ -328,7 +328,6 @@
 
         const deck = [];
         selected.forEach((el, index) => {
-            // 각 쌍에게 고유 색상 배정 (index를 활용)
             const color = pairColors[index % pairColors.length];
             deck.push({ id: index, val: el.s, type: 'symbol', color: color });
             deck.push({ id: index, val: el.n, type: 'name', color: color });
@@ -340,7 +339,6 @@
             const card = document.createElement('div');
             card.className = `card type-${item.type}`;
             card.dataset.id = item.id;
-            // CSS 변수로 고유 색상 주입
             card.style.setProperty('--pair-color', item.color);
 
             card.innerHTML = `
@@ -409,7 +407,7 @@
         document.getElementById('final-stats').innerHTML = `
             <strong>모드:</strong> ${currentMode}종 챌린지<br>
             <strong>시간:</strong> ${document.getElementById('timer').textContent}<br>
-            <strong>시도:</strong> ${tries}회
+            <strong>시도 횟수:</strong> ${tries}회
         `;
     }
 
