@@ -214,7 +214,7 @@
                 <div class="calc-row row-e">전자의 총 (-)전하량 <span id="calcE">-1</span></div>
                 <div class="calc-row row-total">전체 전하량 합계 <span id="calcTotal">0</span></div>
                 <div id="chargeExplanation" class="charge-explanation">
-                    (+)전하량과 (-)전하량이 합쳐져 0이 되었습니다. 전기적으로 중성을 이루는 원자 상태입니다.
+                    원자핵과 전자의 총 전하량이 같아 전기적으로 중성인 상태입니다.
                 </div>
             </div>
             
@@ -325,7 +325,7 @@
                 tag.innerText = "원자";
                 tag.style.background = "#e9ecef"; tag.style.color = "#495057";
                 chargeSup.innerText = "";
-                explanation.innerText = "원자핵의 (+)전하량과 전자의 총 (-)전하량이 합쳐져 0이 되었습니다. 전기적으로 중성을 이루는 원자 상태입니다.";
+                explanation.innerText = "원자핵과 전자의 총 전하량이 같아 전기적으로 중성인 상태입니다.";
             } else {
                 const absCharge = Math.abs(charge);
                 const sign = charge > 0 ? "+" : "-";
