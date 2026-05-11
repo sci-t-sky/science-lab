@@ -26,8 +26,7 @@
             flex-direction: column;
             height: 100vh;
             overflow: hidden;
-            /* 푸터 높이만큼 하단 여백 확보 */
-            padding-bottom: 50px; 
+            padding-bottom: 60px; /* 고정 푸터 공간 */
         }
 
         header {
@@ -95,16 +94,43 @@
             border: 2px solid #e9ecef;
         }
 
-        .element-name { font-size: 1.8rem; font-weight: bold; color: var(--accent-color); }
-        .element-symbol { font-size: 2.2rem; font-weight: bold; color: #495057; margin: 5px 0; }
-        .element-symbol sup { font-size: 1.2rem; color: #f03e3e; margin-left: 2px; vertical-align: top; }
-        .charge-info { font-size: 0.85rem; color: #868e96; margin-bottom: 5px; }
-        .charge-status { 
-            padding: 4px 12px; 
-            border-radius: 15px; 
+        .element-name-label { font-size: 0.85rem; color: #868e96; margin-bottom: 3px; }
+        .element-display-name { font-size: 1.8rem; font-weight: bold; color: var(--accent-color); margin-bottom: 2px; }
+        
+        .element-symbol { font-size: 2.5rem; font-weight: bold; color: #495057; margin: 8px 0; position: relative; display: inline-block;}
+        .element-symbol sup { font-size: 1.4rem; color: #f03e3e; position: absolute; top: 0; left: 100%; white-space: nowrap; }
+        
+        .charge-calc-box {
+            background: white;
+            border: 1px dashed #adb5bd;
+            border-radius: 10px;
+            padding: 12px;
+            margin: 12px 0;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            color: #495057;
+            text-align: left;
+        }
+        .charge-calc-box b { float: right; color: #212529; }
+        
+        /* 친절한 원리 설명 스타일 */
+        .charge-explanation {
+            border-top: 1px solid #f1f3f5;
+            margin-top: 8px;
+            padding-top: 8px;
+            font-size: 0.78rem;
+            color: #1971c2;
+            text-align: center;
+            line-height: 1.4;
+            word-break: keep-all;
+        }
+
+        .charge-status-tag { 
+            padding: 6px 16px; 
+            border-radius: 20px; 
             font-weight: bold; 
             display: inline-block;
-            font-size: 0.9rem;
+            font-size: 1rem;
         }
 
         .control-group { background: #f8f9fa; padding: 12px; border-radius: 12px; border: 1px solid #eee; }
@@ -132,7 +158,7 @@
 
         .count-display { width: 40px; text-align: center; font-size: 1.3rem; font-weight: 800; }
 
-        /* 고정 푸터 스타일 */
+        /* Mandatory Footer 고정 레이아웃 */
         .mandatory-footer {
             position: fixed;
             bottom: 0;
@@ -140,11 +166,11 @@
             width: 100%;
             background: rgba(255, 255, 255, 0.95);
             border-top: 1px solid #dee2e6;
-            padding: 8px 0;
+            padding: 10px 0;
             text-align: center;
             z-index: 1000;
         }
-        .footer-content {
+        .footer-copyright {
             font-size: 0.75rem;
             color: #868e96;
             margin: 0;
@@ -160,7 +186,7 @@
             main { flex-direction: column; overflow-y: auto; }
             #left-sidebar, #right-sidebar { width: 100%; border: none; height: auto; }
             #canvas-container { height: 350px; min-height: 350px; }
-            body { padding-bottom: 60px; } /* 모바일에서 푸터 높이 대응 */
+            body { padding-bottom: 75px; }
         }
     </style>
 </head>
@@ -171,37 +197,44 @@
 </header>
 
 <main>
-    <!-- 왼쪽: 안내 패널 -->
     <aside id="left-sidebar">
         <section class="guide-section">
             <div class="guide-title">📖 실험 방법</div>
             <div class="list-item">1. 우측 버튼으로 <b>양성자</b>와 <b>전자</b>의 개수를 조절합니다.</div>
             <div class="list-item">2. 양성자 수에 따라 <b>원소의 종류</b>가 결정됩니다.</div>
-            <div class="list-item">3. 전하량의 합이 0이면 <b>원자</b>, 0이 아니면 <b>이온</b>이 됩니다.</div>
+            <div class="list-item">3. <b>원자핵의 총 (+)전하량</b>과 <b>전자의 총 (-)전하량</b>을 비교하여 입자의 상태를 확인합니다.</div>
         </section>
 
         <section class="guide-section">
             <div class="guide-title" style="color: #c92a2a;">💡 알고 가기</div>
-            <div class="list-item"><b>원자핵:</b> 양성자(+)와 전하가 없는 중성자로 이루어져 있습니다.</div>
-            <div class="list-item"><b>전자:</b> 원자핵 주위에서 (-)전하를 띠며 움직입니다.</div>
+            <div class="list-item"><b>원자핵:</b> 원자의 중심에 있으며, <b>양성자(+)</b>와 전하가 없는 <b>중성자</b>로 이루어져 있습니다.</div>
+            <div class="list-item"><b>전자:</b> 원자핵 주위에서 움직이며, <b>(-)전하</b>를 띱니다.</div>
             <div class="list-item" style="color: #495057; background: #fff9db; padding: 10px; border-radius: 8px; font-size: 0.85rem; line-height: 1.6;">
-                <b>※ 주의:</b> 전자는 그림처럼 정해진 선을 따라 움직이지 않습니다. 실제로는 원자핵 주변에서 어디에 있는지 확인하기 어려울 만큼 매우 빠르게 움직이고 있습니다. 이 그림은 전자가 모두 몇 개인지, 그리고 어떤 상태로 있는지 여러분이 한눈에 알아보기 쉽게 나타낸 모델입니다.
+                <b>※ 주의:</b> 전자는 그림처럼 정해진 선을 따라 움직이지 않습니다. 실제로는 원자핵 주변에서 어디에 있는지 확인하기 어려울 만큼 매우 빠르게 움직이고 있습니다. 이 그림은 전자가 모두 몇 개인지 한눈에 확인하여 원자의 구성을 이해하기 쉽게 나타낸 모델입니다.
             </div>
         </section>
     </aside>
 
-    <!-- 중앙: 캔버스 -->
     <section id="canvas-container">
         <canvas id="atomCanvas"></canvas>
     </section>
 
-    <!-- 오른쪽: 조작 패널 -->
     <aside id="right-sidebar">
         <div class="info-card">
-            <div id="elName" class="element-name">수소</div>
+            <div class="element-name-label">선택된 원소</div>
+            <div id="elDisplayName" class="element-display-name">수소</div>
             <div id="elSymbolArea" class="element-symbol">H<sup id="elChargeSup"></sup></div>
-            <div id="chargeCalc" class="charge-info">(+1) + (-1) = 0</div>
-            <div id="chargeTag" class="charge-status">중성 원자</div>
+            
+            <div class="charge-calc-box" id="chargeCalcBox">
+                원자핵 총 전하량 <b id="calcP">+1</b><br>
+                전자 총 전하량 <b id="calcE">-1</b><br>
+                전하량 합계 <b id="calcTotal">0</b>
+                <div id="chargeExplanation" class="charge-explanation">
+                    양성자(+1)와 전자(-1)의 개수가 같으면 0이 돼요. 전기적으로 중성인 '원자' 상태입니다!
+                </div>
+            </div>
+            
+            <div id="chargeTag" class="charge-status-tag">원자</div>
         </div>
 
         <div class="control-group">
@@ -222,16 +255,16 @@
             </div>
         </div>
         
-        <p style="text-align: center; color: #adb5bd; font-size: 0.8rem; margin: 10px 0;">
+        <p style="text-align: center; color: #adb5bd; font-size: 0.8rem; margin: 0;">
             회색 입자는 전하가 없는 <b>중성자</b>입니다.
         </p>
     </aside>
 </main>
 
-<!-- 필수 하단 푸터 (Copyright) -->
+<!-- 필수 하단 푸터 (Mandatory Footer) -->
 <footer class="mandatory-footer">
-    <p class="footer-content">
-        © 2026. LEE HANEUL All rights reserved. [원자 모형 만들기 가상 실험] [v1.5] (2026. 05. 11.)
+    <p class="footer-copyright">
+        © 2026. LEE HANEUL All rights reserved. [원자 모형 만들기 가상 실험] [v1.7] (2026. 05. 11.)
     </p>
     <p class="footer-support">
         본 프로그램은 아이패드 및 태블릿 환경에서의 터치 조작을 지원합니다.
@@ -286,39 +319,46 @@
         const eNum = state.e;
         const el = elements[pNum] || { name: "미지", symbol: "?" };
         
-        document.getElementById('elName').innerText = el.name;
+        document.getElementById('elDisplayName').innerText = el.name;
         document.getElementById('elSymbolArea').firstChild.textContent = pNum === 0 ? "" : el.symbol;
 
         const charge = pNum - eNum;
         const chargeSup = document.getElementById('elChargeSup');
-        const calcDisplay = document.getElementById('chargeCalc');
         const tag = document.getElementById('chargeTag');
+        const calcBox = document.getElementById('chargeCalcBox');
+        const explanation = document.getElementById('chargeExplanation');
 
-        calcDisplay.innerText = `(+${pNum}) + (-${eNum}) = ${charge > 0 ? '+' + charge : charge}`;
+        // 상세 전하량 계산 업데이트
+        document.getElementById('calcP').innerText = `+${pNum}`;
+        document.getElementById('calcE').innerText = `-${eNum}`;
+        document.getElementById('calcTotal').innerText = `${charge > 0 ? '+' + charge : charge}`;
 
         if (pNum === 0 && eNum === 0) {
             tag.style.visibility = "hidden";
-            calcDisplay.style.visibility = "hidden";
+            calcBox.style.visibility = "hidden";
             chargeSup.innerText = "";
         } else {
             tag.style.visibility = "visible";
-            calcDisplay.style.visibility = "visible";
+            calcBox.style.visibility = "visible";
             
             if (charge === 0) {
-                tag.innerText = "중성 원자";
+                tag.innerText = "원자";
                 tag.style.background = "#e9ecef"; tag.style.color = "#495057";
                 chargeSup.innerText = "";
+                explanation.innerText = "양성자(+1)와 전자(-1)의 개수가 같으면 0이 돼요. 전기적으로 중성인 '원자' 상태입니다!";
             } else {
                 const absCharge = Math.abs(charge);
                 const sign = charge > 0 ? "+" : "-";
                 chargeSup.innerText = absCharge === 1 ? sign : absCharge + sign;
                 
                 if (charge > 0) {
-                    tag.innerText = `양이온 (전하량 +${charge})`;
+                    tag.innerText = "양이온";
                     tag.style.background = "#fff5f5"; tag.style.color = "#ff4d4d";
+                    explanation.innerText = "양성자가 전자보다 많아서 전체적으로 (+)전하를 띠는 '양이온'이 되었어요.";
                 } else {
-                    tag.innerText = `음이온 (전하량 ${charge})`;
+                    tag.innerText = "음이온";
                     tag.style.background = "#e7f5ff"; tag.style.color = "#4dabf7";
+                    explanation.innerText = "전자가 양성자보다 많아서 전체적으로 (-)전하를 띠는 '음이온'이 되었어요.";
                 }
             }
         }
@@ -351,6 +391,7 @@
             }
         }
 
+        // 원자핵 입자 그리기
         state.nucleusParticles.forEach((type, i) => {
             const angle = (i * 137.5) * (Math.PI / 180);
             const r = Math.sqrt(i) * 8.5; 
@@ -373,6 +414,7 @@
             }
         });
 
+        // 전자 그리기
         state.angle += 0.015;
         for (let i = 0; i < state.e; i++) {
             let pIdx, pMax, pPrev;
