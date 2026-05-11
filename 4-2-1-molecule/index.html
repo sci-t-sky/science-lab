@@ -56,7 +56,7 @@
             display: flex; 
             flex-direction: column; 
             overflow-y: auto;
-            padding-top: 10px; /* 명칭 박스 삭제 후 상단 여백 보정 */
+            padding-top: 10px;
         }
 
         /* 오른쪽 패널: 분자 목록 */
@@ -86,7 +86,6 @@
         .content-box ul { padding-left: 20px; margin: 0; list-style-type: disc; }
         .content-box li { margin-bottom: 10px; }
 
-        /* 텍스트 강조 스타일 */
         .text-blue { color: var(--highlight-blue); font-weight: 800; }
         .text-red { color: var(--highlight-red); font-weight: 800; }
         .text-bold { font-weight: 800; color: #1e293b; }
@@ -155,7 +154,6 @@
 
 <main>
     <aside id="sidebar-left">
-        <!-- '실험 안내판' 명칭 박스 삭제됨 -->
         <div class="content-box">
             <h3>🚀 실험 방법</h3>
             <ol>
@@ -213,17 +211,18 @@
 </footer>
 
 <script>
+    // 분자 데이터 (물의 위치를 질소 다음으로 이동)
     const MOLECULE_DB = [
         { id: "H2", name: "수소", formula: "H2", types: "수소(H) 2개", count: 2, info: "가장 가벼운 분자로 우주에 가장 많이 존재하며 미래 연료로 주목받습니다.", atoms: [{t:'H', x: -22, y: 0}, {t:'H', x: 22, y: 0}] },
         { id: "O2", name: "산소", formula: "O2", types: "산소(O) 2개", count: 2, info: "생물의 호흡에 이용되며, 다른 물질이 타는 것을 돕는 성질이 있습니다.", atoms: [{t:'O', x: -32, y: 0}, {t:'O', x: 32, y: 0}] },
         { id: "O3", name: "오존", formula: "O3", types: "산소(O) 3개", count: 3, info: "성층권에서 층을 이루어 태양에서 오는 해로운 자외선을 막아줍니다.", atoms: [{t:'O', x: 0, y: -28}, {t:'O', x: -40, y: 30}, {t:'O', x: 40, y: 30}] },
         { id: "N2", name: "질소", formula: "N2", types: "질소(N) 2개", count: 2, info: "공기의 약 78%를 차지하며, 반응성이 낮아 과자 봉지의 충전 기체로 쓰입니다.", atoms: [{t:'N', x: -32, y: 0}, {t:'N', x: 32, y: 0}] },
+        { id: "H2O", name: "물", formula: "H2O", types: "산소(O) 1개, 수소(H) 2개", count: 3, info: "생명체 내에서 물질 운반 및 체온 유지 등 중요한 역할을 수행합니다.", atoms: [{t:'O', x: 0, y: -10}, {t:'H', x: -50, y: 40}, {t:'H', x: 50, y: 40}] },
         { id: "NH3", name: "암모니아", formula: "NH3", types: "질소(N) 1개, 수소(H) 3개", count: 4, info: "냄새가 자극적이며 물에 잘 녹습니다. 질소 비료를 만드는 중요한 원료입니다.", atoms: [{t:'N', x: 0, y: 0}, {t:'H', x: -48, y: 38}, {t:'H', x: 48, y: 38}, {t:'H', x: 0, y: -58}] },
         { id: "CO", name: "일산화 탄소", formula: "CO", types: "탄소(C) 1개, 산소(O) 1개", count: 2, info: "탄소 성분의 연료가 부족한 산소 조건에서 불완전 연소될 때 만들어지는 독성 기체입니다.", atoms: [{t:'C', x: -32, y: 0}, {t:'O', x: 42, y: 0}] },
         { id: "CO2", name: "이산화 탄소", formula: "CO2", types: "탄소(C) 1개, 산소(O) 2개", count: 3, info: "불을 끄는 성질이 있어 소화기에 이용되며, 지구 온난화를 일으키는 기체입니다.", atoms: [{t:'C', x: 0, y: 0}, {t:'O', x: -68, y: 0}, {t:'O', x: 68, y: 0}] },
         { id: "HCl", name: "염화 수소", formula: "HCl", types: "수소(H) 1개, 염소(Cl) 1개", count: 2, info: "물에 매우 잘 녹으며, 이 수용액을 강한 산성인 염산이라고 부릅니다.", atoms: [{t:'Cl', x: 20, y: 0}, {t:'H', x: -55, y: 0}] },
         { id: "He", name: "헬륨", formula: "He", types: "헬륨(He) 1개", count: 1, info: "매우 가벼워 풍선이나 비행선을 띄우는 데 이용되며, 반응성이 거의 없습니다.", atoms: [{t:'He', x: 0, y: 0}] },
-        { id: "H2O", name: "물", formula: "H2O", types: "산소(O) 1개, 수소(H) 2개", count: 3, info: "생명체 내에서 물질 운반 및 체온 유지 등 중요한 역할을 수행합니다.", atoms: [{t:'O', x: 0, y: -10}, {t:'H', x: -50, y: 40}, {t:'H', x: 50, y: 40}] },
         { id: "CH4", name: "메테인", formula: "CH4", types: "탄소(C) 1개, 수소(H) 4개", count: 5, info: "도시가스의 주성분이며, 연소할 때 많은 열이 발생하여 연료로 사용됩니다.", atoms: [{t:'C', x: 0, y: 0}, {t:'H', x: -65, y: 0}, {t:'H', x: 65, y: 0}, {t:'H', x: 0, y: -65}, {t:'H', x: 0, y: 65}] }
     ];
 
