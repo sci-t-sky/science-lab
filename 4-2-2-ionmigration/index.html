@@ -14,6 +14,7 @@
             --copper-blue: #1e90ff;
             --perm-purple: #a442f1;
             --chrom-yellow: #ffa502;
+            --border-dark: #555;
             --caution-bg: #fff9c4;
             --metal-gray: #95a5a6;
         }
@@ -78,14 +79,14 @@
 
         #psu-switch {
             width: 140px; height: 40px; background: #ee5253; border: 3px solid #ff6b6b;
-            border-radius: 8px; cursor: pointer; color: white; font-weight: bold; font-size: 1rem;
+            border-radius: 8px; cursor: pointer; color: white; font-weight: bold; font-size: 1.1rem;
             display: flex; align-items: center; justify-content: center;
         }
         #psu-switch.on { background: #1dd1a1; border-color: #10ac84; }
 
         .psu-term-box { display: flex; gap: 70px; align-items: center; }
         .psu-term-wrap { display: flex; flex-direction: column; align-items: center; }
-        .psu-term-label { font-weight: bold; font-size: 0.9rem; margin-bottom: 2px; }
+        .psu-term-label { font-weight: bold; font-size: 1rem; margin-bottom: 2px; }
         .psu-term { width: 22px; height: 22px; border-radius: 50%; border: 2px solid rgba(0,0,0,0.2); }
 
         /* 실험대 레이아웃 */
@@ -97,14 +98,12 @@
         }
         #petri-container { width: 320px; height: 320px; position: relative; }
         
-        /* 페트리 접시 테두리 */
         .petri-rim {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             border: 8px solid #ced4da; border-radius: 50%; z-index: 45;
             pointer-events: none; box-shadow: inset 0 0 15px rgba(0,0,0,0.1);
         }
 
-        /* 고정된 금속 전극판 디자인 (ㄷ자 꺾임 느낌) */
         .electrode-plate {
             position: absolute; width: 35px; height: 50px; background: linear-gradient(to bottom, #bdc3c7, #8e9eab, #bdc3c7);
             border: 1px solid #7f8c8d; top: 50%; transform: translateY(-50%);
@@ -114,16 +113,15 @@
         .el-l-plate { left: -18px; border-radius: 4px 2px 2px 4px; }
         .el-r-plate { right: -18px; border-radius: 2px 4px 4px 2px; }
 
-        /* 전극 극성 표시 */
+        /* 전극 기호를 전극 바깥쪽으로 위치 조정 */
         .el-marker {
             position: absolute; top: 50%; transform: translateY(-50%);
-            font-size: 1.8rem; font-weight: 900; z-index: 60; color: #2f3542;
+            font-size: 2rem; font-weight: 900; z-index: 60; color: #2f3542;
             pointer-events: none;
         }
-        .marker-l { left: 25px; }
-        .marker-r { right: 25px; }
+        .marker-l { left: -65px; } /* 전극 판 왼쪽 밖 */
+        .marker-r { right: -65px; } /* 전극 판 오른쪽 밖 */
 
-        /* SVG 전선 및 집게 (최상위) */
         #wire-svg { 
             position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
             pointer-events: none; z-index: 100; 
@@ -136,7 +134,6 @@
 
         #mainCanvas { position: absolute; top: 0; left: 0; width: 320px; height: 320px; border-radius: 50%; z-index: 30; background: #fff; }
 
-        /* 우측 컨트롤 영역 */
         .side-ctrl {
             width: 290px; background: #fff; border-left: 1px solid #ddd;
             padding: 20px; display: flex; flex-direction: column; gap: 15px;
@@ -148,7 +145,6 @@
         }
         .reagent-btn.active { border-color: #2f3542; background: #eef2f5; box-shadow: 0 4px 8px rgba(0,0,0,0.05); }
 
-        /* 스포이드 SVG 스타일 */
         .spoid-svg { width: 36px; height: 100px; }
         .spoid-outline { stroke: #888; stroke-width: 1.0; fill: none; stroke-linecap: round; stroke-linejoin: round; }
         .spoid-liquid { opacity: 0.95; stroke: none; }
@@ -168,7 +164,6 @@
 <header>이온의 이동 가상 실험실</header>
 
 <div id="wrapper">
-    <!-- 좌측 사이드바 -->
     <aside class="side-info">
         <div class="info-card">
             <h3>📋 실험 방법</h3>
@@ -185,26 +180,21 @@
         </div>
     </aside>
 
-    <!-- 중앙 메인 실험 영역 -->
     <main class="main-lab" id="lab-container">
-        <!-- SVG 전선 및 집게 -->
         <svg id="wire-svg">
             <path id="wire-r-path" d="" stroke="red" stroke-width="5" fill="none" />
             <path id="wire-b-path" d="" stroke="black" stroke-width="5" fill="none" />
             
-            <!-- 빨간색 집게 -->
             <g id="clip-red-group">
                 <path class="alligator-clip-shape" d="M -25 -10 L 0 -10 L 10 -2 L 10 2 L 0 10 L -25 10 Z" />
                 <circle fill="red" cx="-18" cy="0" r="3.5" />
             </g>
-            <!-- 검은색 집게 -->
             <g id="clip-black-group">
                 <path class="alligator-clip-shape" d="M -25 -10 L 0 -10 L 10 -2 L 10 2 L 0 10 L -25 10 Z" />
                 <circle fill="black" cx="-18" cy="0" r="3.5" />
             </g>
         </svg>
 
-        <!-- 전원 장치 -->
         <div id="psu">
             <div class="psu-display-row">
                 <div class="psu-v">
@@ -228,14 +218,12 @@
             </div>
         </div>
 
-        <!-- 페트리 접시 및 전극 -->
         <div id="stage-plate">
             <div id="petri-container">
                 <div class="petri-rim"></div>
-                <!-- 고정된 금속판 전극 -->
                 <div class="electrode-plate el-l-plate"></div>
                 <div class="electrode-plate el-r-plate"></div>
-                <!-- 극성 기호 -->
+                <!-- 전극 기호 위치 조정 -->
                 <div id="mark-l" class="el-marker marker-l">+</div>
                 <div id="mark-r" class="el-marker marker-r">-</div>
                 <canvas id="mainCanvas"></canvas>
@@ -243,7 +231,6 @@
         </div>
     </main>
 
-    <!-- 우측 컨트롤바 -->
     <aside class="side-ctrl">
         <h3 style="margin:0; font-size:1.1rem;">🧪 실험 시약 선택</h3>
         
@@ -365,8 +352,9 @@
             ctx.strokeStyle = this.border;
             ctx.lineWidth = 1.5;
             ctx.stroke();
+
             ctx.fillStyle = (this.colorless || this.type === 'cro4') ? '#2f3542' : '#fff';
-            ctx.font = 'bold 18px Arial';
+            ctx.font = 'bold 18px Pretendard, sans-serif'; 
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
             ctx.fillText(this.name, this.x, this.y);
@@ -374,10 +362,18 @@
         }
     }
 
+    function setupCanvas() {
+        const ratio = window.devicePixelRatio || 1;
+        canvas.width = SIZE * ratio;
+        canvas.height = SIZE * ratio;
+        canvas.style.width = SIZE + 'px';
+        canvas.style.height = SIZE + 'px';
+        ctx.scale(ratio, ratio);
+    }
+
     function init() {
-        canvas.width = SIZE;
-        canvas.height = SIZE;
-        setTimeout(drawWires, 100); // 레이아웃 렌더링 후 좌표 계산
+        setupCanvas();
+        setTimeout(drawWires, 100);
     }
 
     function drawWires() {
@@ -396,7 +392,6 @@
         const sR = { x: tr.left + 11 - lab.left, y: tr.top + 11 - lab.top };
         const sB = { x: tb.left + 11 - lab.left, y: tb.top + 11 - lab.top };
         
-        // 전극 금속판의 집게 물림 지점 (ㄷ자 바깥쪽)
         const midL = { x: platL.left + 10 - lab.left, y: platL.top + 25 - lab.top };
         const midR = { x: platR.right - 10 - lab.left, y: platR.top + 25 - lab.top };
 
