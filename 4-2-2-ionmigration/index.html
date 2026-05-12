@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>이온의 이동 가상 실험실</title>
+    <style>
+        :root {
+            --paper-color: #fff9e6;
+            --pos-red: #ff4757;
+            --neg-black: #2f3542;
+            --bg-color: #f1f2f6;
+            --psu-gray: #ced4da;
+            --copper-blue: #1e90ff;
+            --perm-purple: #a442f1;
+            --chrom-yellow: #ffa502;
+            --caution-bg: #fff9c4;
+            --metal-gray: #95a5a6;
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; }
+
+        body {
+            font-family: 'Pretendard', -apple-system, sans-serif;
+            background-color: var(--bg-color);
+            margin: 0; padding: 0;
+            display: flex; flex-direction: column;
+            height: 100vh; overflow: hidden;
+        }
+
+        header {
+            padding: 12px; background: #fff; border-bottom: 1px solid #ddd;
+            text-align: center; font-weight: bold; font-size: 1.3rem; color: #2f3542;
+        }
+
+        #wrapper { flex: 1; display: flex; overflow: hidden; }
+
+        /* 좌측 안내 영역 */
+        .side-info {
+            width: 320px; background: #fff; border-right: 1px solid #ddd;
+            padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px;
+        }
+
+        .info-card {
+            background: #ffffff; border-radius: 12px; border: 1px solid #e0e0e0;
+            padding: 18px; box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+        }
+        .info-card h3 { font-size: 1.05rem; margin: 0 0 12px 0; color: #2f3542; border-bottom: 1.5px solid #eee; padding-bottom: 8px; }
+        .info-card ol { padding-left: 18px; margin: 0; }
+        .info-card li { margin-bottom: 10px; font-size: 0.85rem; line-height: 1.6; color: #444; }
+
+        .caution-card {
+            background: var(--caution-bg); border-radius: 10px; border: 1px solid #f0e68c;
+            padding: 15px; font-size: 0.83rem; line-height: 1.6; color: #5d4037;
+        }
+
+        /* 중앙 실험대 영역 */
+        .main-lab {
+            flex: 1; position: relative; background: #fff;
+            display: flex; flex-direction: column; align-items: center; padding-top: 15px;
+            z-index: 1;
+        }
+
+        /* PSU (전원장치) */
+        #psu {
+            width: 250px; height: 165px; background: var(--psu-gray); border: 3px solid #747d8c;
+            border-radius: 12px; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; margin-bottom: 30px; z-index: 50;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1); gap: 10px;
+        }
+        .psu-display-row { display: flex; align-items: center; gap: 12px; width: 100%; justify-content: center; }
+        .psu-v { 
+            background: #111; color: #ff3e3e; padding: 5px 15px; border-radius: 4px; 
+            font-size: 1.8rem; font-family: 'Courier New', monospace; border: 2px solid #555;
+            white-space: nowrap; display: flex; align-items: baseline; justify-content: center; width: 145px;
+        }
+        .v-btn { width: 38px; height: 26px; background: #2f3542; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 0.7rem; }
+
+        #psu-switch {
+            width: 140px; height: 40px; background: #ee5253; border: 3px solid #ff6b6b;
+            border-radius: 8px; cursor: pointer; color: white; font-weight: bold; font-size: 1rem;
+            display: flex; align-items: center; justify-content: center;
+        }
+        #psu-switch.on { background: #1dd1a1; border-color: #10ac84; }
+
+        .psu-term-box { display: flex; gap: 70px; align-items: center; }
+        .psu-term-wrap { display: flex; flex-direction: column; align-items: center; }
+        .psu-term-label { font-weight: bold; font-size: 0.9rem; margin-bottom: 2px; }
+        .psu-term { width: 22px; height: 22px; border-radius: 50%; border: 2px solid rgba(0,0,0,0.2); }
+
+        /* 실험대 레이아웃 */
+        #stage-plate {
+            width: 500px; height: 380px; background: var(--paper-color);
+            border-radius: 15px; border: 1px solid #ddd; position: relative;
+            display: flex; align-items: center; justify-content: center;
+            z-index: 10;
+        }
+        #petri-container { width: 320px; height: 320px; position: relative; }
+        
+        /* 페트리 접시 테두리 */
+        .petri-rim {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            border: 8px solid #ced4da; border-radius: 50%; z-index: 45;
+            pointer-events: none; box-shadow: inset 0 0 15px rgba(0,0,0,0.1);
+        }
+
+        /* 고정된 금속 전극판 디자인 (ㄷ자 꺾임 느낌) */
+        .electrode-plate {
+            position: absolute; width: 35px; height: 50px; background: linear-gradient(to bottom, #bdc3c7, #8e9eab, #bdc3c7);
+            border: 1px solid #7f8c8d; top: 50%; transform: translateY(-50%);
+            z-index: 40; border-radius: 2px;
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+        }
+        .el-l-plate { left: -18px; border-radius: 4px 2px 2px 4px; }
+        .el-r-plate { right: -18px; border-radius: 2px 4px 4px 2px; }
+
+        /* 전극 극성 표시 */
+        .el-marker {
+            position: absolute; top: 50%; transform: translateY(-50%);
+            font-size: 1.8rem; font-weight: 900; z-index: 60; color: #2f3542;
+            pointer-events: none;
+        }
+        .marker-l { left: 25px; }
+        .marker-r { right: 25px; }
+
+        /* SVG 전선 및 집게 (최상위) */
+        #wire-svg { 
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
+            pointer-events: none; z-index: 100; 
+        }
+        .alligator-clip-shape { 
+            fill: #7f8c8d; stroke: #333; stroke-width: 1.2; 
+            transition: transform 0.1s;
+        }
+        .biting { transform: scaleX(0.9) scaleY(0.85); }
+
+        #mainCanvas { position: absolute; top: 0; left: 0; width: 320px; height: 320px; border-radius: 50%; z-index: 30; background: #fff; }
+
+        /* 우측 컨트롤 영역 */
+        .side-ctrl {
+            width: 290px; background: #fff; border-left: 1px solid #ddd;
+            padding: 20px; display: flex; flex-direction: column; gap: 15px;
+        }
+        .reagent-btn {
+            display: flex; align-items: center; gap: 10px; cursor: pointer;
+            padding: 10px; border-radius: 12px; border: 2.5px solid #f1f2f6;
+            background: #f8f9fa; transition: 0.2s;
+        }
+        .reagent-btn.active { border-color: #2f3542; background: #eef2f5; box-shadow: 0 4px 8px rgba(0,0,0,0.05); }
+
+        /* 스포이드 SVG 스타일 */
+        .spoid-svg { width: 36px; height: 100px; }
+        .spoid-outline { stroke: #888; stroke-width: 1.0; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+        .spoid-liquid { opacity: 0.95; stroke: none; }
+        .spoid-bulb-bg { fill: rgba(245,245,245,0.8); }
+
+        .reagent-label { font-size: 0.9rem; font-weight: bold; color: #2f3542; line-height: 1.4; }
+        .reagent-sub { font-size: 0.8rem; color: #747d8c; font-weight: normal; display: block; }
+
+        footer {
+            background: #2f3542; color: #f1f2f6;
+            padding: 15px 10px 45px 10px; text-align: center; font-size: 0.75rem;
+        }
+    </style>
+</head>
+<body>
+
+<header>이온의 이동 가상 실험실</header>
+
+<div id="wrapper">
+    <!-- 좌측 사이드바 -->
+    <aside class="side-info">
+        <div class="info-card">
+            <h3>📋 실험 방법</h3>
+            <ol>
+                <li>거름종이를 <b>질산 칼륨(KNO<sub>3</sub>)</b> 수용액으로 충분히 적셔 준비합니다.</li>
+                <li>우측의 <b>스포이드</b>를 선택하여 거름종이 중앙에 시료를 떨어뜨립니다.</li>
+                <li>장치에서 <b>전압</b>을 조절한 뒤 <b>ON / OFF</b> 버튼을 누릅니다.</li>
+                <li>색깔을 띤 이온들이 이동하는 방향을 관찰하여 전하의 종류를 추론해 봅시다.</li>
+            </ol>
+        </div>
+
+        <div class="caution-card">
+            ※ 주의: 실제로 질산 이온, 칼륨 이온, 황산 이온 등은 무색이라 눈에 보이지 않습니다. 이 실험에서는 이해를 돕기 위해 점선 원으로 표시하였습니다.
+        </div>
+    </aside>
+
+    <!-- 중앙 메인 실험 영역 -->
+    <main class="main-lab" id="lab-container">
+        <!-- SVG 전선 및 집게 -->
+        <svg id="wire-svg">
+            <path id="wire-r-path" d="" stroke="red" stroke-width="5" fill="none" />
+            <path id="wire-b-path" d="" stroke="black" stroke-width="5" fill="none" />
+            
+            <!-- 빨간색 집게 -->
+            <g id="clip-red-group">
+                <path class="alligator-clip-shape" d="M -25 -10 L 0 -10 L 10 -2 L 10 2 L 0 10 L -25 10 Z" />
+                <circle fill="red" cx="-18" cy="0" r="3.5" />
+            </g>
+            <!-- 검은색 집게 -->
+            <g id="clip-black-group">
+                <path class="alligator-clip-shape" d="M -25 -10 L 0 -10 L 10 -2 L 10 2 L 0 10 L -25 10 Z" />
+                <circle fill="black" cx="-18" cy="0" r="3.5" />
+            </g>
+        </svg>
+
+        <!-- 전원 장치 -->
+        <div id="psu">
+            <div class="psu-display-row">
+                <div class="psu-v">
+                    <span id="v-val">12.0</span>&nbsp;V
+                </div>
+                <div class="volt-ctrl">
+                    <button class="v-btn" onclick="adjVolt(1)">▲</button>
+                    <button class="v-btn" onclick="adjVolt(-1)">▼</button>
+                </div>
+            </div>
+            <div id="psu-switch" onclick="togglePwr()">ON / OFF</div>
+            <div class="psu-term-box">
+                <div class="psu-term-wrap">
+                    <span class="psu-term-label" style="color:red;">(+)</span>
+                    <div class="psu-term" id="term-r" style="background:var(--pos-red);"></div>
+                </div>
+                <div class="psu-term-wrap">
+                    <span class="psu-term-label" style="color:black;">(-)</span>
+                    <div class="psu-term" id="term-b" style="background:var(--neg-black);"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 페트리 접시 및 전극 -->
+        <div id="stage-plate">
+            <div id="petri-container">
+                <div class="petri-rim"></div>
+                <!-- 고정된 금속판 전극 -->
+                <div class="electrode-plate el-l-plate"></div>
+                <div class="electrode-plate el-r-plate"></div>
+                <!-- 극성 기호 -->
+                <div id="mark-l" class="el-marker marker-l">+</div>
+                <div id="mark-r" class="el-marker marker-r">-</div>
+                <canvas id="mainCanvas"></canvas>
+            </div>
+        </div>
+    </main>
+
+    <!-- 우측 컨트롤바 -->
+    <aside class="side-ctrl">
+        <h3 style="margin:0; font-size:1.1rem;">🧪 실험 시약 선택</h3>
+        
+        <div class="reagent-btn" onclick="setSolution('copper', this)">
+            <svg class="spoid-svg" viewBox="0 0 40 100">
+                <path class="spoid-bulb-bg" d="M12,28 Q12,8 20,8 Q28,8 28,28 Z" />
+                <path class="spoid-liquid" d="M15,55 L25,55 L25,82 L22,96 L18,96 L15,82 Z" fill="var(--copper-blue)" />
+                <path class="spoid-outline" d="M12,28 Q12,8 20,8 Q28,8 28,28 L28,32 L12,32 Z" />
+                <path class="spoid-outline" d="M15,32 L25,32 L25,82 L22,96 L18,96 L15,82 Z" />
+            </svg>
+            <div class="reagent-label">황산 구리(II)<br><span class="reagent-sub">CuSO<sub>4</sub></span></div>
+        </div>
+
+        <div class="reagent-btn" onclick="setSolution('permanganate', this)">
+            <svg class="spoid-svg" viewBox="0 0 40 100">
+                <path class="spoid-bulb-bg" d="M12,28 Q12,8 20,8 Q28,8 28,28 Z" />
+                <path class="spoid-liquid" d="M15,55 L25,55 L25,82 L22,96 L18,96 L15,82 Z" fill="var(--perm-purple)" />
+                <path class="spoid-outline" d="M12,28 Q12,8 20,8 Q28,8 28,28 L28,32 L12,32 Z" />
+                <path class="spoid-outline" d="M15,32 L25,32 L25,82 L22,96 L18,96 L15,82 Z" />
+            </svg>
+            <div class="reagent-label">과망가니즈산 칼륨<br><span class="reagent-sub">KMnO<sub>4</sub></span></div>
+        </div>
+
+        <div class="reagent-btn" onclick="setSolution('chromate', this)">
+            <svg class="spoid-svg" viewBox="0 0 40 100">
+                <path class="spoid-bulb-bg" d="M12,28 Q12,8 20,8 Q28,8 28,28 Z" />
+                <path class="spoid-liquid" d="M15,55 L25,55 L25,82 L22,96 L18,96 L15,82 Z" fill="var(--chrom-yellow)" />
+                <path class="spoid-outline" d="M12,28 Q12,8 20,8 Q28,8 28,28 L28,32 L12,32 Z" />
+                <path class="spoid-outline" d="M15,32 L25,32 L25,82 L22,96 L18,96 L15,82 Z" />
+            </svg>
+            <div class="reagent-label">크롬산 칼륨<br><span class="reagent-sub">K<sub>2</sub>CrO<sub>4</sub></span></div>
+        </div>
+
+        <div style="margin-top:auto; display:flex; flex-direction:column; gap:10px;">
+            <button onclick="reverseElectrodes()" style="width:100%; padding:12px; border-radius:10px; border:1px solid #ccc; background:#f1f2f6; font-weight:bold; cursor:pointer; font-size:0.9rem;">🔄 전극 반전</button>
+            <button onclick="resetExperiment()" style="width:100%; padding:12px; border-radius:10px; border:none; background:#747d8c; color:white; font-weight:bold; cursor:pointer; font-size:0.9rem;">전체 초기화</button>
+        </div>
+    </aside>
+</div>
+
+<footer>
+    © 2026. LEE HANEUL All rights reserved. [v1.0] (2026-05-12)<br>
+    본 프로그램은 아이패드 및 태블릿 환경에서의 터치 조작을 지원합니다.
+</footer>
+
+<script>
+    const canvas = document.getElementById('mainCanvas');
+    const ctx = canvas.getContext('2d');
+    const psuSwitch = document.getElementById('psu-switch');
+    const vValDisplay = document.getElementById('v-val');
+    
+    const SIZE = 320;
+    const CENTER = SIZE / 2;
+
+    let isPowerOn = false, isLeftPos = true, ions = [], currentType = null;
+    let voltage = 12.0;
+
+    const ION_INFO = {
+        copper: { name: 'Cu²⁺', color: '#1e90ff', charge: 2, colorless: false },
+        so4: { name: 'SO₄²⁻', color: '#ffffff', charge: -2, border: '#bdc3c7', colorless: true },
+        k: { name: 'K⁺', color: '#ffffff', charge: 1, border: '#dcdde1', colorless: true },
+        no3: { name: 'NO₃⁻', color: '#ffffff', charge: -1, border: '#dcdde1', colorless: true },
+        mno4: { name: 'MnO₄⁻', color: '#a442f1', charge: -1, colorless: false },
+        cro4: { name: 'CrO₄²⁻', color: '#ffa502', charge: -2, colorless: false }
+    };
+
+    class Particle {
+        constructor(type, isCenter = true) {
+            this.type = type;
+            const d = ION_INFO[type];
+            this.name = d.name;
+            this.color = d.color;
+            this.charge = d.charge;
+            this.colorless = d.colorless;
+            this.border = d.border || 'rgba(0,0,0,0.1)';
+            this.radius = 33;
+
+            if (isCenter) {
+                this.x = CENTER + (Math.random() - 0.5) * 40;
+                this.y = CENTER + (Math.random() - 0.5) * 60;
+            } else {
+                const angle = Math.random() * Math.PI * 2;
+                const dist = Math.random() * (CENTER - 55);
+                this.x = CENTER + Math.cos(angle) * dist;
+                this.y = CENTER + Math.sin(angle) * dist;
+            }
+            this.vx = 0;
+            this.vy = (Math.random() - 0.5) * 0.2; 
+        }
+
+        update() {
+            if (isPowerOn) {
+                let accel = (0.0006 * voltage) * this.charge;
+                if (!isLeftPos) accel *= -1;
+                this.vx += accel;
+            }
+            this.vx *= 0.96;
+            this.vy *= 0.96;
+            this.x += this.vx;
+            this.y += this.vy;
+
+            const limit = CENTER - this.radius - 12;
+            const dist = Math.sqrt((this.x - CENTER)**2 + (this.y - CENTER)**2);
+            if (dist > limit) {
+                const angle = Math.atan2(this.y - CENTER, this.x - CENTER);
+                this.x = CENTER + Math.cos(angle) * limit;
+                this.y = CENTER + Math.sin(angle) * limit;
+                this.vx *= -0.1;
+            }
+        }
+
+        draw() {
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+            ctx.fillStyle = this.color;
+            ctx.fill();
+            if (this.colorless) ctx.setLineDash([4, 4]);
+            ctx.strokeStyle = this.border;
+            ctx.lineWidth = 1.5;
+            ctx.stroke();
+            ctx.fillStyle = (this.colorless || this.type === 'cro4') ? '#2f3542' : '#fff';
+            ctx.font = 'bold 18px Arial';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(this.name, this.x, this.y);
+            ctx.restore();
+        }
+    }
+
+    function init() {
+        canvas.width = SIZE;
+        canvas.height = SIZE;
+        setTimeout(drawWires, 100); // 레이아웃 렌더링 후 좌표 계산
+    }
+
+    function drawWires() {
+        const lab = document.getElementById('lab-container').getBoundingClientRect();
+        const tr = document.getElementById('term-r').getBoundingClientRect();
+        const tb = document.getElementById('term-b').getBoundingClientRect();
+        
+        const platL = document.querySelector('.el-l-plate').getBoundingClientRect();
+        const platR = document.querySelector('.el-r-plate').getBoundingClientRect();
+
+        const pRed = document.getElementById('wire-r-path');
+        const pBlack = document.getElementById('wire-b-path');
+        const grpRed = document.getElementById('clip-red-group');
+        const grpBlack = document.getElementById('clip-black-group');
+
+        const sR = { x: tr.left + 11 - lab.left, y: tr.top + 11 - lab.top };
+        const sB = { x: tb.left + 11 - lab.left, y: tb.top + 11 - lab.top };
+        
+        // 전극 금속판의 집게 물림 지점 (ㄷ자 바깥쪽)
+        const midL = { x: platL.left + 10 - lab.left, y: platL.top + 25 - lab.top };
+        const midR = { x: platR.right - 10 - lab.left, y: platR.top + 25 - lab.top };
+
+        if(isLeftPos) {
+            pRed.setAttribute('d', `M ${sR.x} ${sR.y} C ${sR.x} ${sR.y + 120}, ${midL.x} ${midL.y - 120}, ${midL.x} ${midL.y}`);
+            pBlack.setAttribute('d', `M ${sB.x} ${sB.y} C ${sB.x} ${sB.y + 120}, ${midR.x} ${midR.y - 120}, ${midR.x} ${midR.y}`);
+            grpRed.setAttribute('transform', `translate(${midL.x}, ${midL.y}) rotate(0)`);
+            grpBlack.setAttribute('transform', `translate(${midR.x}, ${midR.y}) rotate(180)`);
+        } else {
+            pRed.setAttribute('d', `M ${sR.x} ${sR.y} C ${sR.x + 130} ${sR.y + 130}, ${midR.x} ${midR.y - 120}, ${midR.x} ${midR.y}`);
+            pBlack.setAttribute('d', `M ${sB.x} ${sB.y} C ${sB.x - 130} ${sB.y + 130}, ${midL.x} ${midL.y - 120}, ${midL.x} ${midL.y}`);
+            grpRed.setAttribute('transform', `translate(${midR.x}, ${midR.y}) rotate(180)`);
+            grpBlack.setAttribute('transform', `translate(${midL.x}, ${midL.y}) rotate(0)`);
+        }
+
+        const shapes = document.querySelectorAll('.alligator-clip-shape');
+        shapes.forEach(s => {
+            if(isPowerOn) s.classList.add('biting');
+            else s.classList.remove('biting');
+        });
+    }
+
+    function setSolution(mode, element) {
+        currentType = mode;
+        isPowerOn = false;
+        psuSwitch.classList.remove('on');
+        document.querySelectorAll('.reagent-btn').forEach(d => d.classList.remove('active'));
+        element.classList.add('active');
+        ions = [];
+        for(let i=0; i<10; i++) {
+            ions.push(new Particle('k', false));
+            ions.push(new Particle('no3', false));
+        }
+        if(mode === 'copper') {
+            for(let i=0; i<6; i++) { ions.push(new Particle('copper')); ions.push(new Particle('so4')); }
+        } else if(mode === 'permanganate') {
+            for(let i=0; i<6; i++) { ions.push(new Particle('k', true)); ions.push(new Particle('mno4')); }
+        } else if(mode === 'chromate') {
+            for(let i=0; i<6; i++) { 
+                ions.push(new Particle('cro4')); 
+                ions.push(new Particle('k', true)); ions.push(new Particle('k', true)); 
+            }
+        }
+        drawWires();
+    }
+
+    function togglePwr() {
+        if (!currentType) { alert('실험 시약을 먼저 선택해 주세요!'); return; }
+        isPowerOn = !isPowerOn;
+        psuSwitch.classList.toggle('on');
+        drawWires();
+    }
+
+    function adjVolt(val) {
+        voltage += val;
+        if (voltage < 0) voltage = 0;
+        if (voltage > 20) voltage = 20;
+        vValDisplay.textContent = voltage.toFixed(1);
+    }
+
+    function reverseElectrodes() {
+        isLeftPos = !isLeftPos;
+        document.getElementById('mark-l').textContent = isLeftPos ? '+' : '-';
+        document.getElementById('mark-r').textContent = isLeftPos ? '-' : '+';
+        drawWires();
+    }
+
+    function resetExperiment() {
+        isPowerOn = false; currentType = null; ions = []; voltage = 12.0;
+        psuSwitch.classList.remove('on');
+        vValDisplay.textContent = "12.0";
+        document.querySelectorAll('.reagent-btn').forEach(d => d.classList.remove('active'));
+        ctx.clearRect(0, 0, SIZE, SIZE);
+        drawWires();
+    }
+
+    function loop() {
+        ctx.clearRect(0, 0, SIZE, SIZE);
+        ions.forEach(ion => { ion.update(); ion.draw(); });
+        requestAnimationFrame(loop);
+    }
+
+    window.onload = () => { init(); loop(); };
+    window.onresize = drawWires;
+</script>
+</body>
+</html>
