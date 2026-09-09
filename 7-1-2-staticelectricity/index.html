@@ -21,11 +21,12 @@
             background-color: var(--bg-color);
             overflow: hidden;
             display: flex; flex-direction: column; 
-            height: 100vh; /* 화면에 딱 맞춤 */
+            height: 100vh; /* 브라우저 높이에 고정 */
         }
 
+        /* 상단 레이아웃 압축 */
         #header {
-            background: white; padding: 12px 10px; text-align: center;
+            background: white; padding: 10px; text-align: center;
             border-bottom: 1px solid #e2e8f0; flex-shrink: 0;
         }
 
@@ -36,15 +37,16 @@
             background: #fff; overflow: hidden; touch-action: none;
         }
 
+        /* 버튼 영역 위치 상향 조정 */
         #controls {
-            background: white; padding: 10px;
+            background: white; padding: 10px 10px 15px 10px;
             display: flex; justify-content: center; gap: 10px;
             border-top: 1px solid #e2e8f0; flex-shrink: 0;
         }
 
         button {
-            padding: 10px 15px; font-size: 13px; font-weight: bold;
-            border: 2px solid transparent; border-radius: 10px;
+            padding: 10px 18px; font-size: 14px; font-weight: bold;
+            border: 2px solid transparent; border-radius: 12px;
             cursor: pointer; transition: all 0.15s; color: white;
             -webkit-appearance: none;
         }
@@ -54,7 +56,7 @@
         .btn-reset { background-color: #64748b; }
         .selected { border-color: #000; box-shadow: 0 0 0 3px rgba(0,0,0,0.1); }
 
-        /* 안내 박스: 도체와 겹치지 않도록 너비 및 간격 조정 */
+        /* 안내 박스: 도체와 겹치지 않도록 슬림하게 유지 */
         .info-container {
             position: absolute; top: 12px; left: 12px;
             display: flex; flex-direction: column; gap: 6px;
@@ -62,28 +64,31 @@
         }
 
         .info-box {
-            background: rgba(255, 255, 255, 0.9);
-            width: 240px; padding: 12px 15px;
-            border-radius: 8px; border: 1px solid #cbd5e1;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+            background: rgba(255, 255, 255, 0.92);
+            width: 230px; padding: 12px 15px;
+            border-radius: 10px; border: 1px solid #cbd5e1;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
         }
 
-        .info-box.method { border-left: 4px solid #10b981; }
-        .info-box.notice { border-left: 4px solid #f59e0b; }
+        .info-box.method { border-left: 5px solid #10b981; }
+        .info-box.notice { border-left: 5px solid #f59e0b; }
         .info-box h3 { margin: 0 0 6px 0; font-size: 13px; color: #1e293b; border-bottom: 1px solid #e2e8f0; padding-bottom: 4px; }
         .info-box ul { margin: 0; padding: 0; list-style: none; }
-        .info-box li { font-size: 11px; line-height: 1.4; color: #475569; margin-bottom: 3px; position: relative; padding-left: 12px; text-align: left; }
+        .info-box li { font-size: 11.5px; line-height: 1.5; color: #475569; margin-bottom: 3px; position: relative; padding-left: 12px; text-align: left; }
         .info-box li::before { content: "•"; position: absolute; left: 0; color: #94a3b8; }
 
+        /* 하단 푸터: 태블릿 홈바 대응을 위해 하단 패딩 확보 */
         .footer-info {
-            padding: 8px; text-align: center; font-size: 0.7rem; color: #888;
-            background: #f8fafc; border-top: 1px solid #eee; flex-shrink: 0;
+            padding: 10px 10px 30px 10px; /* 하단 여백 대폭 추가 */
+            text-align: center; font-size: 0.75rem; color: #888;
+            background: white; border-top: 1px solid #f1f5f9; flex-shrink: 0;
         }
 
         @media (max-width: 768px) {
-            .info-box { width: 200px; }
+            .info-box { width: 210px; }
             #header h1 { font-size: 16px; }
-            button { padding: 8px 12px; font-size: 12px; }
+            button { padding: 8px 14px; font-size: 12px; }
+            .footer-info { padding-bottom: 40px; } /* 모바일에서 더 높게 */
         }
     </style>
 </head>
@@ -121,20 +126,20 @@
 </div>
 
 <div class="footer-info">
-  <div>Copyright © 2026 LEE HANEUL. All Rights Reserved.</div>
-  <div style="margin-top: 2px;">정전기 유도 가상 실험 v1.30 (2026-09-09)</div>
-  <div style="color: #bbb;">본 프로그램은 아이패드 및 태블릿 환경에서의 터치 조작을 지원합니다.</div>
+  <div class="copyright">Copyright © 2026 LEE HANEUL. All Rights Reserved.</div>
+  <div style="margin-top: 3px; color: #999;">정전기 유도 가상 실험 v1.31 (2026-09-09)</div>
+  <div style="margin-top: 2px; color: #bbb;">본 프로그램은 아이패드 및 태블릿 환경에서의 터치 조작을 지원합니다.</div>
 </div>
 
 <script>
     let particles = [];
     let rod, can;
     let rodType = -1; 
-    let CAN_W = 140; // 태블릿 대응을 위해 약간 축소
+    let CAN_W = 140; 
     let CAN_H = 200;
-    const NUCLEUS_SIZE = 22;
-    const ELECTRON_SIZE = 11;
-    const NEUTRAL_OFFSET = 16; 
+    const NUCLEUS_SIZE = 24;
+    const ELECTRON_SIZE = 12;
+    const NEUTRAL_OFFSET = 18; 
 
     function setup() {
         let container = document.getElementById('canvas-wrapper');
@@ -148,18 +153,18 @@
     }
 
     function initSimulation() {
-        CAN_H = min(height * 0.55, 220);
-        // 도체가 안내 박스와 겹치지 않도록 시작 위치를 오른쪽으로 조정 (width * 0.45)
-        can = { x: width * 0.45, y: height / 2, vx: 0 };
-        rod = { x: width * 0.85, y: height / 2, w: 40, h: height * 0.65, isDragging: false };
+        CAN_H = min(height * 0.55, 230);
+        // 캔 시작 위치를 왼쪽으로 더 이동(0.32), 대전체는 더 오른쪽(0.92)으로 배치하여 초기 인력 발생 차단
+        can = { x: width * 0.35, y: height / 2, vx: 0 };
+        rod = { x: width * 0.92, y: height / 2, w: 45, h: height * 0.65, isDragging: false };
 
         particles = [];
         let rows = 6;
         let cols = 3;
         for (let i = 0; i < cols; i++) {
             for (let j = 0; j < rows; j++) {
-                let px = map(i, 0, cols - 1, -CAN_W / 2 + 30, CAN_W / 2 - 30);
-                let py = map(j, 0, rows - 1, -CAN_H / 2 + 35, CAN_H / 2 - 35);
+                let px = map(i, 0, cols - 1, -CAN_W / 2 + 32, CAN_W / 2 - 32);
+                let py = map(j, 0, rows - 1, -CAN_H / 2 + 38, CAN_H / 2 - 38);
                 particles.push({ nx: px, ny: py, ex: px + NEUTRAL_OFFSET, ey: py });
             }
         }
@@ -175,16 +180,17 @@
 
         let rodEdgeX = rod.x - rod.w / 2;
         let canEdgeX = can.x + CAN_W / 2;
-        let distance = max(10, rodEdgeX - canEdgeX);
+        let distance = max(5, rodEdgeX - canEdgeX);
 
         // --- 물리 로직 ---
         particles.forEach(p => {
-            let forceEffect = map(distance, 0, 500, 65, 0, true);
+            let forceEffect = map(distance, 0, 500, 70, 0, true);
             let targetEx = (p.nx + NEUTRAL_OFFSET) + (rodType * forceEffect);
-            targetEx = constrain(targetEx, -CAN_W / 2 + 10, CAN_W / 2 - 10);
-            p.ex += (targetEx - p.ex) * 0.15;
+            targetEx = constrain(targetEx, -CAN_W / 2 + 12, CAN_W / 2 - 12);
+            p.ex += (targetEx - p.ex) * 0.12;
         });
 
+        // 인력 발생 (거리가 500 미만일 때만)
         if (distance < 500) {
             let attraction = map(distance, 0, 500, 0.45, 0, true); 
             can.vx += attraction;
@@ -193,83 +199,85 @@
         can.x += can.vx;
 
         // 충돌 및 화면 제한
-        if (can.x + CAN_W/2 > rodEdgeX - 10) {
-            can.x = rodEdgeX - 10 - CAN_W/2;
+        if (can.x + CAN_W/2 > rodEdgeX - 15) {
+            can.x = rodEdgeX - 15 - CAN_W/2;
             can.vx = 0;
         }
-        // 왼쪽 한계 (안내 박스 부근까지)
-        can.x = max(can.x, width * 0.15 + CAN_W/2);
+        // 왼쪽 한계: 안내 박스(230px)와 겹치지 않게 보호
+        can.x = max(can.x, 260 + CAN_W/2);
 
         // --- 렌더링 ---
         
         // 1. 금속 캔
         push();
         translate(can.x, can.y);
-        stroke(140); strokeWeight(2); fill(235, 238, 242);
+        stroke(140); strokeWeight(2); fill(230, 235, 240);
         rect(-CAN_W/2, -CAN_H/2, CAN_W, CAN_H, 4);
-        fill(210, 215, 220); ellipse(0, -CAN_H/2, CAN_W, 18);
-        fill(180, 185, 190); ellipse(0, CAN_H/2, CAN_W, 18);
+        fill(210, 215, 220); ellipse(0, -CAN_H/2, CAN_W, 20);
+        fill(180, 185, 190); ellipse(0, CAN_H/2, CAN_W, 20);
 
-        let chargeOpacity = map(distance, 0, 400, 255, 0, true);
+        // 유도 전하 부호 (테두리 제거)
+        let chargeOpacity = map(distance, 0, 420, 255, 0, true);
         if (chargeOpacity > 10) {
-            noStroke(); textAlign(CENTER, CENTER); textSize(22); textStyle(BOLD);
+            noStroke(); textAlign(CENTER, CENTER); textSize(24); textStyle(BOLD);
             if(rodType === -1) fill(239, 68, 68, chargeOpacity); else fill(59, 130, 246, chargeOpacity);
-            text(rodType === -1 ? "(+)" : "(-)", CAN_W/2 + 35, 0);
+            text(rodType === -1 ? "(+)" : "(-)", CAN_W/2 + 40, 0);
             if(rodType === -1) fill(59, 130, 246, chargeOpacity); else fill(239, 68, 68, chargeOpacity);
-            text(rodType === -1 ? "(-)" : "(+)", -CAN_W/2 - 35, 0);
+            text(rodType === -1 ? "(-)" : "(+)", -CAN_W/2 - 40, 0);
         }
 
+        // 입자 렌더링 (부호 정중앙 보정)
         particles.forEach(p => {
-            stroke(220, 38, 38, 120); fill(239, 68, 68, 160); ellipse(p.nx, p.ny, NUCLEUS_SIZE);
-            noStroke(); fill(255); textAlign(CENTER, CENTER); textSize(14); textStyle(BOLD);
+            stroke(220, 38, 38, 110); fill(239, 68, 68, 150); ellipse(p.nx, p.ny, NUCLEUS_SIZE);
+            noStroke(); fill(255); textAlign(CENTER, CENTER); textSize(16); textStyle(BOLD);
             text("+", p.nx, p.ny + 1); 
         });
 
         particles.forEach(p => {
-            stroke(30, 64, 175, 120); fill(59, 130, 246, 180); ellipse(p.ex, p.ey, ELECTRON_SIZE);
-            noStroke(); fill(255); textAlign(CENTER, CENTER); textSize(11); textStyle(BOLD);
+            stroke(30, 64, 175, 110); fill(59, 130, 246, 170); ellipse(p.ex, p.ey, ELECTRON_SIZE);
+            noStroke(); fill(255); textAlign(CENTER, CENTER); textSize(12); textStyle(BOLD);
             text("-", p.ex, p.ey - 1); 
         });
 
-        noStroke(); fill(100); textStyle(NORMAL); textSize(13); 
-        text("금속 캔 (도체)", 0, CAN_H/2 + 35);
+        noStroke(); fill(80); textStyle(NORMAL); textSize(14); 
+        text("금속 캔 (도체)", 0, CAN_H/2 + 38);
         pop();
 
         // 2. 대전체
         push();
         translate(rod.x, rod.y);
         rectMode(CENTER); noStroke();
-        fill(0, 15); rect(6, 6, rod.w, rod.h, 10);
-        fill(rodType === 1 ? '#ef4444' : '#3b82f6'); rect(0, 0, rod.w, rod.h, 10);
-        fill(255); textAlign(CENTER, CENTER); textSize(24); textStyle(BOLD);
+        fill(0, 15); rect(8, 8, rod.w, rod.h, 12);
+        fill(rodType === 1 ? '#ef4444' : '#3b82f6'); rect(0, 0, rod.w, rod.h, 12);
+        fill(255); textAlign(CENTER, CENTER); textSize(28); textStyle(BOLD);
         let s = rodType === 1 ? "+" : "-";
         for(let i = -3; i <= 3; i++) text(s, 0, i * (rod.h/8));
         pop();
 
-        // 3. 화살표
-        if (distance < 350 && distance > 15) {
-            let startX = can.x + CAN_W/2 + 70; 
-            drawArrow(startX, can.y - 50, distance); 
+        // 3. 인력 화살표
+        if (distance < 380 && distance > 15) {
+            let startX = can.x + CAN_W/2 + 80; 
+            drawArrow(startX, can.y - 60, distance); 
             drawArrow(startX, can.y, distance);      
-            drawArrow(startX, can.y + 50, distance); 
+            drawArrow(startX, can.y + 60, distance); 
         }
     }
 
     function drawArrow(x, y, d) {
-        let len = map(d, 0, 400, 60, 10, true);
-        stroke(245, 158, 11); strokeWeight(3);
+        let len = map(d, 0, 400, 70, 15, true);
+        stroke(245, 158, 11); strokeWeight(4);
         line(x, y, x + len, y);
-        line(x + len, y, x + len - 7, y - 5);
-        line(x + len, y, x + len - 7, y + 5);
+        line(x + len, y, x + len - 8, y - 6);
+        line(x + len, y, x + len - 8, y + 6);
     }
 
-    // --- 터치 제어 ---
+    // --- 인터랙션 제어 ---
     function checkRodHit(x, y) {
-        return (x > rod.x - 60 && x < rod.x + 60 && y > rod.y - rod.h/2 - 40 && y < rod.y + rod.h/2 + 40);
+        return (x > rod.x - 70 && x < rod.x + 70 && y > rod.y - rod.h/2 - 40 && y < rod.y + rod.h/2 + 40);
     }
 
     function mousePressed() { if (checkRodHit(mouseX, mouseY)) rod.isDragging = true; }
-    function mouseDragged() { if (rod.isDragging) rod.x = constrain(mouseX, width * 0.3, width - 30); }
+    function mouseDragged() { if (rod.isDragging) rod.x = constrain(mouseX, width * 0.4, width - 40); }
     function mouseReleased() { rod.isDragging = false; }
 
     function touchStarted() {
@@ -283,7 +291,7 @@
     }
     function touchMoved() {
         if (rod.isDragging && touches.length > 0) {
-            rod.x = constrain(touches[0].x, width * 0.3, width - 30);
+            rod.x = constrain(touches[0].x, width * 0.4, width - 40);
             return false;
         }
     }
@@ -295,8 +303,8 @@
         rod.y = height / 2;
         can.y = height / 2;
         rod.h = height * 0.65;
-        CAN_H = min(height * 0.55, 220);
-        rod.x = constrain(rod.x, width * 0.3, width - 30);
+        CAN_H = min(height * 0.55, 230);
+        rod.x = constrain(rod.x, width * 0.4, width - 40);
     }
 </script>
 
