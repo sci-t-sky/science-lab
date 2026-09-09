@@ -86,7 +86,16 @@
         .btn-reset { background: #6c757d; color: white; }
 
         .graph-panel { min-height: 320px; }
-        .footer-info { padding: 10px; text-align: center; font-size: 0.78rem; color: #888; }
+        
+        .footer-info { 
+            margin-top: 10px;
+            padding: 15px; 
+            text-align: center; 
+            font-size: 0.82rem; 
+            line-height: 1.6;
+            color: #666; 
+            border-top: 1px solid #eee;
+        }
     </style>
 </head>
 <body>
@@ -160,15 +169,17 @@
         </div>
     </div>
 
-    <div class="footer-info">
-        Copyright © 2026 LEE HANEUL. All Rights Reserved. v2.0.0 (A Unit Upgrade)
-    </div>
+    <footer class="footer-info">
+        <div>Copyright © 2026 LEE HANEUL. All Rights Reserved.</div>
+        <div>전류, 전압, 저항 사이의 관계 가상 실험 v2.1 (2026-09-09)</div>
+        <div>본 프로그램은 아이패드 및 태블릿 환경에서의 터치 조작을 지원합니다.</div>
+    </footer>
 </div>
 
 <script>
     let voltage = 0;
     let resistance = 10;
-    let current = 0; // 이제 A 단위
+    let current = 0;
     let electronOffset = 0;
     let dpr = window.devicePixelRatio || 1;
 
@@ -273,7 +284,7 @@
         drawMeter(centerX, top + h, "A", "#27ae60");
 
         if (current > 0) {
-            electronOffset += current * 10; // A 단위에 맞춰 속도 보정
+            electronOffset += current * 10;
             const totalLen = (w * 2) + (h * 2);
             ctx.fillStyle = "#FFEB3B";
             for (let i = 0; i < 15; i++) {
@@ -293,7 +304,7 @@
     function updatePhysics() {
         voltage = parseFloat(vSlider.value);
         resistance = parseFloat(document.querySelector('input[name="resistance"]:checked').value);
-        current = (voltage / resistance); // Ampere
+        current = (voltage / resistance);
         vDisplay.innerText = `${voltage.toFixed(2)} V`;
         iDisplay.innerText = `${current.toFixed(2)} A`;
     }
