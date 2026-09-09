@@ -21,15 +21,15 @@
             background-color: var(--bg-color);
             overflow: hidden;
             display: flex; flex-direction: column; 
-            height: 100vh;
+            height: 100vh; /* 화면에 딱 맞춤 */
         }
 
         #header {
-            background: white; padding: 15px 10px; text-align: center;
+            background: white; padding: 12px 10px; text-align: center;
             border-bottom: 1px solid #e2e8f0; flex-shrink: 0;
         }
 
-        #header h1 { margin: 0; font-size: 20px; color: var(--primary-dark); font-weight: 800; }
+        #header h1 { margin: 0; font-size: 18px; color: var(--primary-dark); font-weight: 800; }
 
         #canvas-wrapper { 
             flex: 1; position: relative; width: 100%; 
@@ -37,15 +37,15 @@
         }
 
         #controls {
-            background: white; padding: 12px;
+            background: white; padding: 10px;
             display: flex; justify-content: center; gap: 10px;
-            border-top: 1px solid #e2e8f0; flex-shrink: 0; z-index: 100;
+            border-top: 1px solid #e2e8f0; flex-shrink: 0;
         }
 
         button {
-            padding: 10px 16px; font-size: 14px; font-weight: bold;
+            padding: 10px 15px; font-size: 13px; font-weight: bold;
             border: 2px solid transparent; border-radius: 10px;
-            cursor: pointer; transition: all 0.2s; color: white;
+            cursor: pointer; transition: all 0.15s; color: white;
             -webkit-appearance: none;
         }
 
@@ -54,34 +54,36 @@
         .btn-reset { background-color: #64748b; }
         .selected { border-color: #000; box-shadow: 0 0 0 3px rgba(0,0,0,0.1); }
 
+        /* 안내 박스: 도체와 겹치지 않도록 너비 및 간격 조정 */
         .info-container {
-            position: absolute; top: 15px; left: 15px;
-            display: flex; flex-direction: column; gap: 8px;
+            position: absolute; top: 12px; left: 12px;
+            display: flex; flex-direction: column; gap: 6px;
             pointer-events: none; z-index: 5;
         }
 
         .info-box {
-            background: rgba(255, 255, 255, 0.95);
-            width: 280px; padding: 14px 18px;
-            border-radius: 10px; border: 1px solid #cbd5e1;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            background: rgba(255, 255, 255, 0.9);
+            width: 240px; padding: 12px 15px;
+            border-radius: 8px; border: 1px solid #cbd5e1;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
         }
 
-        .info-box.method { border-left: 5px solid #10b981; }
-        .info-box.notice { border-left: 5px solid #f59e0b; }
-        .info-box h3 { margin: 0 0 8px 0; font-size: 14px; color: #1e293b; border-bottom: 1px solid #e2e8f0; padding-bottom: 5px; }
+        .info-box.method { border-left: 4px solid #10b981; }
+        .info-box.notice { border-left: 4px solid #f59e0b; }
+        .info-box h3 { margin: 0 0 6px 0; font-size: 13px; color: #1e293b; border-bottom: 1px solid #e2e8f0; padding-bottom: 4px; }
         .info-box ul { margin: 0; padding: 0; list-style: none; }
-        .info-box li { font-size: 12px; line-height: 1.5; color: #475569; margin-bottom: 4px; position: relative; padding-left: 14px; text-align: left; }
+        .info-box li { font-size: 11px; line-height: 1.4; color: #475569; margin-bottom: 3px; position: relative; padding-left: 12px; text-align: left; }
         .info-box li::before { content: "•"; position: absolute; left: 0; color: #94a3b8; }
 
         .footer-info {
-            padding: 10px; text-align: center; font-size: 0.75rem; color: #888;
-            background: #fff; border-top: 1px solid #f1f5f9; flex-shrink: 0;
+            padding: 8px; text-align: center; font-size: 0.7rem; color: #888;
+            background: #f8fafc; border-top: 1px solid #eee; flex-shrink: 0;
         }
 
         @media (max-width: 768px) {
-            .info-box { width: 220px; }
-            #header h1 { font-size: 18px; }
+            .info-box { width: 200px; }
+            #header h1 { font-size: 16px; }
+            button { padding: 8px 12px; font-size: 12px; }
         }
     </style>
 </head>
@@ -97,7 +99,7 @@
             <h3>🔍 실험 방법</h3>
             <ul>
                 <li>하단 버튼으로 <b>대전체 종류</b>를 선택합니다.</li>
-                <li>오른쪽 <b>대전체</b>를 드래그하여 캔에 가까이 가져갑니다.</li>
+                <li>오른쪽 <b>대전체</b>를 드래그하여 이동시킵니다.</li>
                 <li><b>전자(-)의 이동</b>과 <b>유도 전하</b>를 관찰합니다.</li>
             </ul>
         </div>
@@ -106,7 +108,7 @@
             <ul>
                 <li><b>원자핵(+)</b>은 제자리에 고정되어 있습니다.</li>
                 <li><b>자유 전자(-)</b>만 전기력을 받아 이동합니다.</li>
-                <li>이 실험은 원리 이해를 위한 <b>학습용 모델</b>입니다.</li>
+                <li>본 실험은 원리 이해를 위한 <b>학습용 모델</b>입니다.</li>
             </ul>
         </div>
     </div>
@@ -119,20 +121,20 @@
 </div>
 
 <div class="footer-info">
-  <div class="copyright">Copyright © 2026 LEE HANEUL. All Rights Reserved.</div>
-  <div style="font-size: 0.7rem; margin-top: 3px; color: #999;">정전기 유도 가상 실험 v1.29 (2026-09-09)</div>
-  <div style="font-size: 0.7rem; margin-top: 2px; color: #aaa;">본 프로그램은 아이패드 및 태블릿 환경에서의 터치 조작을 지원합니다.</div>
+  <div>Copyright © 2026 LEE HANEUL. All Rights Reserved.</div>
+  <div style="margin-top: 2px;">정전기 유도 가상 실험 v1.30 (2026-09-09)</div>
+  <div style="color: #bbb;">본 프로그램은 아이패드 및 태블릿 환경에서의 터치 조작을 지원합니다.</div>
 </div>
 
 <script>
     let particles = [];
     let rod, can;
     let rodType = -1; 
-    let CAN_W = 160;
-    let CAN_H = 240;
-    const NUCLEUS_SIZE = 24;
-    const ELECTRON_SIZE = 12;
-    const NEUTRAL_OFFSET = 18; 
+    let CAN_W = 140; // 태블릿 대응을 위해 약간 축소
+    let CAN_H = 200;
+    const NUCLEUS_SIZE = 22;
+    const ELECTRON_SIZE = 11;
+    const NEUTRAL_OFFSET = 16; 
 
     function setup() {
         let container = document.getElementById('canvas-wrapper');
@@ -146,17 +148,18 @@
     }
 
     function initSimulation() {
-        CAN_H = min(height * 0.5, 240);
-        can = { x: width * 0.25, y: height / 2, vx: 0 };
-        rod = { x: width * 0.8, y: height / 2, w: 45, h: height * 0.6, isDragging: false };
+        CAN_H = min(height * 0.55, 220);
+        // 도체가 안내 박스와 겹치지 않도록 시작 위치를 오른쪽으로 조정 (width * 0.45)
+        can = { x: width * 0.45, y: height / 2, vx: 0 };
+        rod = { x: width * 0.85, y: height / 2, w: 40, h: height * 0.65, isDragging: false };
 
         particles = [];
         let rows = 6;
         let cols = 3;
         for (let i = 0; i < cols; i++) {
             for (let j = 0; j < rows; j++) {
-                let px = map(i, 0, cols - 1, -CAN_W / 2 + 35, CAN_W / 2 - 35);
-                let py = map(j, 0, rows - 1, -CAN_H / 2 + 40, CAN_H / 2 - 40);
+                let px = map(i, 0, cols - 1, -CAN_W / 2 + 30, CAN_W / 2 - 30);
+                let py = map(j, 0, rows - 1, -CAN_H / 2 + 35, CAN_H / 2 - 35);
                 particles.push({ nx: px, ny: py, ex: px + NEUTRAL_OFFSET, ey: py });
             }
         }
@@ -170,141 +173,117 @@
     function draw() {
         background(255);
 
-        // 안전 거리 계산을 위한 변수
         let rodEdgeX = rod.x - rod.w / 2;
         let canEdgeX = can.x + CAN_W / 2;
-        let distance = max(5, rodEdgeX - canEdgeX); // 최소 거리 5 보장
+        let distance = max(10, rodEdgeX - canEdgeX);
 
         // --- 물리 로직 ---
         particles.forEach(p => {
-            let forceEffect = map(distance, 0, 500, 70, 0, true);
+            let forceEffect = map(distance, 0, 500, 65, 0, true);
             let targetEx = (p.nx + NEUTRAL_OFFSET) + (rodType * forceEffect);
-            targetEx = constrain(targetEx, -CAN_W / 2 + 12, CAN_W / 2 - 12);
-            p.ex += (targetEx - p.ex) * 0.12;
+            targetEx = constrain(targetEx, -CAN_W / 2 + 10, CAN_W / 2 - 10);
+            p.ex += (targetEx - p.ex) * 0.15;
         });
 
         if (distance < 500) {
-            let attraction = map(distance, 0, 500, 0.4, 0, true); 
+            let attraction = map(distance, 0, 500, 0.45, 0, true); 
             can.vx += attraction;
         }
-        can.vx *= 0.85; 
+        can.vx *= 0.88; 
         can.x += can.vx;
 
-        // 충돌 처리
+        // 충돌 및 화면 제한
         if (can.x + CAN_W/2 > rodEdgeX - 10) {
             can.x = rodEdgeX - 10 - CAN_W/2;
             can.vx = 0;
         }
-        can.x = constrain(can.x, CAN_W/2 + 20, width - rod.w - CAN_W/2);
+        // 왼쪽 한계 (안내 박스 부근까지)
+        can.x = max(can.x, width * 0.15 + CAN_W/2);
 
         // --- 렌더링 ---
         
-        // 1. 금속 캔 렌더링
+        // 1. 금속 캔
         push();
         translate(can.x, can.y);
-        stroke(140); strokeWeight(2); fill(230, 235, 240);
-        rect(-CAN_W/2, -CAN_H/2, CAN_W, CAN_H);
-        fill(210, 215, 220); ellipse(0, -CAN_H/2, CAN_W, 20);
-        fill(180, 185, 190); ellipse(0, CAN_H/2, CAN_W, 20);
+        stroke(140); strokeWeight(2); fill(235, 238, 242);
+        rect(-CAN_W/2, -CAN_H/2, CAN_W, CAN_H, 4);
+        fill(210, 215, 220); ellipse(0, -CAN_H/2, CAN_W, 18);
+        fill(180, 185, 190); ellipse(0, CAN_H/2, CAN_W, 18);
 
-        // 유도 전하 부호 (NaN 방지를 위해 색상 직접 지정)
-        let chargeOpacity = map(distance, 0, 450, 255, 0, true);
+        let chargeOpacity = map(distance, 0, 400, 255, 0, true);
         if (chargeOpacity > 10) {
-            noStroke(); textAlign(CENTER, CENTER); textSize(24); textStyle(BOLD);
-            
-            // 오른쪽 부호
-            if(rodType === -1) fill(239, 68, 68, chargeOpacity); // 빨간색 (+)
-            else fill(59, 130, 246, chargeOpacity); // 파란색 (-)
-            text(rodType === -1 ? "(+)" : "(-)", CAN_W/2 + 40, 0);
-            
-            // 왼쪽 부호
-            if(rodType === -1) fill(59, 130, 246, chargeOpacity); // 파란색 (-)
-            else fill(239, 68, 68, chargeOpacity); // 빨간색 (+)
-            text(rodType === -1 ? "(-)" : "(+)", -CAN_W/2 - 40, 0);
+            noStroke(); textAlign(CENTER, CENTER); textSize(22); textStyle(BOLD);
+            if(rodType === -1) fill(239, 68, 68, chargeOpacity); else fill(59, 130, 246, chargeOpacity);
+            text(rodType === -1 ? "(+)" : "(-)", CAN_W/2 + 35, 0);
+            if(rodType === -1) fill(59, 130, 246, chargeOpacity); else fill(239, 68, 68, chargeOpacity);
+            text(rodType === -1 ? "(-)" : "(+)", -CAN_W/2 - 35, 0);
         }
 
-        // 입자 렌더링
         particles.forEach(p => {
-            // 원자핵 (+)
-            stroke(220, 38, 38, 100); fill(239, 68, 68, 140); 
-            ellipse(p.nx, p.ny, NUCLEUS_SIZE);
-            noStroke(); fill(255, 240); textAlign(CENTER, CENTER);
-            textSize(16); textStyle(BOLD);
+            stroke(220, 38, 38, 120); fill(239, 68, 68, 160); ellipse(p.nx, p.ny, NUCLEUS_SIZE);
+            noStroke(); fill(255); textAlign(CENTER, CENTER); textSize(14); textStyle(BOLD);
             text("+", p.nx, p.ny + 1); 
         });
 
         particles.forEach(p => {
-            // 전자 (-)
-            stroke(30, 64, 175, 100); fill(59, 130, 246, 160); 
-            ellipse(p.ex, p.ey, ELECTRON_SIZE);
-            noStroke(); fill(255, 240); textAlign(CENTER, CENTER);
-            textSize(12); textStyle(BOLD);
+            stroke(30, 64, 175, 120); fill(59, 130, 246, 180); ellipse(p.ex, p.ey, ELECTRON_SIZE);
+            noStroke(); fill(255); textAlign(CENTER, CENTER); textSize(11); textStyle(BOLD);
             text("-", p.ex, p.ey - 1); 
         });
 
-        noStroke(); fill(80); textStyle(NORMAL); textSize(14); 
-        text("금속 캔 (도체)", 0, CAN_H/2 + 40);
+        noStroke(); fill(100); textStyle(NORMAL); textSize(13); 
+        text("금속 캔 (도체)", 0, CAN_H/2 + 35);
         pop();
 
-        // 2. 대전체 렌더링
+        // 2. 대전체
         push();
         translate(rod.x, rod.y);
         rectMode(CENTER); noStroke();
-        fill(0, 20); rect(8, 8, rod.w, rod.h, 12);
-        fill(rodType === 1 ? '#ef4444' : '#3b82f6'); 
-        rect(0, 0, rod.w, rod.h, 12);
-        fill(255); textAlign(CENTER, CENTER); textSize(28); textStyle(BOLD);
+        fill(0, 15); rect(6, 6, rod.w, rod.h, 10);
+        fill(rodType === 1 ? '#ef4444' : '#3b82f6'); rect(0, 0, rod.w, rod.h, 10);
+        fill(255); textAlign(CENTER, CENTER); textSize(24); textStyle(BOLD);
         let s = rodType === 1 ? "+" : "-";
-        for(let i = -3; i <= 3; i++) text(s, 0, i * 42);
+        for(let i = -3; i <= 3; i++) text(s, 0, i * (rod.h/8));
         pop();
 
-        // 3. 인력 화살표
-        if (distance < 380 && distance > 10) {
-            let startX = can.x + CAN_W/2 + 80; 
-            drawArrow(startX, can.y - 60, distance); 
+        // 3. 화살표
+        if (distance < 350 && distance > 15) {
+            let startX = can.x + CAN_W/2 + 70; 
+            drawArrow(startX, can.y - 50, distance); 
             drawArrow(startX, can.y, distance);      
-            drawArrow(startX, can.y + 60, distance); 
+            drawArrow(startX, can.y + 50, distance); 
         }
     }
 
     function drawArrow(x, y, d) {
-        let len = map(d, 0, 450, 70, 15, true);
-        stroke(245, 158, 11); strokeWeight(4);
+        let len = map(d, 0, 400, 60, 10, true);
+        stroke(245, 158, 11); strokeWeight(3);
         line(x, y, x + len, y);
-        line(x + len, y, x + len - 8, y - 6);
-        line(x + len, y, x + len - 8, y + 6);
+        line(x + len, y, x + len - 7, y - 5);
+        line(x + len, y, x + len - 7, y + 5);
     }
 
-    // --- 인터랙션 제어 ---
-    function getTouchX() {
-        if (touches.length > 0) return touches[0].x;
-        return mouseX;
-    }
-    function getTouchY() {
-        if (touches.length > 0) return touches[0].y;
-        return mouseY;
-    }
-
+    // --- 터치 제어 ---
     function checkRodHit(x, y) {
-        return (x > rod.x - 70 && x < rod.x + 70 && y > rod.y - rod.h/2 - 40 && y < rod.y + rod.h/2 + 40);
+        return (x > rod.x - 60 && x < rod.x + 60 && y > rod.y - rod.h/2 - 40 && y < rod.y + rod.h/2 + 40);
     }
 
     function mousePressed() { if (checkRodHit(mouseX, mouseY)) rod.isDragging = true; }
-    function mouseDragged() { if (rod.isDragging) rod.x = constrain(mouseX, width * 0.4, width - 40); }
+    function mouseDragged() { if (rod.isDragging) rod.x = constrain(mouseX, width * 0.3, width - 30); }
     function mouseReleased() { rod.isDragging = false; }
 
     function touchStarted() {
         if (touches.length > 0) {
             if (checkRodHit(touches[0].x, touches[0].y)) {
                 rod.isDragging = true;
-                return false;
+                return false; 
             }
         }
         return true;
     }
     function touchMoved() {
         if (rod.isDragging && touches.length > 0) {
-            rod.x = constrain(touches[0].x, width * 0.4, width - 40);
+            rod.x = constrain(touches[0].x, width * 0.3, width - 30);
             return false;
         }
     }
@@ -313,12 +292,11 @@
     function windowResized() {
         let container = document.getElementById('canvas-wrapper');
         resizeCanvas(container.offsetWidth, container.offsetHeight);
-        // 위치 보정
         rod.y = height / 2;
         can.y = height / 2;
-        rod.h = height * 0.6;
-        CAN_H = min(height * 0.5, 240);
-        rod.x = constrain(rod.x, width * 0.4, width - 40);
+        rod.h = height * 0.65;
+        CAN_H = min(height * 0.55, 220);
+        rod.x = constrain(rod.x, width * 0.3, width - 30);
     }
 </script>
 
