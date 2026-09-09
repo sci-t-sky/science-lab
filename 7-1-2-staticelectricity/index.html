@@ -212,7 +212,6 @@
         let canEdgeX = can.x + CAN_W / 2;
         let distance = rodEdgeX - canEdgeX;
 
-        // 물리 로직
         particles.forEach(p => {
             let forceEffect = map(distance, 0, 500, 70, 0, true);
             let targetEx = (p.nx + NEUTRAL_OFFSET) + (rodType * forceEffect);
@@ -235,8 +234,6 @@
         // 1. 금속 캔 렌더링
         push();
         translate(can.x, can.y);
-        
-        // 캔 몸체
         stroke(140);
         strokeWeight(2);
         fill(230, 235, 240);
@@ -249,17 +246,13 @@
         // 유도 전하 부호 렌더링 (테두리 제거됨)
         let chargeOpacity = map(distance, 0, 450, 255, 0, true);
         if (chargeOpacity > 20) {
-            noStroke(); // 외곽선 제거
+            noStroke(); // 테두리 제거
             textAlign(CENTER, CENTER);
             textSize(24);
             textStyle(BOLD);
-            
-            // 오른쪽 부호
             let rightSign = rodType === -1 ? "(+)" : "(-)";
             fill(rodType === -1 ? 220 : 30, rodType === -1 ? 38 : 64, rodType === -1 ? 38 : 175, chargeOpacity);
             text(rightSign, CAN_W/2 + 40, 0);
-            
-            // 왼쪽 부호
             let leftSign = rodType === -1 ? "(-)" : "(+)";
             fill(rodType === -1 ? 30 : 220, rodType === -1 ? 64 : 38, rodType === -1 ? 175 : 38, chargeOpacity);
             text(leftSign, -CAN_W/2 - 40, 0);
@@ -315,7 +308,6 @@
         line(x + len, y, x + len - 10, y + 8);
     }
 
-    // 인터랙션 로직
     function handleStart(ex, ey) {
         if (dist(ex, ey, rod.x, rod.y) < 220) rod.isDragging = true;
     }
