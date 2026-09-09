@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>전류, 전압, 저항 사이의 관계 실험 (옴의 법칙)</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --bg-color: #f0f2f5;
+            --panel-bg: #ffffff;
+            --primary-blue: #007bff;
+            --accent-red: #dc3545;
+            --text-dark: #333;
+            --border-color: #ddd;
+            --voltmeter-color: #f39c12;
+            --ammeter-color: #27ae60;
+            --guide-bg: #e7f3ff;
+            --caution-bg: #fff3f3;
+        }
+
+        * { 
+            box-sizing: border-box; 
+            -webkit-tap-highlight-color: transparent; 
+            user-select: none;
+            /* 텍스트 렌더링 최적화 */
+            text-rendering: optimizeLegibility;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        
+        body {
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0; padding: 10px; background-color: var(--bg-color); color: var(--text-dark); overflow-x: hidden;
+        }
+
+        .container { max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; gap: 15px; }
+        header { text-align: center; padding: 10px; background: white; border-radius: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        h1 { margin: 0; font-size: 1.4rem; color: #222; }
+
+        .guide-container { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .guide-box { padding: 12px; border-radius: 10px; font-size: 0.85rem; line-height: 1.5; }
+        .method-box { background-color: var(--guide-bg); border-left: 4px solid var(--primary-blue); }
+        .caution-box { background-color: var(--caution-bg); border-left: 4px solid var(--accent-red); }
+        .guide-title { font-weight: bold; margin-bottom: 5px; display: block; }
+
+        .main-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        @media (max-width: 900px) { .main-layout { grid-template-columns: 1fr; } }
+
+        .panel {
+            background: var(--panel-bg); border-radius: 12px; padding: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05); display: flex; flex-direction: column; gap: 15px;
+        }
+
+        .display-container { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .sensor-box {
+            background: #222; padding: 12px; border-radius: 8px; text-align: center;
+            font-family: 'Consolas', 'Monaco', monospace; box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+        }
+        .v-box { color: var(--voltmeter-color); border: 1px solid var(--voltmeter-color); }
+        .i-box { color: var(--ammeter-color); border: 1px solid var(--ammeter-color); }
+        .sensor-label { font-size: 0.75rem; opacity: 0.8; margin-bottom: 5px; }
+        .sensor-value { font-size: 1.4rem; font-weight: bold; }
+
+        #circuit-canvas { 
+            width: 100%; height: 320px; background: #fff; 
+            border: 1px solid #eee; border-radius: 8px; touch-action: none;
+        }
+
+        .controls { display: flex; flex-direction: column; gap: 15px; background: #f8f9fa; padding: 15px; border-radius: 10px; border: 1px solid var(--border-color); }
+        .control-group { display: flex; flex-direction: column; gap: 8px; }
+        label { font-weight: bold; font-size: 0.9rem; }
+        input[type="range"] { width: 100%; height: 12px; border-radius: 5px; outline: none; touch-action: none; }
+        .radio-group { display: flex; gap: 10px; }
+        .radio-item { flex: 1; text-align: center; }
+        .radio-item input { display: none; }
+        .radio-item label { display: block; padding: 10px; background: #eee; border-radius: 8px; cursor: pointer; transition: 0.2s; font-size: 0.9rem; }
+        .radio-item input:checked + label { background: var(--primary-blue); color: white; }
+
+        .button-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        button { padding: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.2s; font-size: 0.9rem; }
+        .btn-record { background: var(--primary-blue); color: white; }
+        .btn-reset { background: #6c757d; color: white; }
+        .graph-panel { min-height: 420px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>전류, 전압, 저항 사이의 관계 (옴의 법칙)</h1>
+    </header>
+
+    <div class="guide-container">
+        <div class="guide-box method-box">
+            <span class="guide-title">📘 실험 방법</span>
+            1. 전압 조절 슬라이더를 움직여 회로에 흐르는 전압을 바꿉니다.<br>
+            2. 니크롬선의 길이에 따라 전류계의 눈금이 어떻게 변하는지 봅니다.<br>
+            3. '데이터 기록하기' 버튼으로 측정 결과를 그래프에 남깁니다.
+        </div>
+        <div class="guide-box caution-box">
+            <span class="guide-title">⚠️ 주의사항</span>
+            1. 전자는 (-)극에서 (+)극으로 전선을 따라 이동합니다.<br>
+            2. 전압이 높을수록 전자의 이동 속도가 빨라짐을 관찰하세요.<br>
+            3. 니크롬선이 촘촘할수록(길이가 길수록) 저항이 커집니다.
+        </div>
+    </div>
+
+    <div class="main-layout">
+        <div class="panel">
+            <div class="display-container">
+                <div class="sensor-box v-box">
+                    <div class="sensor-label">전압계 (Voltmeter)</div>
+                    <div class="sensor-value" id="v-display">0.00 V</div>
+                </div>
+                <div class="sensor-box i-box">
+                    <div class="sensor-label">전류계 (Ammeter)</div>
+                    <div class="sensor-value" id="i-display">0 mA</div>
+                </div>
+            </div>
+
+            <canvas id="circuit-canvas"></canvas>
+
+            <div class="controls">
+                <div class="control-group">
+                    <label>전원 장치 전압 조절 (0V - 10V)</label>
+                    <input type="range" id="voltage-slider" min="0" max="10" step="0.1" value="0">
+                </div>
+                <div class="control-group">
+                    <label>니크롬선 선택</label>
+                    <div class="radio-group">
+                        <div class="radio-item">
+                            <input type="radio" name="resistance" id="res-short" value="10" checked>
+                            <label for="res-short">짧은 니크롬선</label>
+                        </div>
+                        <div class="radio-item">
+                            <input type="radio" name="resistance" id="res-long" value="25">
+                            <label for="res-long">긴 니크롬선</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button class="btn-record" id="record-btn">데이터 기록하기</button>
+                <button class="btn-reset" id="reset-btn">실험 초기화</button>
+            </div>
+        </div>
+
+        <div class="panel graph-panel">
+            <canvas id="graph-canvas"></canvas>
+        </div>
+    </div>
+</div>
+
+<div class="footer-info" style="margin-top: 20px; padding: 15px; text-align: center; font-size: 0.85rem; color: #666; border-top: 1px solid #eee;">
+    <div class="copyright">Copyright © 2026 LEE HANEUL. All Rights Reserved.</div>
+    <div class="version">전류, 전압, 저항 사이의 관계 가상 실험 v1.7.5 (2026-09-09)</div>
+</div>
+
+<script>
+    let voltage = 0;
+    let resistance = 10;
+    let current = 0;
+    let electronOffset = 0;
+    let dpr = window.devicePixelRatio || 1;
+
+    const vSlider = document.getElementById('voltage-slider');
+    const vDisplay = document.getElementById('v-display');
+    const iDisplay = document.getElementById('i-display');
+    const circuitCanvas = document.getElementById('circuit-canvas');
+    const ctx = circuitCanvas.getContext('2d');
+    const resRadios = document.getElementsByName('resistance');
+
+    // Chart.js 폰트 선명도 설정 및 전역 폰트 변경
+    Chart.defaults.font.family = "'Pretendard', sans-serif";
+    Chart.defaults.font.size = 13;
+    Chart.defaults.devicePixelRatio = dpr;
+
+    const chart = new Chart(document.getElementById('graph-canvas'), {
+        type: 'scatter',
+        data: {
+            datasets: [
+                { label: '짧은 니크롬선', data: [], backgroundColor: '#007bff', borderColor: '#007bff', showLine: true, tension: 0.1 },
+                { label: '긴 니크롬선', data: [], backgroundColor: '#dc3545', borderColor: '#dc3545', showLine: true, tension: 0.1 }
+            ]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            animation: { duration: 400 },
+            scales: {
+                x: { 
+                    title: { display: true, text: '전압 (V)', font: { weight: 'bold', size: 14 } }, 
+                    min: 0, max: 10,
+                    grid: { color: 'rgba(0,0,0,0.05)' }
+                },
+                y: { 
+                    title: { display: true, text: '전류 (mA)', font: { weight: 'bold', size: 14 } }, 
+                    min: 0, max: 1000,
+                    grid: { color: 'rgba(0,0,0,0.05)' }
+                }
+            },
+            plugins: {
+                legend: { labels: { usePointStyle: true, font: { size: 12 } } }
+            }
+        }
+    });
+
+    function getSmoothCoilX(y, startY, endY, turns, width, baseLineX) {
+        if (y < startY || y > endY) return baseLineX;
+        const totalH = endY - startY;
+        const relY = (y - startY) / totalH;
+        return baseLineX + Math.sin(relY * Math.PI * 2 * turns) * width;
+    }
+
+    function drawMeter(x, y, label, color) {
+        ctx.beginPath(); ctx.arc(x, y, 18, 0, Math.PI * 2);
+        ctx.fillStyle = "#fff"; ctx.fill(); ctx.strokeStyle = color; ctx.lineWidth = 3; ctx.stroke();
+        ctx.fillStyle = color; 
+        ctx.font = "bold 16px 'Pretendard', sans-serif"; // 폰트 변경
+        ctx.textAlign = "center"; ctx.textBaseline = "middle";
+        ctx.fillText(label, x, y);
+    }
+
+    function getCircuitPoint(distance, params) {
+        const { left, top, w, h, centerY, turns, resWidth } = params;
+        const totalLen = (w * 2) + (h * 2);
+        let d = distance % totalLen;
+        if (d < 0) d += totalLen;
+
+        if (d < h) return { x: left, y: (top + h) - d };
+        d -= h;
+        if (d < w) return { x: left + d, y: top };
+        d -= w;
+        if (d < h) {
+            const currentY = top + d;
+            const tx = getSmoothCoilX(currentY, centerY - 40, centerY + 40, turns, resWidth, left + w);
+            return { x: tx, y: currentY };
+        }
+        d -= h;
+        return { x: (left + w) - d, y: top + h };
+    }
+
+    function drawCircuit() {
+        ctx.clearRect(0, 0, circuitCanvas.width / dpr, circuitCanvas.height / dpr);
+        
+        const logicalWidth = circuitCanvas.width / dpr;
+        const logicalHeight = circuitCanvas.height / dpr;
+        
+        const centerX = logicalWidth / 2;
+        const centerY = logicalHeight / 2;
+        const w = 240, h = 180;
+        const left = centerX - w/2, top = centerY - h/2 + 20;
+        const turns = (resistance === 10) ? 5 : 12;
+        const resWidth = 10;
+
+        const pathParams = { left, top, w, h, centerY, turns, resWidth };
+
+        // 1. 전선 그리기
+        ctx.strokeStyle = "#333"; ctx.lineWidth = 3; ctx.lineJoin = "round";
+        ctx.beginPath();
+        ctx.moveTo(left, centerY - 15); ctx.lineTo(left, top); ctx.lineTo(left + w, top);
+        ctx.lineTo(left + w, centerY - 40); ctx.stroke();
+
+        ctx.beginPath();
+        ctx.moveTo(left + w, centerY + 40); ctx.lineTo(left + w, top + h);
+        ctx.lineTo(left, top + h); ctx.lineTo(left, centerY + 45); ctx.stroke();
+
+        // 2. 니크롬선 그리기
+        ctx.strokeStyle = (resistance === 10) ? "#666" : "#b03a2e"; ctx.lineWidth = 4;
+        ctx.beginPath();
+        ctx.moveTo(left + w, centerY - 40);
+        for (let y = centerY - 40; y <= centerY + 40; y += 0.5) {
+            ctx.lineTo(getSmoothCoilX(y, centerY - 40, centerY + 40, turns, resWidth, left + w), y);
+        }
+        ctx.stroke();
+
+        // 3. 부가 장치
+        ctx.strokeStyle = "#bbb"; ctx.lineWidth = 2; ctx.beginPath();
+        ctx.moveTo(left + w, centerY - 50); ctx.lineTo(left + w + 45, centerY - 50);
+        ctx.lineTo(left + w + 45, centerY + 50); ctx.lineTo(left + w, centerY + 50); ctx.stroke();
+        drawMeter(left + w + 45, centerY, "V", "#f39c12");
+
+        ctx.fillStyle = "#fff"; ctx.strokeStyle = "#333"; ctx.lineWidth = 2;
+        ctx.fillRect(left - 17, centerY - 15, 34, 60); ctx.strokeRect(left - 17, centerY - 15, 34, 60);
+        ctx.fillStyle = "#333"; ctx.textAlign = "center"; 
+        ctx.font = "bold 18px 'Pretendard', sans-serif";
+        ctx.fillText("+", left, centerY + 5); ctx.fillText("-", left, centerY + 35);
+        ctx.font = "bold 11px 'Pretendard', sans-serif"; ctx.fillText("Power", left, centerY - 24);
+
+        drawMeter(centerX, top + h, "A", "#27ae60");
+
+        // 4. 전자 애니메이션
+        if (current > 0) {
+            const speed = (current / 1000) * 10;
+            electronOffset += speed;
+            const totalLen = (w * 2) + (h * 2);
+            const electronCount = 18;
+            
+            ctx.fillStyle = "#FFEB3B";
+            for (let i = 0; i < electronCount; i++) {
+                const d = (electronOffset + (i * (totalLen / electronCount))) % totalLen;
+                const pos = getCircuitPoint(d, pathParams);
+                if (pos.x === left && pos.y > centerY - 15 && pos.y < centerY + 45) continue;
+
+                ctx.beginPath();
+                ctx.arc(pos.x, pos.y, 5, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.strokeStyle = "#FBC02D"; ctx.lineWidth = 1; ctx.stroke();
+            }
+        }
+
+        // 니크롬선 종류 표시 글자 선명하게
+        ctx.fillStyle = "#333"; 
+        ctx.textAlign = "right"; 
+        ctx.font = "bold 13px 'Pretendard', sans-serif";
+        ctx.fillText(resistance === 10 ? "짧은 니크롬선" : "긴 니크롬선", left + w - 15, centerY + 65);
+
+        requestAnimationFrame(drawCircuit);
+    }
+
+    function updatePhysics() {
+        voltage = parseFloat(vSlider.value);
+        resistance = parseFloat(document.querySelector('input[name="resistance"]:checked').value);
+        current = (voltage / resistance) * 1000;
+        vDisplay.innerText = `${voltage.toFixed(2)} V`;
+        iDisplay.innerText = `${Math.round(current)} mA`;
+    }
+
+    // 캔버스 초기화 (DPR 대응)
+    function initCanvas() {
+        dpr = window.devicePixelRatio || 1;
+        const rect = circuitCanvas.getBoundingClientRect();
+        
+        // 실제 픽셀 수 설정
+        circuitCanvas.width = rect.width * dpr;
+        circuitCanvas.height = rect.height * dpr;
+        
+        // CSS 크기 고정
+        circuitCanvas.style.width = rect.width + 'px';
+        circuitCanvas.style.height = rect.height + 'px';
+        
+        // 모든 그리기 작업에 스케일 적용
+        ctx.scale(dpr, dpr);
+        updatePhysics();
+    }
+
+    vSlider.addEventListener('input', updatePhysics);
+    resRadios.forEach(r => r.addEventListener('change', updatePhysics));
+    
+    document.getElementById('record-btn').addEventListener('click', () => {
+        const point = { x: voltage, y: Math.round(current) };
+        const dsIndex = (resistance === 10) ? 0 : 1;
+        chart.data.datasets[dsIndex].data.push(point);
+        chart.data.datasets[dsIndex].data.sort((a,b) => a.x - b.x);
+        chart.update();
+    });
+
+    document.getElementById('reset-btn').addEventListener('click', () => {
+        vSlider.value = 0; 
+        chart.data.datasets[0].data = []; 
+        chart.data.datasets[1].data = []; 
+        chart.update(); 
+        updatePhysics();
+    });
+
+    // 화면 크기 변경 시 대응
+    window.addEventListener('resize', initCanvas);
+
+    // 실행
+    initCanvas();
+    drawCircuit();
+</script>
+</body>
+</html>
