@@ -23,15 +23,13 @@
             box-sizing: border-box; 
             -webkit-tap-highlight-color: transparent; 
             user-select: none;
-            /* 텍스트 렌더링 최적화 */
             text-rendering: optimizeLegibility;
             -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
         }
         
         body {
-            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            margin: 0; padding: 10px; background-color: var(--bg-color); color: var(--text-dark); overflow-x: hidden;
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+            margin: 0; padding: 10px; background-color: var(--bg-color); color: var(--text-dark);
         }
 
         .container { max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; gap: 15px; }
@@ -55,22 +53,79 @@
         .display-container { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .sensor-box {
             background: #222; padding: 12px; border-radius: 8px; text-align: center;
-            font-family: 'Consolas', 'Monaco', monospace; box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+            font-family: 'Consolas', monospace; box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
         }
         .v-box { color: var(--voltmeter-color); border: 1px solid var(--voltmeter-color); }
         .i-box { color: var(--ammeter-color); border: 1px solid var(--ammeter-color); }
         .sensor-label { font-size: 0.75rem; opacity: 0.8; margin-bottom: 5px; }
         .sensor-value { font-size: 1.4rem; font-weight: bold; }
 
-        #circuit-canvas { 
-            width: 100%; height: 320px; background: #fff; 
-            border: 1px solid #eee; border-radius: 8px; touch-action: none;
+        #circuit-canvas { width: 100%; height: 320px; background: #fff; border: 1px solid #eee; border-radius: 8px; }
+
+        /* --- 슬라이더 눈금 정렬 수정 부분 --- */
+        .controls { background: #f8f9fa; padding: 15px; border-radius: 10px; border: 1px solid var(--border-color); display: flex; flex-direction: column; gap: 20px; }
+        .control-group { display: flex; flex-direction: column; gap: 10px; }
+        label { font-weight: bold; font-size: 0.9rem; color: #444; }
+
+        .slider-wrapper { position: relative; width: 100%; padding: 10px 0; }
+        
+        input[type="range"] { 
+            -webkit-appearance: none;
+            width: 100%; 
+            height: 8px; 
+            background: #ddd; 
+            border-radius: 4px; 
+            outline: none;
+            margin: 0;
+            cursor: pointer;
         }
 
-        .controls { display: flex; flex-direction: column; gap: 15px; background: #f8f9fa; padding: 15px; border-radius: 10px; border: 1px solid var(--border-color); }
-        .control-group { display: flex; flex-direction: column; gap: 8px; }
-        label { font-weight: bold; font-size: 0.9rem; }
-        input[type="range"] { width: 100%; height: 12px; border-radius: 5px; outline: none; touch-action: none; }
+        /* 슬라이더 단추(Thumb) 크기 고정: 가로 20px */
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            background: var(--primary-blue);
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+            transition: 0.1s;
+        }
+        input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            background: var(--primary-blue);
+            border-radius: 50%;
+            cursor: pointer;
+            border: none;
+        }
+
+        /* 눈금 컨테이너: 좌우 패딩을 단추 반지름(10px)만큼 주어 중심을 맞춤 */
+        .tick-marks {
+            display: flex;
+            justify-content: space-between;
+            padding: 0 10px; 
+            margin-top: 10px;
+            pointer-events: none;
+        }
+        .tick-marks span {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 0.75rem;
+            color: #777;
+            width: 0; /* 텍스트가 0을 중심으로 퍼지게 함 */
+            white-space: nowrap;
+        }
+        .tick-marks span::before {
+            content: "";
+            width: 1px;
+            height: 5px;
+            background: #bbb;
+            margin-bottom: 4px;
+        }
+        /* ---------------------------------- */
+
         .radio-group { display: flex; gap: 10px; }
         .radio-item { flex: 1; text-align: center; }
         .radio-item input { display: none; }
@@ -78,7 +133,7 @@
         .radio-item input:checked + label { background: var(--primary-blue); color: white; }
 
         .button-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        button { padding: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.2s; font-size: 0.9rem; }
+        button { padding: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 0.9rem; }
         .btn-record { background: var(--primary-blue); color: white; }
         .btn-reset { background: #6c757d; color: white; }
         .graph-panel { min-height: 420px; }
@@ -124,7 +179,12 @@
             <div class="controls">
                 <div class="control-group">
                     <label>전원 장치 전압 조절 (0V - 10V)</label>
-                    <input type="range" id="voltage-slider" min="0" max="10" step="0.1" value="0">
+                    <div class="slider-wrapper">
+                        <input type="range" id="voltage-slider" min="0" max="10" step="0.1" value="0">
+                        <div class="tick-marks">
+                            <span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span>
+                        </div>
+                    </div>
                 </div>
                 <div class="control-group">
                     <label>니크롬선 선택</label>
@@ -155,7 +215,7 @@
 
 <div class="footer-info" style="margin-top: 20px; padding: 15px; text-align: center; font-size: 0.85rem; color: #666; border-top: 1px solid #eee;">
     <div class="copyright">Copyright © 2026 LEE HANEUL. All Rights Reserved.</div>
-    <div class="version">전류, 전압, 저항 사이의 관계 가상 실험 v1.7.5 (2026-09-09)</div>
+    <div class="version">전류, 전압, 저항 사이의 관계 가상 실험 v1.8.2 (2026-09-09)</div>
 </div>
 
 <script>
@@ -172,9 +232,7 @@
     const ctx = circuitCanvas.getContext('2d');
     const resRadios = document.getElementsByName('resistance');
 
-    // Chart.js 폰트 선명도 설정 및 전역 폰트 변경
     Chart.defaults.font.family = "'Pretendard', sans-serif";
-    Chart.defaults.font.size = 13;
     Chart.defaults.devicePixelRatio = dpr;
 
     const chart = new Chart(document.getElementById('graph-canvas'), {
@@ -187,21 +245,9 @@
         },
         options: {
             responsive: true, maintainAspectRatio: false,
-            animation: { duration: 400 },
             scales: {
-                x: { 
-                    title: { display: true, text: '전압 (V)', font: { weight: 'bold', size: 14 } }, 
-                    min: 0, max: 10,
-                    grid: { color: 'rgba(0,0,0,0.05)' }
-                },
-                y: { 
-                    title: { display: true, text: '전류 (mA)', font: { weight: 'bold', size: 14 } }, 
-                    min: 0, max: 1000,
-                    grid: { color: 'rgba(0,0,0,0.05)' }
-                }
-            },
-            plugins: {
-                legend: { labels: { usePointStyle: true, font: { size: 12 } } }
+                x: { title: { display: true, text: '전압 (V)', font: { weight: 'bold' } }, min: 0, max: 10 },
+                y: { title: { display: true, text: '전류 (mA)', font: { weight: 'bold' } }, min: 0, max: 1000 }
             }
         }
     });
@@ -216,9 +262,7 @@
     function drawMeter(x, y, label, color) {
         ctx.beginPath(); ctx.arc(x, y, 18, 0, Math.PI * 2);
         ctx.fillStyle = "#fff"; ctx.fill(); ctx.strokeStyle = color; ctx.lineWidth = 3; ctx.stroke();
-        ctx.fillStyle = color; 
-        ctx.font = "bold 16px 'Pretendard', sans-serif"; // 폰트 변경
-        ctx.textAlign = "center"; ctx.textBaseline = "middle";
+        ctx.fillStyle = color; ctx.font = "bold 16px 'Pretendard'"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
         ctx.fillText(label, x, y);
     }
 
@@ -227,7 +271,6 @@
         const totalLen = (w * 2) + (h * 2);
         let d = distance % totalLen;
         if (d < 0) d += totalLen;
-
         if (d < h) return { x: left, y: (top + h) - d };
         d -= h;
         if (d < w) return { x: left + d, y: top };
@@ -243,30 +286,23 @@
 
     function drawCircuit() {
         ctx.clearRect(0, 0, circuitCanvas.width / dpr, circuitCanvas.height / dpr);
-        
-        const logicalWidth = circuitCanvas.width / dpr;
-        const logicalHeight = circuitCanvas.height / dpr;
-        
-        const centerX = logicalWidth / 2;
-        const centerY = logicalHeight / 2;
+        const lw = circuitCanvas.width / dpr;
+        const lh = circuitCanvas.height / dpr;
+        const centerX = lw / 2, centerY = lh / 2;
         const w = 240, h = 180;
         const left = centerX - w/2, top = centerY - h/2 + 20;
         const turns = (resistance === 10) ? 5 : 12;
         const resWidth = 10;
-
         const pathParams = { left, top, w, h, centerY, turns, resWidth };
 
-        // 1. 전선 그리기
         ctx.strokeStyle = "#333"; ctx.lineWidth = 3; ctx.lineJoin = "round";
         ctx.beginPath();
         ctx.moveTo(left, centerY - 15); ctx.lineTo(left, top); ctx.lineTo(left + w, top);
         ctx.lineTo(left + w, centerY - 40); ctx.stroke();
-
         ctx.beginPath();
         ctx.moveTo(left + w, centerY + 40); ctx.lineTo(left + w, top + h);
         ctx.lineTo(left, top + h); ctx.lineTo(left, centerY + 45); ctx.stroke();
 
-        // 2. 니크롬선 그리기
         ctx.strokeStyle = (resistance === 10) ? "#666" : "#b03a2e"; ctx.lineWidth = 4;
         ctx.beginPath();
         ctx.moveTo(left + w, centerY - 40);
@@ -275,7 +311,6 @@
         }
         ctx.stroke();
 
-        // 3. 부가 장치
         ctx.strokeStyle = "#bbb"; ctx.lineWidth = 2; ctx.beginPath();
         ctx.moveTo(left + w, centerY - 50); ctx.lineTo(left + w + 45, centerY - 50);
         ctx.lineTo(left + w + 45, centerY + 50); ctx.lineTo(left + w, centerY + 50); ctx.stroke();
@@ -284,36 +319,24 @@
         ctx.fillStyle = "#fff"; ctx.strokeStyle = "#333"; ctx.lineWidth = 2;
         ctx.fillRect(left - 17, centerY - 15, 34, 60); ctx.strokeRect(left - 17, centerY - 15, 34, 60);
         ctx.fillStyle = "#333"; ctx.textAlign = "center"; 
-        ctx.font = "bold 18px 'Pretendard', sans-serif";
-        ctx.fillText("+", left, centerY + 5); ctx.fillText("-", left, centerY + 35);
-        ctx.font = "bold 11px 'Pretendard', sans-serif"; ctx.fillText("Power", left, centerY - 24);
+        ctx.font = "bold 18px 'Pretendard'"; ctx.fillText("+", left, centerY + 5); ctx.fillText("-", left, centerY + 35);
+        ctx.font = "bold 10px 'Pretendard'"; ctx.fillText("Power", left, centerY - 24);
 
         drawMeter(centerX, top + h, "A", "#27ae60");
 
-        // 4. 전자 애니메이션
         if (current > 0) {
-            const speed = (current / 1000) * 10;
-            electronOffset += speed;
+            electronOffset += (current / 1000) * 10;
             const totalLen = (w * 2) + (h * 2);
-            const electronCount = 18;
-            
             ctx.fillStyle = "#FFEB3B";
-            for (let i = 0; i < electronCount; i++) {
-                const d = (electronOffset + (i * (totalLen / electronCount))) % totalLen;
+            for (let i = 0; i < 18; i++) {
+                const d = (electronOffset + (i * (totalLen / 18))) % totalLen;
                 const pos = getCircuitPoint(d, pathParams);
                 if (pos.x === left && pos.y > centerY - 15 && pos.y < centerY + 45) continue;
-
-                ctx.beginPath();
-                ctx.arc(pos.x, pos.y, 5, 0, Math.PI * 2);
-                ctx.fill();
-                ctx.strokeStyle = "#FBC02D"; ctx.lineWidth = 1; ctx.stroke();
+                ctx.beginPath(); ctx.arc(pos.x, pos.y, 5, 0, Math.PI * 2); ctx.fill();
             }
         }
 
-        // 니크롬선 종류 표시 글자 선명하게
-        ctx.fillStyle = "#333"; 
-        ctx.textAlign = "right"; 
-        ctx.font = "bold 13px 'Pretendard', sans-serif";
+        ctx.fillStyle = "#333"; ctx.textAlign = "right"; ctx.font = "bold 13px 'Pretendard'";
         ctx.fillText(resistance === 10 ? "짧은 니크롬선" : "긴 니크롬선", left + w - 15, centerY + 65);
 
         requestAnimationFrame(drawCircuit);
@@ -327,49 +350,30 @@
         iDisplay.innerText = `${Math.round(current)} mA`;
     }
 
-    // 캔버스 초기화 (DPR 대응)
     function initCanvas() {
         dpr = window.devicePixelRatio || 1;
         const rect = circuitCanvas.getBoundingClientRect();
-        
-        // 실제 픽셀 수 설정
         circuitCanvas.width = rect.width * dpr;
         circuitCanvas.height = rect.height * dpr;
-        
-        // CSS 크기 고정
         circuitCanvas.style.width = rect.width + 'px';
         circuitCanvas.style.height = rect.height + 'px';
-        
-        // 모든 그리기 작업에 스케일 적용
         ctx.scale(dpr, dpr);
         updatePhysics();
     }
 
     vSlider.addEventListener('input', updatePhysics);
     resRadios.forEach(r => r.addEventListener('change', updatePhysics));
-    
     document.getElementById('record-btn').addEventListener('click', () => {
-        const point = { x: voltage, y: Math.round(current) };
-        const dsIndex = (resistance === 10) ? 0 : 1;
-        chart.data.datasets[dsIndex].data.push(point);
-        chart.data.datasets[dsIndex].data.sort((a,b) => a.x - b.x);
+        chart.data.datasets[resistance === 10 ? 0 : 1].data.push({ x: voltage, y: Math.round(current) });
+        chart.data.datasets.forEach(ds => ds.data.sort((a,b) => a.x - b.x));
         chart.update();
     });
-
     document.getElementById('reset-btn').addEventListener('click', () => {
-        vSlider.value = 0; 
-        chart.data.datasets[0].data = []; 
-        chart.data.datasets[1].data = []; 
-        chart.update(); 
-        updatePhysics();
+        vSlider.value = 0; chart.data.datasets.forEach(ds => ds.data = []); chart.update(); updatePhysics();
     });
 
-    // 화면 크기 변경 시 대응
     window.addEventListener('resize', initCanvas);
-
-    // 실행
-    initCanvas();
-    drawCircuit();
+    initCanvas(); drawCircuit();
 </script>
 </body>
 </html>
