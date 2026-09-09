@@ -3,13 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>정전기 유도 가상 실험 (원통형 모델)</title>
+    <title>정전기 유도 가상 실험</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
     <style>
         :root {
             --rod-plus: #ef4444;
             --rod-minus: #3b82f6;
             --bg-color: #f8fafc;
+            --primary-dark: #1e293b;
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -19,19 +20,44 @@
             font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             background-color: var(--bg-color);
             overflow: hidden;
-            /* touch-action: none; 제거: 버튼 클릭을 방해하지 않도록 함 */
             display: flex; flex-direction: column; height: 100vh;
         }
 
+        /* [상단] 실험 제목 */
+        #header {
+            background: white;
+            padding: 20px 10px;
+            text-align: center;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        #header h1 {
+            margin: 0;
+            font-size: 22px;
+            color: var(--primary-dark);
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        /* [중앙] 캔버스 영역 */
+        #canvas-wrapper { 
+            flex: 1; 
+            position: relative; 
+            width: 100%; 
+            touch-action: none;
+        }
+
+        /* [하단] 컨트롤 버튼 */
         #controls {
-            background: white; padding: 15px;
-            display: flex; justify-content: center; gap: 15px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            z-index: 100; /* 버튼이 항상 최상단에 오도록 */
+            background: white; 
+            padding: 15px;
+            display: flex; justify-content: center; gap: 12px;
+            border-top: 1px solid #e2e8f0;
+            z-index: 100;
         }
 
         button {
-            padding: 12px 20px; font-size: 15px; font-weight: bold;
+            padding: 12px 18px; font-size: 15px; font-weight: bold;
             border: 2px solid transparent; border-radius: 12px;
             cursor: pointer; transition: all 0.2s; color: white;
             -webkit-appearance: none;
@@ -44,14 +70,7 @@
         button:active { transform: scale(0.95); }
         .selected { border-color: #000; box-shadow: 0 0 0 4px rgba(0,0,0,0.1); }
 
-        #canvas-wrapper { 
-            flex: 1; 
-            position: relative; 
-            width: 100%; 
-            touch-action: none; /* 캔버스 영역 내에서만 브라우저 기본 동작 차단 */
-        }
-
-        /* 안내 박스 레이아웃 및 텍스트 정렬 */
+        /* 안내 박스 설정 */
         .info-container {
             position: absolute; top: 20px; left: 20px;
             display: flex; flex-direction: column; gap: 12px;
@@ -69,58 +88,54 @@
         .info-box.notice { border-left: 6px solid #f59e0b; }
 
         .info-box h3 { 
-            margin: 0 0 12px 0; font-size: 16px; color: #1e293b;
+            margin: 0 0 10px 0; font-size: 16px; color: #1e293b;
             display: flex; align-items: center; gap: 8px;
             border-bottom: 1px solid #e2e8f0; padding-bottom: 8px;
         }
 
-        .info-box ul { 
-            margin: 0; padding: 0; list-style: none; 
-        }
-
+        .info-box ul { margin: 0; padding: 0; list-style: none; }
         .info-box li { 
-            font-size: 13.5px; line-height: 1.65; color: #475569;
-            margin-bottom: 8px; position: relative; padding-left: 18px;
+            font-size: 13px; line-height: 1.6; color: #475569;
+            margin-bottom: 6px; position: relative; padding-left: 18px;
             text-align: left; word-break: keep-all;
         }
-
-        .info-box li:last-child { margin-bottom: 0; }
 
         .info-box li::before {
             content: "•"; position: absolute; left: 0; color: #94a3b8; font-weight: bold;
         }
 
-        .info-box li b { color: #1e293b; font-weight: 700; }
+        /* [최하단] 푸터 */
+        .footer-info {
+            padding: 12px; text-align: center; font-size: 0.8rem; 
+            color: #888; background: #fff;
+            border-top: 1px solid #f1f5f9;
+        }
 
         @media (max-width: 768px) {
+            #header h1 { font-size: 18px; }
             .info-box { width: 280px; padding: 15px 18px; }
-            .info-box h3 { font-size: 14px; margin-bottom: 8px; }
-            .info-box li { font-size: 12px; line-height: 1.5; margin-bottom: 5px; }
+            button { padding: 10px 14px; font-size: 13px; }
         }
     </style>
 </head>
 <body>
 
-<div id="controls">
-    <button id="plusRod" class="btn-plus">＋ 대전체</button>
-    <button id="minusRod" class="btn-minus selected">－ 대전체</button>
-    <button id="reset" class="btn-reset">초기화</button>
+<div id="header">
+    <h1>정전기 유도 가상 실험</h1>
 </div>
 
 <div id="canvas-wrapper">
     <div class="info-container">
-        <!-- 실험 방법 (원래 문구 복구) -->
         <div class="info-box method">
             <h3>🔍 실험 방법</h3>
             <ul>
-                <li>상단 버튼을 클릭하여 <b>대전체의 종류(+, -)</b>를 선택합니다.</li>
+                <li>하단 버튼을 클릭하여 <b>대전체의 종류(+, -)</b>를 선택합니다.</li>
                 <li>오른쪽 대전체를 드래그하여 <b>금속 캔 가까이</b> 이동시킵니다.</li>
                 <li>대전체 전하에 따른 <b>자유 전자의 이동 방향</b>을 관찰합니다.</li>
                 <li>캔 양 끝의 <b>유도 전하 부호</b>와 <b>인력 화살표</b>를 확인합니다.</li>
             </ul>
         </div>
 
-        <!-- 주의 사항 (원래 문구 복구) -->
         <div class="info-box notice">
             <h3>💡 주의 사항</h3>
             <ul>
@@ -133,10 +148,15 @@
     </div>
 </div>
 
-<div class="footer-info" style="margin-top: 0; padding: 15px; text-align: center; font-size: 0.85rem; color: #666; border-top: 1px solid #eee; background: #fff;">
+<div id="controls">
+    <button id="plusRod" class="btn-plus">＋ 대전체</button>
+    <button id="minusRod" class="btn-minus selected">－ 대전체</button>
+    <button id="reset" class="btn-reset">초기화</button>
+</div>
+
+<div class="footer-info">
   <div class="copyright">Copyright © 2026 LEE HANEUL. All Rights Reserved.</div>
-  <div class="version">정전기 유도 가상 실험 v1.19 (2026-09-09)</div>
-  <div>본 프로그램은 아이패드 및 태블릿 환경에서의 터치 조작을 지원합니다.</div>
+  <div class="version">정전기 유도 가상 실험 v1.24 (2026-09-09)</div>
 </div>
 
 <script>
@@ -155,7 +175,6 @@
         canvas.parent('canvas-wrapper');
         initSimulation();
 
-        // 버튼 이벤트 바인딩 (태블릿 호환성 강화)
         document.getElementById('plusRod').onclick = (e) => { rodType = 1; updateUI(); };
         document.getElementById('minusRod').onclick = (e) => { rodType = -1; updateUI(); };
         document.getElementById('reset').onclick = (e) => initSimulation();
@@ -193,7 +212,7 @@
         let canEdgeX = can.x + CAN_W / 2;
         let distance = rodEdgeX - canEdgeX;
 
-        // --- 물리 로직 ---
+        // 물리 로직
         particles.forEach(p => {
             let forceEffect = map(distance, 0, 500, 70, 0, true);
             let targetEx = (p.nx + NEUTRAL_OFFSET) + (rodType * forceEffect);
@@ -213,36 +232,34 @@
             can.vx = 0;
         }
 
-        // --- 렌더링 (원래 디자인 복구) ---
-        
-        // 1. 금속 캔
+        // 1. 금속 캔 렌더링
         push();
         translate(can.x, can.y);
         
+        // 캔 몸체
         stroke(140);
         strokeWeight(2);
         fill(230, 235, 240);
         rect(-CAN_W/2, -CAN_H/2, CAN_W, CAN_H);
-        
         fill(210, 215, 220);
         ellipse(0, -CAN_H/2, CAN_W, 20);
         fill(180, 185, 190);
         ellipse(0, CAN_H/2, CAN_W, 20);
 
-        noStroke();
-        fill(255, 255, 255, 140);
-        rect(-CAN_W/2 + 20, -CAN_H/2 + 10, 25, CAN_H - 20);
-
+        // 유도 전하 부호 렌더링 (테두리 제거됨)
         let chargeOpacity = map(distance, 0, 450, 255, 0, true);
         if (chargeOpacity > 20) {
+            noStroke(); // 외곽선 제거
             textAlign(CENTER, CENTER);
             textSize(24);
             textStyle(BOLD);
             
+            // 오른쪽 부호
             let rightSign = rodType === -1 ? "(+)" : "(-)";
             fill(rodType === -1 ? 220 : 30, rodType === -1 ? 38 : 64, rodType === -1 ? 38 : 175, chargeOpacity);
             text(rightSign, CAN_W/2 + 40, 0);
             
+            // 왼쪽 부호
             let leftSign = rodType === -1 ? "(-)" : "(+)";
             fill(rodType === -1 ? 30 : 220, rodType === -1 ? 64 : 38, rodType === -1 ? 175 : 38, chargeOpacity);
             text(leftSign, -CAN_W/2 - 40, 0);
@@ -250,46 +267,33 @@
 
         // 입자 렌더링
         particles.forEach(p => {
-            stroke(220, 38, 38, 100);
-            fill(239, 68, 68, 140); 
+            stroke(220, 38, 38, 100); fill(239, 68, 68, 140); 
             ellipse(p.nx, p.ny, NUCLEUS_SIZE);
-            noStroke();
-            fill(255, 255, 255, 220);
-            textAlign(CENTER, CENTER);
-            textSize(15);
-            textStyle(BOLD);
-            text("+", p.nx, p.ny - 1);
+            noStroke(); fill(255, 220); textAlign(CENTER, CENTER);
+            textSize(15); textStyle(BOLD); text("+", p.nx, p.ny - 1);
         });
 
         particles.forEach(p => {
-            stroke(30, 64, 175, 100);
-            fill(59, 130, 246, 160); 
+            stroke(30, 64, 175, 100); fill(59, 130, 246, 160); 
             ellipse(p.ex, p.ey, ELECTRON_SIZE);
-            noStroke();
-            fill(255, 255, 255, 220);
-            textSize(12);
-            text("-", p.ex, p.ey - 1);
+            noStroke(); fill(255, 220);
+            textSize(12); text("-", p.ex, p.ey - 1);
         });
         
-        fill(80);
-        textStyle(NORMAL);
-        textSize(15);
+        noStroke();
+        fill(80); textStyle(NORMAL); textSize(15);
         text("금속 캔 (도체)", 0, CAN_H/2 + 45);
         pop();
 
-        // 2. 대전체
+        // 2. 대전체 렌더링
         push();
         translate(rod.x, rod.y);
         rectMode(CENTER);
         noStroke();
-        fill(0, 20); 
-        rect(8, 8, rod.w, rod.h, 12);
+        fill(0, 20); rect(8, 8, rod.w, rod.h, 12);
         fill(rodType === 1 ? '#ef4444' : '#3b82f6');
         rect(0, 0, rod.w, rod.h, 12);
-        fill(255);
-        textAlign(CENTER, CENTER);
-        textSize(28);
-        textStyle(BOLD);
+        fill(255); textAlign(CENTER, CENTER); textSize(28); textStyle(BOLD);
         let s = rodType === 1 ? "+" : "-";
         for(let i = -3; i <= 3; i++) text(s, 0, i * 42);
         pop();
@@ -305,23 +309,19 @@
 
     function drawArrow(x, y, d) {
         let len = map(d, 0, 450, 80, 20);
-        stroke(245, 158, 11);
-        strokeWeight(4);
+        stroke(245, 158, 11); strokeWeight(4);
         line(x, y, x + len, y);
         line(x + len, y, x + len - 10, y - 8);
         line(x + len, y, x + len - 10, y + 8);
     }
 
-    // --- 인터랙션 (태블릿 오류 수정 핵심 로직) ---
+    // 인터랙션 로직
     function handleStart(ex, ey) {
-        if (dist(ex, ey, rod.x, rod.y) < 220) {
-            rod.isDragging = true;
-        }
+        if (dist(ex, ey, rod.x, rod.y) < 220) rod.isDragging = true;
     }
     function handleMove(ex, ey) {
         if (rod.isDragging) {
-            rod.x = ex;
-            rod.x = constrain(rod.x, can.x + CAN_W/2 + 130, width - 30);
+            rod.x = constrain(ex, can.x + CAN_W/2 + 130, width - 30);
         }
     }
     function handleEnd() { rod.isDragging = false; }
@@ -331,19 +331,15 @@
     function mouseReleased() { handleEnd(); }
 
     function touchStarted() {
-        // 상단 버튼 영역(높이 약 80px) 밖에서만 p5.js 터치 제어권 획득
-        if (touches.length > 0 && touches[0].y > 80) {
+        let canvasTop = document.getElementById('canvas-wrapper').offsetTop;
+        let canvasBottom = canvasTop + document.getElementById('canvas-wrapper').offsetHeight;
+        if (touches.length > 0 && touches[0].y > canvasTop && touches[0].y < canvasBottom) {
             handleStart(touches[0].x, touches[0].y);
-            return false; // 브라우저 스크롤 방지
-        }
-        return true; // 버튼 클릭 허용
-    }
-    function touchMoved() {
-        if (rod.isDragging) {
-            handleMove(touches[0].x, touches[0].y);
             return false;
         }
+        return true;
     }
+    function touchMoved() { if (rod.isDragging) { handleMove(touches[0].x, touches[0].y); return false; } }
     function touchEnded() { handleEnd(); }
 
     function windowResized() {
