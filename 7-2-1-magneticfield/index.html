@@ -16,16 +16,37 @@
         .btn-power.on { background: #44bd32; box-shadow: 0 0 12px rgba(68, 189, 50, 0.6); }
         .btn-toggle { background: #e1b12c; color: white; }
         main { display: flex; flex: 1; overflow: hidden; }
-        aside { width: 340px; flex-shrink: 0; background: white; padding: 15px; border-right: 1px solid #ddd; display: flex; flex-direction: column; gap: 12px; box-shadow: 2px 0 5px rgba(0,0,0,0.05); overflow-y: auto; }
-        .info-box { background: #f9f9f9; padding: 10px 12px; border-radius: 10px; border-left: 5px solid var(--primary); font-size: 13px; line-height: 1.5; }
+        
+        /* === 사이드바 및 관찰 가이드 사이즈 조정 === */
+        aside { 
+            width: 240px; /* 기존 340px -> 240px로 축소 */
+            flex-shrink: 0; 
+            background: white; 
+            padding: 10px; /* 여백 축소 */
+            border-right: 1px solid #ddd; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 8px; /* 박스 간격 축소 */
+            box-shadow: 2px 0 5px rgba(0,0,0,0.05); 
+            overflow-y: auto; 
+        }
+        .info-box { 
+            background: #f9f9f9; 
+            padding: 8px 10px; /* 내부 패딩 축소 */
+            border-radius: 8px; 
+            border-left: 4px solid var(--primary); 
+            font-size: 11.5px; /* 폰트 크기 축소 */
+            line-height: 1.4; 
+        }
         .info-box.guide { border-left-color: #f39c12; background: #fffdf5; }
-        .info-box h3 { margin: 0 0 6px 0; font-size: 14px; }
-        .info-box ol { margin: 0; padding-left: 16px; }
-        .info-box li { margin-bottom: 4px; }
+        .info-box h3 { margin: 0 0 4px 0; font-size: 12.5px; } /* 제목 폰트 축소 */
+        .info-box ol { margin: 0; padding-left: 14px; }
+        .info-box li { margin-bottom: 3px; }
         .info-box li:last-child { margin-bottom: 0; }
-        .legend-list { list-style: none; padding-left: 0; margin: 8px 0 0 0; border-top: 1px dashed #e0e0e0; padding-top: 6px; }
-        .legend-list li { margin-bottom: 4px; }
+        .legend-list { list-style: none; padding-left: 0; margin: 6px 0 0 0; border-top: 1px dashed #e0e0e0; padding-top: 5px; }
+        .legend-list li { margin-bottom: 3px; }
         .legend-list li:last-child { margin-bottom: 0; }
+        
         .canvas-container { flex: 1; position: relative; background: #fff; display: flex; align-items: center; justify-content: center; }
         canvas { display: block; }
         footer { background: #eee; color: #666; padding: 8px; text-align: center; font-size: 11px; border-top: 1px solid #ddd; line-height: 1.5; }
