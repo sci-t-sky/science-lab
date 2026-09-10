@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>전류가 흐르는 도선 주위의 자기장 가상 실험실</title>
+    <style>
+        :root { --bg: #f8f9fa; --panel: #1e272e; --primary: #3498db; --current: #f1c40f; --warning: #e74c3c; }
+        body { font-family: 'Pretendard', sans-serif; background-color: #f0f2f5; margin: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+        header { background: var(--panel); color: white; padding: 12px; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.3); z-index: 100; }
+        header h1 { margin: 0; font-size: 20px; letter-spacing: 1px; }
+        .controls { background: #2f3640; padding: 10px; display: flex; justify-content: center; gap: 10px; border-bottom: 2px solid #111; }
+        button { padding: 10px 18px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.2s; font-size: 14px; }
+        .btn-mode { background: #dcdde1; color: #2f3640; }
+        .btn-mode.active { background: var(--primary); color: white; }
+        .btn-power { background: #718093; color: white; min-width: 100px; }
+        .btn-power.on { background: #44bd32; box-shadow: 0 0 12px rgba(68, 189, 50, 0.6); }
+        .btn-toggle { background: #e1b12c; color: white; }
+        main { display: flex; flex: 1; overflow: hidden; }
+        aside { width: 280px; background: white; padding: 20px; border-right: 1px solid #ddd; display: flex; flex-direction: column; gap: 15px; box-shadow: 2px 0 5px rgba(0,0,0,0.05); overflow-y: auto; }
+        .info-box { background: #f9f9f9; padding: 12px 15px; border-radius: 10px; border-left: 5px solid var(--primary); font-size: 13px; line-height: 1.6; }
+        .info-box.guide { border-left-color: #f39c12; background: #fffdf5; }
+        .info-box h3 { margin: 0 0 8px 0; font-size: 15px; }
+        .info-box ol { margin: 0; padding-left: 18px; }
+        .info-box li { margin-bottom: 6px; }
+        .info-box li:last-child { margin-bottom: 0; }
+        .legend-list { list-style: none; padding-left: 0; margin: 10px 0 0 0; border-top: 1px dashed #e0e0e0; padding-top: 8px; }
+        .legend-list li { margin-bottom: 5px; }
+        .legend-list li:last-child { margin-bottom: 0; }
+        .canvas-container { flex: 1; position: relative; background: #fff; display: flex; align-items: center; justify-content: center; }
+        canvas { display: block; }
+        footer { background: #eee; color: #666; padding: 10px; text-align: center; font-size: 11px; border-top: 1px solid #ddd; line-height: 1.6; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>전류가 흐르는 도선 주위의 자기장</h1>
+    </header>
+
+    <div class="controls">
+        <button class="btn-mode active" id="modeStraight" onclick="setMode('straight')">직선 도선</button>
+        <button class="btn-mode" id="modeLoop" onclick="setMode('loop')">원형 도선</button>
+        <button class="btn-mode" id="modeSolenoid" onclick="setMode('solenoid')">코일 (솔레노이드)</button>
+        <div style="width: 2px; background: #555; margin: 0 10px;"></div>
+        <button id="powerBtn" class="btn-power" onclick="togglePower()">전원 OFF</button>
+        <button class="btn-toggle" onclick="toggleDir()">전류 방향 전환</button>
+    </div>
+
+    <main>
+        <aside>
+            <div class="info-box">
+                <h3>🧪 실험 방법</h3>
+                <ol>
+                    <li><b>[전원 OFF]</b> 버튼을 눌러 전원을 켭니다 (전원 ON).</li>
+                    <li><b>[전류 방향 전환]</b> 버튼을 눌러 도선에 흐르는 전류의 방향을 바꿔봅니다.</li>
+                    <li>상단의 <b>[직선 도선]</b>, <b>[원형 도선]</b>, <b>[코일]</b> 버튼을 차례로 클릭하며 자기장의 모양과 방향 변화를 관찰합니다.</li>
+                </ol>
+            </div>
+
+            <div class="info-box guide">
+                <h3>💡 관찰 가이드 </h3>
+                <ol>
+                    <li><b>전원이 ON</b> 상태일 때만 자기력선 애니메이션과 나침반 정렬이 작동합니다.</li>
+                    <li>나침반의 <b>N극(빨간색 바늘)</b>이 가리키는 방향이 해당 위치의 자기장 방향입니다.</li>
+                    <li>화살표 방향은 자기력선의 방향입니다.</li>
+                </ol>
+                <ul class="legend-list">
+                    <li><span style="color:#e74c3c; font-weight:bold;">▲ :</span> 나침반 N극 (자기장 방향)</li>
+                    <li><span style="color:#d4ac0d; font-weight:bold;">➡ :</span> 전류의 방향(I)</li>
+                    <li><span style="color:#8c7ae6; font-weight:bold;">┈ :</span> 자기력선 및 방향 화살표</li>
+                </ul>
+            </div>
+        </aside>
+
+        <div class="canvas-container">
+            <canvas id="simCanvas" width="800" height="580"></canvas>
+        </div>
+    </main>
+
+    <footer>
+        © 2026. LEE HANEUL All rights reserved. [전류가 흐르는 도선 주위의 자기장 가상 실험실] [v1.0] (2026-09-10)<br>
+        본 프로그램은 아이패드 및 태블릿 환경에서의 터치 조작을 지원합니다.
+    </footer>
+
+<script>
+    const canvas = document.getElementById('simCanvas');
+    const ctx = canvas.getContext('2d');
+    
+    let mode = 'straight';
+    let isPowered = false;
+    let direction = -1; 
+    let dashOffset = 0;
+
+    const ISO_ANGLE = 0.55;
+
+    function setMode(m) {
+        mode = m;
+        document.getElementById('modeStraight').classList.toggle('active', m === 'straight');
+        document.getElementById('modeLoop').classList.toggle('active', m === 'loop');
+        document.getElementById('modeSolenoid').classList.toggle('active', m === 'solenoid');
+    }
+    function togglePower() {
+        isPowered = !isPowered;
+        document.getElementById('powerBtn').innerText = isPowered ? "전원 ON" : "전원 OFF";
+        document.getElementById('powerBtn').classList.toggle('on', isPowered);
+    }
+    function toggleDir() { direction *= -1; }
+
+    function project(x, y, z) {
+        const px = (x - z) * Math.cos(ISO_ANGLE) + 400;
+        const py = y + (x + z) * Math.sin(ISO_ANGLE) + 260;
+        return { x: px, y: py, depth: x + z + (y * -0.01) };
+    }
+
+    function getScreenAngle(x, z, dx, dz) {
+        const p1 = project(x, 0, z);
+        const p2 = project(x + dx, 0, z + dz);
+        return Math.atan2(p2.y - p1.y, p2.x - p1.x);
+    }
+
+    function render() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        if(isPowered) dashOffset += 0.8;
+
+        if (mode === 'solenoid') {
+            draw2DSolenoid();
+        } else {
+            draw3DScene();
+        }
+
+        drawReferenceCompass();
+
+        requestAnimationFrame(render);
+    }
+
+    function drawReferenceCompass() {
+        const cx = 765;
+        const cy = 35;
+        const r = 22;
+
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(cx, cy, r, 0, Math.PI * 2);
+        ctx.fillStyle = "#fff";
+        ctx.fill();
+        ctx.strokeStyle = "#95a5a6";
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+
+        ctx.save();
+        ctx.translate(cx, cy);
+        
+        ctx.beginPath();
+        ctx.moveTo(0, -(r - 3));
+        ctx.lineTo(5, 0);
+        ctx.lineTo(-5, 0);
+        ctx.closePath();
+        ctx.fillStyle = "#e74c3c";
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.moveTo(0, r - 3);
+        ctx.lineTo(5, 0);
+        ctx.lineTo(-5, 0);
+        ctx.closePath();
+        ctx.fillStyle = "#3498db";
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.arc(0, 0, 2.5, 0, Math.PI * 2);
+        ctx.fillStyle = "#2c3e50";
+        ctx.fill();
+
+        ctx.font = "bold 9px Arial";
+        ctx.fillStyle = "#e74c3c";
+        ctx.textAlign = "center";
+        ctx.fillText("N", 0, -r + 8);
+        ctx.fillStyle = "#3498db";
+        ctx.fillText("S", 0, r - 1);
+
+        ctx.restore();
+        ctx.restore();
+    }
+
+    function draw2DSolenoid() {
+        const cx = 400, cy = 290;
+        const width = 300, height = 120;
+        const turns = 6;
+        const stepX = width / (turns - 1);
+        const startX = cx - width/2;
+        const bulge = 25; 
+
+        const dirRight = direction === 1;
+        const flowDir = dirRight ? 1 : -1; 
+        const bAngleInternal = dirRight ? 0 : Math.PI; 
+
+        const topY = cy - height/2;
+        const bottomY = cy + height/2;
+        const lastX = startX + (turns - 1) * stepX;
+
+        ctx.strokeStyle = "rgba(160, 82, 45, 0.45)";
+        ctx.lineWidth = 7;
+        ctx.lineCap = "round";
+
+        for (let i = 0; i < turns - 1; i++) {
+            const x1 = startX + i * stepX;
+            const x2 = startX + (i + 1) * stepX;
+            ctx.beginPath();
+            ctx.moveTo(x1, topY);
+            ctx.bezierCurveTo(x1 - 18, topY + 25, x2 - 18, bottomY - 25, x2, bottomY);
+            ctx.stroke();
+        }
+
+        ctx.beginPath();
+        ctx.moveTo(startX, bottomY);
+        ctx.lineTo(startX, bottomY + 65);
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.moveTo(lastX, topY);
+        ctx.lineTo(lastX, topY - 65);
+        ctx.stroke();
+
+        const boardW = 610;
+        const boardH = 390;
+        ctx.save();
+        ctx.beginPath();
+        if (ctx.roundRect) {
+            ctx.roundRect(cx - boardW/2, cy - boardH/2, boardW, boardH, 14);
+        } else {
+            ctx.rect(cx - boardW/2, cy - boardH/2, boardW, boardH);
+        }
+        ctx.fillStyle = "rgba(220, 235, 255, 0.45)";
+        ctx.fill();
+        ctx.strokeStyle = "rgba(44, 62, 80, 0.35)";
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        for (let i = 0; i < turns; i++) {
+            const hx = startX + i * stepX;
+            ctx.beginPath();
+            ctx.ellipse(hx, topY, 8, 4, 0, 0, Math.PI*2);
+            ctx.fillStyle = "rgba(0,0,0,0.4)";
+            ctx.fill();
+
+            ctx.beginPath();
+            ctx.ellipse(hx, bottomY, 8, 4, 0, 0, Math.PI*2);
+            ctx.fillStyle = "rgba(0,0,0,0.4)";
+            ctx.fill();
+        }
+        ctx.restore();
+
+        if (isPowered) {
+            ctx.strokeStyle = "rgba(156, 136, 255, 0.85)";
+            ctx.lineWidth = 2;
+            ctx.setLineDash([8, 8]);
+
+            [-30, 0, 30].forEach(offsetY => {
+                ctx.lineDashOffset = -dashOffset * flowDir;
+                ctx.beginPath();
+                ctx.moveTo(cx - width/2 - 100, cy + offsetY);
+                ctx.lineTo(cx + width/2 + 100, cy + offsetY);
+                ctx.stroke();
+
+                const arrowX = flowDir === 1 ? cx + width/2 + 100 : cx - width/2 - 100;
+                drawMagneticArrowHead(arrowX, cy + offsetY, flowDir === 1 ? 0 : Math.PI);
+            });
+
+            [70, 110].forEach(rx => {
+                const rxTotal = width/2 + rx;
+
+                ctx.lineDashOffset = dashOffset * flowDir;
+                const upperRadiusY = 40 + rx * 0.3;
+                const upperCenterY = topY - 20;
+                ctx.beginPath();
+                ctx.ellipse(cx, upperCenterY, rxTotal, upperRadiusY, 0, Math.PI, 0);
+                ctx.stroke();
+
+                const upperArrowX = flowDir === 1 ? cx - rxTotal : cx + rxTotal;
+                drawMagneticArrowHead(upperArrowX, upperCenterY, Math.PI / 2);
+
+                ctx.lineDashOffset = -dashOffset * flowDir;
+                const lowerRadiusY = 40 + rx * 0.3;
+                const lowerCenterY = bottomY + 20;
+                ctx.beginPath();
+                ctx.ellipse(cx, lowerCenterY, rxTotal, lowerRadiusY, 0, 0, Math.PI);
+                ctx.stroke();
+
+                const lowerArrowX = flowDir === 1 ? cx - rxTotal : cx + rxTotal;
+                drawMagneticArrowHead(lowerArrowX, lowerCenterY, -Math.PI / 2);
+            });
+            ctx.setLineDash([]);
+        }
+
+        draw2DCompass(cx - 60, cy, bAngleInternal);
+        draw2DCompass(cx + 60, cy, bAngleInternal);
+
+        for (let i = 0; i < turns; i++) {
+            const x = startX + i * stepX;
+            ctx.beginPath();
+            ctx.ellipse(x, cy, bulge, height/2, 0, -Math.PI/2, Math.PI/2);
+            ctx.strokeStyle = "#cd7f32";
+            ctx.lineWidth = 10;
+            ctx.lineCap = "round";
+            ctx.stroke();
+
+            if (isPowered) {
+                draw2DArrow(x + bulge, cy, dirRight ? Math.PI/2 : -Math.PI/2);
+            }
+        }
+
+        ctx.font = "bold 18px Arial";
+        ctx.fillStyle = dirRight ? "blue" : "red";
+        ctx.fillText(dirRight ? "(-)" : "(+)", startX - 30, bottomY + 50);
+        ctx.fillStyle = dirRight ? "red" : "blue";
+        ctx.fillText(dirRight ? "(+)" : "(-)", lastX + 15, topY - 40);
+
+        const upperLineY = topY - 20 - (40 + 70*0.3);
+        const lowerLineY = bottomY + 20 + (40 + 70*0.3);
+
+        const bAngleExternal = bAngleInternal + Math.PI;
+        draw2DCompass(cx, upperLineY, bAngleExternal);
+        draw2DCompass(cx, lowerLineY, bAngleExternal);
+
+        draw2DCompass(cx - width/2 - 75, cy, bAngleInternal);
+        draw2DCompass(cx + width/2 + 75, cy, bAngleInternal);
+    }
+
+    function drawMagneticArrowHead(x, y, rad) {
+        ctx.save();
+        ctx.translate(x, y);
+        ctx.rotate(rad);
+        ctx.beginPath();
+        ctx.moveTo(8, 0);
+        ctx.lineTo(-6, -6);
+        ctx.lineTo(-6, 6);
+        ctx.closePath();
+        ctx.fillStyle = "rgba(156, 136, 255, 0.95)";
+        ctx.fill();
+        ctx.restore();
+    }
+
+    function draw2DCompass(x, y, targetAngle) {
+        const size = 18;
+        const angle = isPowered ? targetAngle : -Math.PI/2;
+        ctx.save();
+        ctx.translate(x, y);
+        ctx.beginPath(); ctx.arc(0, 0, size, 0, Math.PI*2);
+        ctx.fillStyle = "#fff"; ctx.fill();
+        ctx.strokeStyle = "#bbb"; ctx.lineWidth = 1.2; ctx.stroke();
+        ctx.rotate(angle);
+        ctx.beginPath(); ctx.moveTo(size-2, 0); ctx.lineTo(0, 7); ctx.lineTo(0, -7); ctx.closePath();
+        ctx.fillStyle = "#e74c3c"; ctx.fill(); 
+        ctx.beginPath(); ctx.moveTo(-(size-2), 0); ctx.lineTo(0, 7); ctx.lineTo(0, -7); ctx.closePath();
+        ctx.fillStyle = "#3498db"; ctx.fill(); 
+        ctx.restore();
+    }
+
+    function draw2DArrow(x, y, rad) {
+        ctx.save();
+        ctx.translate(x, y);
+        ctx.rotate(rad);
+        ctx.beginPath(); ctx.moveTo(-8, 0); ctx.lineTo(8, 0);
+        ctx.strokeStyle = "#f1c40f"; ctx.lineWidth = 4; ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(8, 0); ctx.lineTo(2, -5); ctx.lineTo(14, 0); ctx.lineTo(2, 5); ctx.closePath();
+        ctx.fillStyle = "#f1c40f"; ctx.fill();
+        ctx.restore();
+    }
+
+    function draw3DScene() {
+        let queue = [];
+        let topLayer = []; 
+
+        queue.push({ depth: -5000, draw: () => {
+            ctx.setLineDash([]);
+            ctx.beginPath();
+            const p1 = project(-220, 0, -170); const p2 = project(220, 0, -170);
+            const p3 = project(220, 0, 170); const p4 = project(-220, 0, 170);
+            ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y); ctx.lineTo(p3.x, p3.y); ctx.lineTo(p4.x, p4.y);
+            ctx.closePath();
+            ctx.fillStyle = "rgba(220, 235, 255, 0.4)"; ctx.fill();
+            ctx.strokeStyle = "rgba(44, 62, 80, 0.3)"; ctx.lineWidth = 2; ctx.stroke();
+        }});
+
+        if (mode === 'straight') {
+            const wireX = 0, wireZ = 0;
+            const currentUp = direction === -1;
+
+            queue.push({ depth: -4800, draw: () => drawHoleShadow(wireX, 0, wireZ) });
+            queue.push({ depth: -100, draw: () => drawWire(wireX, 0, wireZ, wireX, 160, wireZ, "#a0522d") });
+            queue.push({ depth: 500, draw: () => {
+                drawWire(wireX, -160, wireZ, wireX, 0, wireZ, "#cd7f32");
+                ctx.font = "bold 16px Arial";
+                const pT = project(wireX+50, -170, wireZ); const pB = project(wireX+50, 170, wireZ);
+                ctx.fillStyle = currentUp ? "blue" : "red"; ctx.fillText(currentUp ? "(-)" : "(+)", pT.x, pT.y);
+                ctx.fillStyle = currentUp ? "red" : "blue"; ctx.fillText(currentUp ? "(+)" : "(-)", pB.x, pB.y);
+            }});
+
+            if(isPowered) {
+                topLayer.push(() => drawYellowArrow(wireX+35, 90, wireZ, currentUp ? -1 : 1, Math.PI/2));
+                topLayer.push(() => drawYellowArrow(wireX+35, -90, wireZ, currentUp ? -1 : 1, Math.PI/2));
+                addMovingStraightLines(queue, wireX, wireZ, [80, 140], currentUp ? 1 : -1);
+            }
+
+            [80, 140].forEach(r => {
+                for(let a=0; a<Math.PI*2; a+=Math.PI/4) {
+                    const cx = Math.cos(a)*r; const cz = Math.sin(a)*r;
+                    const dx = Math.sin(a) * (currentUp ? 1 : -1);
+                    const dz = -Math.cos(a) * (currentUp ? 1 : -1);
+                    queue.push({ depth: cx + cz + 50, draw: () => drawCompass(cx, 0, cz, getScreenAngle(cx, cz, dx, dz)) });
+                }
+            });
+
+        } else if (mode === 'loop') {
+            const R = 110;
+            const dirLtoR = direction === 1;
+
+            queue.push({ depth: -4900, draw: () => { drawHoleShadow(-R, 0, 0); drawHoleShadow(R, 0, 0); }});
+
+            queue.push({ depth: -100, draw: () => {
+                drawWire(-R, 0, 0, -R, 80, 0, "#a0522d");
+                drawWire(R, 0, 0, R, 80, 0, "#a0522d");
+            }});
+
+            const steps = 60;
+            for(let i=0; i<steps; i++) {
+                const a1 = (i/steps) * Math.PI; const a2 = ((i+1)/steps) * Math.PI;
+                const x1 = Math.cos(a1)*R; const y1 = -Math.sin(a1)*R;
+                const x2 = Math.cos(a2)*R; const y2 = -Math.sin(a2)*R;
+                
+                queue.push({
+                    depth: x1 + (y1 < -5 ? 2000 : 0), 
+                    draw: () => {
+                        ctx.setLineDash([]);
+                        ctx.beginPath(); ctx.moveTo(project(x1, y1, 0).x, project(x1, y1, 0).y); ctx.lineTo(project(x2, y2, 0).x, project(x2, y2, 0).y);
+                        ctx.strokeStyle = "#cd7f32"; ctx.lineWidth = 14; ctx.lineCap = "round"; ctx.stroke();
+                    }
+                });
+
+                if(isPowered && i === 30) {
+                    topLayer.push(() => {
+                        const midP = project(0, -R-35, 0);
+                        const dx = dirLtoR ? 1 : -1;
+                        drawYellowArrowHead(midP, getScreenAngle(0, 0, dx, 0));
+                    });
+                }
+            }
+
+            if(isPowered) {
+                topLayer.push(() => drawYellowArrow(-R-35, 45, 0, dirLtoR ? -1 : 1, Math.PI/2));
+                topLayer.push(() => drawYellowArrow(R+35, 45, 0, dirLtoR ? 1 : -1, Math.PI/2));
+                addMovingLoopLines(queue, R, dirLtoR);
+            }
+
+            queue.push({ depth: 2000, draw: () => {
+                const pL = project(-R-20, 100, 0); const pR = project(R+20, 100, 0);
+                ctx.font = "bold 16px Arial";
+                ctx.fillStyle = dirLtoR ? "red" : "blue"; ctx.fillText(dirLtoR ? "(+)" : "(-)", pL.x, pL.y);
+                ctx.fillStyle = dirLtoR ? "blue" : "red"; ctx.fillText(dirLtoR ? "(-)" : "(+)", pR.x, pR.y);
+            }});
+
+            const compassPoints = [];
+            [45, 85].forEach(r => [Math.PI/4, 3*Math.PI/4, 5*Math.PI/4, 7*Math.PI/4].forEach(a => compassPoints.push({x: -R + Math.cos(a)*r, z: Math.sin(a)*r, center: -R})));
+            [45, 85].forEach(r => [Math.PI/4, 3*Math.PI/4, 5*Math.PI/4, 7*Math.PI/4].forEach(a => compassPoints.push({x: R + Math.cos(a)*r, z: Math.sin(a)*r, center: R})));
+            compassPoints.push({x: 0, z: 0, center: 0});
+
+            compassPoints.forEach(pos => {
+                queue.push({ depth: pos.x + pos.z + 800, draw: () => {
+                    let dx, dz;
+                    if (pos.center === -R) { 
+                        const angle = Math.atan2(pos.z, pos.x + R);
+                        dx = Math.sin(angle) * (dirLtoR ? 1 : -1);
+                        dz = -Math.cos(angle) * (dirLtoR ? 1 : -1);
+                    } else if (pos.center === R) { 
+                        const angle = Math.atan2(pos.z, pos.x - R);
+                        dx = -Math.sin(angle) * (dirLtoR ? 1 : -1);
+                        dz = Math.cos(angle) * (dirLtoR ? 1 : -1);
+                    } else { 
+                        dx = 0; dz = dirLtoR ? -1 : 1;
+                    }
+                    drawCompass(pos.x, 0, pos.z, getScreenAngle(pos.x, pos.z, dx, dz));
+                }});
+            });
+        }
+
+        queue.sort((a, b) => a.depth - b.depth);
+        queue.forEach(item => item.draw());
+        topLayer.forEach(f => f());
+    }
+
+    function drawWire(x1, y1, z1, x2, y2, z2, color) {
+        ctx.setLineDash([]);
+        const p1 = project(x1, y1, z1); const p2 = project(x2, y2, z2);
+        ctx.beginPath(); ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y);
+        ctx.strokeStyle = color; ctx.lineWidth = 14; ctx.lineCap = "round"; ctx.stroke();
+    }
+
+    function drawHoleShadow(x, y, z) {
+        const p = project(x, y, z);
+        ctx.beginPath(); ctx.ellipse(p.x, p.y + 4, 13, 8, 0, 0, Math.PI*2);
+        ctx.fillStyle = "rgba(0,0,0,0.35)"; ctx.fill();
+    }
+
+    function drawYellowArrow(x, y, z, dirFactor, baseAng) {
+        const p = project(x, y, z);
+        drawYellowArrowHead(p, dirFactor > 0 ? baseAng : baseAng + Math.PI);
+    }
+
+    function drawYellowArrowHead(p, ang) {
+        ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(ang);
+        ctx.beginPath(); ctx.moveTo(-15, 0); ctx.lineTo(12, 0);
+        ctx.strokeStyle = "#f1c40f"; ctx.lineWidth = 6; ctx.lineCap = "round"; ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(12, 0); ctx.lineTo(4, -10); ctx.lineTo(24, 0); ctx.lineTo(4, 10); ctx.closePath();
+        ctx.fillStyle = "#f1c40f"; ctx.fill();
+        ctx.restore();
+    }
+
+    function drawCompass(x, y, z, targetAngle) {
+        const p = project(x, y, z);
+        draw2DCompass(p.x, p.y, targetAngle);
+    }
+
+    function addMovingStraightLines(queue, x, z, radii, flowDir) {
+        queue.push({ depth: -500, draw: () => {
+            ctx.strokeStyle = "rgba(156, 136, 255, 0.75)"; ctx.lineWidth = 2;
+            ctx.setLineDash([8, 8]);
+            ctx.lineDashOffset = dashOffset * flowDir;
+            radii.forEach(r => {
+                ctx.beginPath();
+                for(let a=0; a<Math.PI*2.1; a+=0.1) {
+                    const p = project(Math.cos(a)*r, 0, Math.sin(a)*r);
+                    if(a===0) ctx.moveTo(p.x, p.y); else ctx.lineTo(p.x, p.y);
+                }
+                ctx.stroke();
+            });
+            ctx.setLineDash([]);
+        }});
+    }
+
+    function addMovingLoopLines(queue, R, dirLtoR) {
+        queue.push({ depth: -500, draw: () => {
+            ctx.strokeStyle = "rgba(156, 136, 255, 0.75)"; ctx.lineWidth = 2;
+            ctx.setLineDash([8, 8]);
+            
+            ctx.lineDashOffset = dashOffset * (dirLtoR ? 1 : -1);
+            for(let r=40; r<=80; r+=40) {
+                ctx.beginPath();
+                for(let a=0; a<Math.PI*2.1; a+=0.1) {
+                    const p = project(-R + Math.cos(a)*r, 0, Math.sin(a)*r);
+                    if(a===0) ctx.moveTo(p.x, p.y); else ctx.lineTo(p.x, p.y);
+                }
+                ctx.stroke();
+            }
+            
+            ctx.lineDashOffset = dashOffset * (dirLtoR ? -1 : 1);
+            for(let r=40; r<=80; r+=40) {
+                ctx.beginPath();
+                for(let a=0; a<Math.PI*2.1; a+=0.2) {
+                    const p = project(R + Math.cos(a)*r, 0, Math.sin(a)*r);
+                    if(a===0) ctx.moveTo(p.x, p.y); else ctx.lineTo(p.x, p.y);
+                }
+                ctx.stroke();
+            }
+
+            ctx.lineDashOffset = -dashOffset * (dirLtoR ? 1 : -1);
+            const s = project(0, 0, 150); const e = project(0, 0, -150);
+            ctx.beginPath(); ctx.moveTo(s.x, s.y); ctx.lineTo(e.x, e.y); ctx.stroke();
+            ctx.setLineDash([]);
+        }});
+    }
+
+    render();
+</script>
+</body>
+</html>
