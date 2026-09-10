@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>전류가 흐르는 도선 주위의 자기장 가상 실험실</title>
+    <title>중2 과학 - 전류가 흐르는 도선 주위의 자기장</title>
     <style>
         :root { --bg: #f8f9fa; --panel: #1e272e; --primary: #3498db; --current: #f1c40f; --warning: #e74c3c; }
         body { font-family: 'Pretendard', sans-serif; background-color: #f0f2f5; margin: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
@@ -17,29 +17,28 @@
         .btn-toggle { background: #e1b12c; color: white; }
         main { display: flex; flex: 1; overflow: hidden; }
         
-        /* === 사이드바 및 관찰 가이드 사이즈 조정 === */
         aside { 
-            width: 240px; /* 기존 340px -> 240px로 축소 */
+            width: 240px; 
             flex-shrink: 0; 
             background: white; 
-            padding: 10px; /* 여백 축소 */
+            padding: 10px; 
             border-right: 1px solid #ddd; 
             display: flex; 
             flex-direction: column; 
-            gap: 8px; /* 박스 간격 축소 */
+            gap: 8px; 
             box-shadow: 2px 0 5px rgba(0,0,0,0.05); 
             overflow-y: auto; 
         }
         .info-box { 
             background: #f9f9f9; 
-            padding: 8px 10px; /* 내부 패딩 축소 */
+            padding: 8px 10px; 
             border-radius: 8px; 
             border-left: 4px solid var(--primary); 
-            font-size: 11.5px; /* 폰트 크기 축소 */
+            font-size: 11.5px; 
             line-height: 1.4; 
         }
         .info-box.guide { border-left-color: #f39c12; background: #fffdf5; }
-        .info-box h3 { margin: 0 0 4px 0; font-size: 12.5px; } /* 제목 폰트 축소 */
+        .info-box h3 { margin: 0 0 4px 0; font-size: 12.5px; }
         .info-box ol { margin: 0; padding-left: 14px; }
         .info-box li { margin-bottom: 3px; }
         .info-box li:last-child { margin-bottom: 0; }
@@ -48,7 +47,8 @@
         .legend-list li:last-child { margin-bottom: 0; }
         
         .canvas-container { flex: 1; position: relative; background: #fff; display: flex; align-items: center; justify-content: center; }
-        canvas { display: block; }
+        /* 선명도 유지를 위한 CSS 선언 */
+        canvas { display: block; max-width: 100%; max-height: 100%; object-fit: contain; }
         footer { background: #eee; color: #666; padding: 8px; text-align: center; font-size: 11px; border-top: 1px solid #ddd; line-height: 1.5; }
     </style>
 </head>
@@ -94,12 +94,12 @@
         </aside>
 
         <div class="canvas-container">
-            <canvas id="simCanvas" width="800" height="580"></canvas>
+            <canvas id="simCanvas"></canvas>
         </div>
     </main>
 
     <footer>
-        © 2026. LEE HANEUL All rights reserved. [전류가 흐르는 도선 주위의 자기장 가상 실험실] [v1.0] (2026-09-10)<br>
+        © 2026. LEE HANEUL All rights reserved. [전류가 흐르는 도선 주위의 자기장] [v1.0] (2026-09-10)<br>
         본 프로그램은 아이패드 및 태블릿 환경에서의 터치 조작을 지원합니다.
     </footer>
 
@@ -107,6 +107,21 @@
     const canvas = document.getElementById('simCanvas');
     const ctx = canvas.getContext('2d');
     
+    // 논리적 캔버스 가로, 세로 크기 설정
+    const LOGICAL_WIDTH = 800;
+    const LOGICAL_HEIGHT = 580;
+
+    // 아이패드/레티나 고해상도 대응 스케일링 설정
+    function initCanvasResolution() {
+        const dpr = window.devicePixelRatio || 1;
+        canvas.width = LOGICAL_WIDTH * dpr;
+        canvas.height = LOGICAL_HEIGHT * dpr;
+        canvas.style.width = LOGICAL_WIDTH + 'px';
+        canvas.style.height = LOGICAL_HEIGHT + 'px';
+        ctx.scale(dpr, dpr);
+    }
+    initCanvasResolution();
+
     let mode = 'straight';
     let isPowered = false;
     let direction = -1; 
@@ -140,7 +155,7 @@
     }
 
     function render() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.clearRect(0, 0, LOGICAL_WIDTH, LOGICAL_HEIGHT);
         if(isPowered) dashOffset += 0.8;
 
         if (mode === 'solenoid') {
