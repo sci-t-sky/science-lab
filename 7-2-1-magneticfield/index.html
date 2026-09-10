@@ -16,19 +16,19 @@
         .btn-power.on { background: #44bd32; box-shadow: 0 0 12px rgba(68, 189, 50, 0.6); }
         .btn-toggle { background: #e1b12c; color: white; }
         main { display: flex; flex: 1; overflow: hidden; }
-        aside { width: 280px; background: white; padding: 20px; border-right: 1px solid #ddd; display: flex; flex-direction: column; gap: 15px; box-shadow: 2px 0 5px rgba(0,0,0,0.05); overflow-y: auto; }
-        .info-box { background: #f9f9f9; padding: 12px 15px; border-radius: 10px; border-left: 5px solid var(--primary); font-size: 13px; line-height: 1.6; }
+        aside { width: 340px; flex-shrink: 0; background: white; padding: 15px; border-right: 1px solid #ddd; display: flex; flex-direction: column; gap: 12px; box-shadow: 2px 0 5px rgba(0,0,0,0.05); overflow-y: auto; }
+        .info-box { background: #f9f9f9; padding: 10px 12px; border-radius: 10px; border-left: 5px solid var(--primary); font-size: 13px; line-height: 1.5; }
         .info-box.guide { border-left-color: #f39c12; background: #fffdf5; }
-        .info-box h3 { margin: 0 0 8px 0; font-size: 15px; }
-        .info-box ol { margin: 0; padding-left: 18px; }
-        .info-box li { margin-bottom: 6px; }
+        .info-box h3 { margin: 0 0 6px 0; font-size: 14px; }
+        .info-box ol { margin: 0; padding-left: 16px; }
+        .info-box li { margin-bottom: 4px; }
         .info-box li:last-child { margin-bottom: 0; }
-        .legend-list { list-style: none; padding-left: 0; margin: 10px 0 0 0; border-top: 1px dashed #e0e0e0; padding-top: 8px; }
-        .legend-list li { margin-bottom: 5px; }
+        .legend-list { list-style: none; padding-left: 0; margin: 8px 0 0 0; border-top: 1px dashed #e0e0e0; padding-top: 6px; }
+        .legend-list li { margin-bottom: 4px; }
         .legend-list li:last-child { margin-bottom: 0; }
         .canvas-container { flex: 1; position: relative; background: #fff; display: flex; align-items: center; justify-content: center; }
         canvas { display: block; }
-        footer { background: #eee; color: #666; padding: 10px; text-align: center; font-size: 11px; border-top: 1px solid #ddd; line-height: 1.6; }
+        footer { background: #eee; color: #666; padding: 8px; text-align: center; font-size: 11px; border-top: 1px solid #ddd; line-height: 1.5; }
     </style>
 </head>
 <body>
@@ -58,16 +58,16 @@
             </div>
 
             <div class="info-box guide">
-                <h3>💡 관찰 가이드 </h3>
+                <h3>💡 관찰 가이드 & 범례</h3>
                 <ol>
                     <li><b>전원이 ON</b> 상태일 때만 자기력선 애니메이션과 나침반 정렬이 작동합니다.</li>
                     <li>나침반의 <b>N극(빨간색 바늘)</b>이 가리키는 방향이 해당 위치의 자기장 방향입니다.</li>
                     <li>화살표 방향은 자기력선의 방향입니다.</li>
                 </ol>
                 <ul class="legend-list">
-                    <li><span style="color:#e74c3c; font-weight:bold;">▲ :</span> 나침반 N극 (자기장 방향)</li>
-                    <li><span style="color:#d4ac0d; font-weight:bold;">➡ :</span> 전류의 방향(I)</li>
-                    <li><span style="color:#8c7ae6; font-weight:bold;">┈ :</span> 자기력선 및 방향 화살표</li>
+                    <li><span style="color:#e74c3c; font-weight:bold;">▲ 빨간색:</span> 나침반 N극 (자기장 방향)</li>
+                    <li><span style="color:#d4ac0d; font-weight:bold;">➡ 노란색:</span> 전류의 방향(I)</li>
+                    <li><span style="color:#8c7ae6; font-weight:bold;">┈ 보라색:</span> 자기력선 및 방향 화살표</li>
                 </ul>
             </div>
         </aside>
@@ -135,7 +135,7 @@
 
     function drawReferenceCompass() {
         const cx = 765;
-        const cy = 35;
+        const cy = 65; 
         const r = 22;
 
         ctx.save();
