@@ -55,6 +55,7 @@
         .btn-power { background: #718093; color: white; min-width: 100px; }
         .btn-power.on { background: #44bd32; box-shadow: 0 0 12px rgba(68, 189, 50, 0.6); }
         .btn-toggle { background: #e1b12c; color: white; }
+        .btn-compass { background: #8e44ad; color: white; }
 
         main { 
             display: flex; 
@@ -158,6 +159,7 @@
         <div style="width: 2px; height: 20px; background: #555; margin: 0 5px;"></div>
         <button id="powerBtn" class="btn-power" onclick="togglePower()">전원 OFF</button>
         <button class="btn-toggle" onclick="toggleDir()">전류 방향 전환</button>
+        <button id="compassBtn" class="btn-compass" onclick="toggleCompass()">나침반 숨기기</button>
     </div>
 
     <main>
@@ -167,6 +169,7 @@
                 <ol>
                     <li><b>[전원 OFF]</b> 버튼을 눌러 전원을 켭니다 (전원 ON).</li>
                     <li><b>[전류 방향 전환]</b> 버튼을 눌러 도선에 흐르는 전류의 방향을 바꿔봅니다.</li>
+                    <li><b>[나침반 숨기기/보이기]</b> 버튼으로 나침반을 켜고 끌 수 있습니다.</li>
                     <li>상단의 <b>[직선 도선]</b>, <b>[원형 도선]</b>, <b>[코일]</b> 버튼을 차례로 클릭하며 자기장의 모양과 방향 변화를 관찰합니다.</li>
                 </ol>
             </div>
@@ -215,23 +218,41 @@
 
     let mode = 'straight';
     let isPowered = false;
+    let showCompass = true; // 나침반 표시 여부 상태
     let direction = -1; 
     let dashOffset = 0;
 
     const ISO_ANGLE = 0.55;
 
+    // 도선 모드 전환 시 전원 자동 OFF
     function setMode(m) {
         mode = m;
         document.getElementById('modeStraight').classList.toggle('active', m === 'straight');
         document.getElementById('modeLoop').classList.toggle('active', m === 'loop');
         document.getElementById('modeSolenoid').classList.toggle('active', m === 'solenoid');
+
+        // 다른 도선을 선택할 경우 전원 자동 OFF 처리
+        isPowered = false;
+        const powerBtn = document.getElementById('powerBtn');
+        powerBtn.innerText = "전원 OFF";
+        powerBtn.classList.remove('on');
     }
+
     function togglePower() {
         isPowered = !isPowered;
         document.getElementById('powerBtn').innerText = isPowered ? "전원 ON" : "전원 OFF";
         document.getElementById('powerBtn').classList.toggle('on', isPowered);
     }
+
     function toggleDir() { direction *= -1; }
+
+    // 나침반 숨기기 / 보이기 토글 함수
+    function toggleCompass() {
+        showCompass = !showCompass;
+        const btn = document.getElementById('compassBtn');
+        btn.innerText = showCompass ? "나침반 숨기기" : "나침반 보이기";
+        btn.style.opacity = showCompass ? "1" : "0.7";
+    }
 
     function project(x, y, z) {
         const px = (x - z) * Math.cos(ISO_ANGLE) + 400;
@@ -468,6 +489,8 @@
     }
 
     function draw2DCompass(x, y, targetAngle) {
+        if (!showCompass) return; // 나침반 숨기기 옵션 동작
+
         const size = 18;
         const angle = isPowered ? targetAngle : -Math.PI/2;
         ctx.save();
