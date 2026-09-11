@@ -35,6 +35,7 @@
       display: flex;
       flex-direction: column;
       height: 100vh;
+      max-height: 100vh;
       overflow: hidden;
       align-items: center;
     }
@@ -59,28 +60,28 @@
     .page-wrapper {
       width: 100%;
       max-width: 1280px;
-      padding: 8px 12px;
+      padding: 6px 12px;
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 6px;
       flex: 1;
-      overflow: hidden;
+      min-height: 0;
     }
 
     .card {
       background: var(--card-bg);
       border: 1px solid var(--card-border);
       border-radius: 12px;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
     }
 
     .main-layout {
       display: grid;
-      grid-template-columns: 250px 1fr 260px;
+      grid-template-columns: 250px 1fr 270px;
       gap: 8px;
       align-items: stretch;
       flex: 1;
-      overflow: hidden;
+      min-height: 0;
     }
 
     .side-panel {
@@ -88,24 +89,26 @@
       flex-direction: column;
       gap: 6px;
       overflow-y: auto;
+      min-height: 0;
+      padding-right: 2px;
     }
 
     .panel-card {
-      padding: 10px 12px;
+      padding: 8px 10px;
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      gap: 5px;
     }
 
     .panel-title {
-      font-size: 0.85rem;
+      font-size: 0.82rem;
       font-weight: 800;
       color: var(--text-main);
       display: flex;
       align-items: center;
       gap: 6px;
       border-bottom: 2px solid var(--bg-color);
-      padding-bottom: 4px;
+      padding-bottom: 3px;
     }
 
     .panel-title.blue {
@@ -118,15 +121,15 @@
 
     .btn-power {
       width: 100%;
-      height: 38px;
+      height: 36px;
       border: none;
       border-radius: 8px;
-      font-size: 0.9rem;
+      font-size: 0.88rem;
       font-weight: 800;
       color: #ffffff;
       background: var(--accent-red);
       cursor: pointer;
-      box-shadow: 0 2px 8px rgba(239, 68, 68, 0.28);
+      box-shadow: 0 3px 10px rgba(239, 68, 68, 0.28);
       transition: all 0.2s ease;
       display: flex;
       align-items: center;
@@ -136,7 +139,7 @@
 
     .btn-power.on {
       background: var(--accent-green);
-      box-shadow: 0 2px 8px rgba(34, 197, 94, 0.3);
+      box-shadow: 0 3px 10px rgba(34, 197, 94, 0.3);
     }
 
     .btn-power:active {
@@ -151,7 +154,7 @@
 
     .opt-btn {
       width: 100%;
-      padding: 8px 4px;
+      padding: 7px 4px;
       background: #f8fafc;
       border: 1px solid var(--card-border);
       border-radius: 6px;
@@ -180,9 +183,9 @@
     .slider-container {
       display: flex;
       flex-direction: column;
-      gap: 4px;
+      gap: 3px;
       background: #f8fafc;
-      padding: 8px 10px;
+      padding: 6px 10px;
       border: 1px solid var(--card-border);
       border-radius: 8px;
     }
@@ -191,21 +194,21 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      font-size: 0.78rem;
+      font-size: 0.76rem;
       font-weight: 700;
       color: var(--text-main);
     }
 
     .slider-header .val-tag {
       color: var(--accent-blue);
-      font-size: 0.82rem;
+      font-size: 0.8rem;
       font-weight: 800;
     }
 
     .slider-labels {
       display: flex;
       justify-content: space-between;
-      font-size: 0.7rem;
+      font-size: 0.68rem;
       font-weight: 700;
       color: var(--text-muted);
     }
@@ -241,7 +244,7 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 6px 10px;
+      padding: 5px 10px;
       background: #f8fafc;
       border: 1px solid var(--card-border);
       border-radius: 6px;
@@ -253,8 +256,14 @@
       align-items: center;
       gap: 4px;
       font-weight: 700;
-      font-size: 0.78rem;
+      font-size: 0.76rem;
       color: var(--text-main);
+    }
+
+    .toggle-item .arrow-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .switch {
@@ -276,7 +285,7 @@
       cursor: pointer;
       top: 0; left: 0; right: 0; bottom: 0;
       background-color: #cbd5e1;
-      transition: 0.25s;
+      transition: 0.2s;
       border-radius: 18px;
     }
 
@@ -288,9 +297,8 @@
       left: 3px;
       bottom: 3px;
       background-color: white;
-      transition: 0.25s;
+      transition: 0.2s;
       border-radius: 50%;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
     }
 
     input:checked + .slider {
@@ -305,8 +313,8 @@
       list-style: none;
       display: flex;
       flex-direction: column;
-      gap: 4px;
-      font-size: 0.78rem;
+      gap: 3px;
+      font-size: 0.74rem;
       color: #334155;
     }
 
@@ -324,7 +332,7 @@
 
     .info-card ol li .desc {
       flex: 1;
-      line-height: 1.4;
+      line-height: 1.25;
     }
 
     .viewport-card {
@@ -333,12 +341,14 @@
       flex-direction: column;
       overflow: hidden;
       height: 100%;
+      min-height: 0;
     }
 
     .canvas-container {
       flex: 1;
       position: relative;
       width: 100%;
+      min-height: 0;
     }
 
     .zoom-overlay {
@@ -351,21 +361,21 @@
       gap: 6px;
       background: rgba(255, 255, 255, 0.88);
       backdrop-filter: blur(4px);
-      padding: 4px 10px;
+      padding: 4px 8px;
       border-radius: 16px;
       border: 1px solid var(--card-border);
       box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
     }
 
     .zoom-overlay input[type="range"] {
-      width: 80px;
+      width: 70px;
     }
 
     .zoom-overlay .val-tag {
-      font-size: 0.75rem;
+      font-size: 0.72rem;
       font-weight: 800;
       color: var(--accent-blue);
-      min-width: 32px;
+      min-width: 30px;
     }
 
     canvas {
@@ -381,16 +391,17 @@
     }
 
     .viewport-bottom-bar {
-      padding: 6px 10px;
+      padding: 5px 10px;
       border-top: 1px solid var(--card-border);
       background: #ffffff;
       display: flex;
       justify-content: center;
       align-items: center;
+      flex-shrink: 0;
     }
 
     .drag-instruction {
-      font-size: 0.75rem;
+      font-size: 0.72rem;
       font-weight: 700;
       color: #000000;
       text-align: center;
@@ -398,27 +409,17 @@
 
     @media (max-width: 960px) {
       body {
-        overflow-y: auto;
+        overflow: auto;
         height: auto;
+        max-height: none;
       }
       .main-layout {
         display: flex;
         flex-direction: column;
       }
       .viewport-card {
-        height: 400px;
         order: -1;
-      }
-      .side-panel {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        overflow-y: visible;
-      }
-    }
-
-    @media (max-width: 600px) {
-      .side-panel {
-        grid-template-columns: 1fr;
+        height: 380px;
       }
     }
 
@@ -426,7 +427,7 @@
       width: 100%;
       background-color: var(--header-bg);
       color: #ffffff;
-      padding: 8px 16px;
+      padding: 6px 16px;
       text-align: center;
       box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.12);
       display: flex;
@@ -439,18 +440,18 @@
       color: #ffffff;
       font-weight: 700;
       letter-spacing: -0.01em;
-      font-size: 0.8rem;
+      font-size: 0.75rem;
     }
 
     footer p.line-2 {
       color: #cbd5e1;
       font-weight: 600;
-      font-size: 0.75rem;
+      font-size: 0.7rem;
     }
 
     footer p.line-3 {
       color: #94a3b8;
-      font-size: 0.7rem;
+      font-size: 0.66rem;
     }
   </style>
 </head>
@@ -491,8 +492,8 @@
 
         <div class="card panel-card">
           <h2 class="panel-title orange">⚠️ 주의사항</h2>
-          <p style="font-size: 0.78rem; color: #334155; line-height: 1.4; word-break: keep-all;">
-            본 시뮬레이션에 표시되는 <strong>자기장 방향</strong>은 이해를 돕기 위해 자석 앞쪽 일부 공간에만 표현되었습니다. <strong>실제로는 전체 공간에 고르게 형성</strong>됩니다.
+          <p style="font-size: 0.72rem; color: #334155; line-height: 1.3; word-break: keep-all;">
+            본 시뮬레이션에 표시되는 <strong>자기장 방향</strong>은 입체적 이해를 돕기 위해 자석 앞쪽 일부에만 표현되었으나, <strong>실제 전체 공간</strong>에 고르게 형성되어 있습니다.
           </p>
         </div>
       </aside>
@@ -500,7 +501,7 @@
       <section class="card viewport-card">
         <div class="canvas-container">
           <div class="zoom-overlay">
-            <span style="font-size:0.78rem; font-weight:800; color:var(--text-main);">🔍</span>
+            <span style="font-size:0.7rem; font-weight:800; color:var(--text-main);">🔍</span>
             <input type="range" id="slider-zoom" min="0.6" max="1.8" step="0.05" value="1.0">
             <span class="val-tag" id="val-zoom">100%</span>
           </div>
@@ -508,7 +509,7 @@
         </div>
         
         <div class="viewport-bottom-bar">
-          <p class="drag-instruction">💡 마우스 드래그 또는 터치로 3D 시점을 회전할 수 있습니다.</p>
+          <p class="drag-instruction">💡 마우스 또는 터치로 3D 시점을 회전할 수 있습니다.</p>
         </div>
       </section>
 
@@ -556,7 +557,7 @@
               <span class="info">
                 자기장 방향
                 <span class="arrow-icon">
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
                 </span>
               </span>
               <div class="switch">
@@ -569,7 +570,7 @@
               <span class="info">
                 전류 방향
                 <span class="arrow-icon">
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
                 </span>
               </span>
               <div class="switch">
@@ -582,7 +583,7 @@
               <span class="info">
                 힘 방향
                 <span class="arrow-icon">
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
                 </span>
               </span>
               <div class="switch">
@@ -598,7 +599,7 @@
 
   <footer>
     <p class="line-1">© 2026. LEE HANEUL All rights reserved.</p>
-    <p class="line-2">[자기장 안에서 전류가 흐르는 코일이 받는 힘 관찰하기] v4.9(2026-09-11)</p>
+    <p class="line-2">[자기장 안에서 전류가 흐르는 코일이 받는 힘 관찰하기] v4.10(2026-09-11)</p>
     <p class="line-3">본 프로그램은 아이패드 및 태블릿 환경에서의 터치 조작을 지원합니다.</p>
   </footer>
 
@@ -1109,7 +1110,7 @@
 
         const leftN = state.poleDir === 1;
         const lCol = leftN ? '#ef4444' : '#3b82f6';
-        const rCol = leftN ? '#3b82f6' : '#3b82f6';
+        const rCol = leftN ? '#3b82f6' : '#ef4444';
 
         buildCubePolygons({x: -160, y: -40, z: -60}, 60, 80, 120, lCol, leftN?'N':'S', {x: -130, y: 0, z: -61}, true, 0).forEach(queuePoly);
         buildCubePolygons({x: 100, y: -40, z: -60}, 60, 80, 120, rCol, leftN?'S':'N', {x: 130, y: 0, z: -61}, true, 0).forEach(queuePoly);
