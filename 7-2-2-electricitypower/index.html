@@ -34,7 +34,8 @@
       color: var(--text-main);
       display: flex;
       flex-direction: column;
-      min-height: 100vh;
+      height: 100vh;
+      overflow: hidden;
       align-items: center;
     }
 
@@ -42,13 +43,14 @@
       width: 100%;
       background-color: var(--header-bg);
       color: #ffffff;
-      padding: 14px 20px;
+      padding: 8px 16px;
       text-align: center;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+      flex-shrink: 0;
     }
 
     header.top-header h1 {
-      font-size: 1.3rem;
+      font-size: 1.15rem;
       font-weight: 800;
       color: #ffffff;
       letter-spacing: -0.01em;
@@ -57,49 +59,53 @@
     .page-wrapper {
       width: 100%;
       max-width: 1280px;
-      padding: 16px;
+      padding: 8px 12px;
       display: flex;
       flex-direction: column;
-      gap: 16px;
+      gap: 8px;
       flex: 1;
+      overflow: hidden;
     }
 
     .card {
       background: var(--card-bg);
       border: 1px solid var(--card-border);
-      border-radius: 16px;
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+      border-radius: 12px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
     }
 
     .main-layout {
       display: grid;
-      grid-template-columns: 270px 1fr 290px;
-      gap: 16px;
+      grid-template-columns: 250px 1fr 260px;
+      gap: 8px;
       align-items: stretch;
+      flex: 1;
+      overflow: hidden;
     }
 
     .side-panel {
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 6px;
+      overflow-y: auto;
     }
 
     .panel-card {
-      padding: 14px 16px;
+      padding: 10px 12px;
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 6px;
     }
 
     .panel-title {
-      font-size: 0.90rem;
+      font-size: 0.85rem;
       font-weight: 800;
       color: var(--text-main);
       display: flex;
       align-items: center;
       gap: 6px;
       border-bottom: 2px solid var(--bg-color);
-      padding-bottom: 6px;
+      padding-bottom: 4px;
     }
 
     .panel-title.blue {
@@ -112,15 +118,15 @@
 
     .btn-power {
       width: 100%;
-      height: 44px;
+      height: 38px;
       border: none;
-      border-radius: 10px;
-      font-size: 0.95rem;
+      border-radius: 8px;
+      font-size: 0.9rem;
       font-weight: 800;
       color: #ffffff;
       background: var(--accent-red);
       cursor: pointer;
-      box-shadow: 0 3px 10px rgba(239, 68, 68, 0.28);
+      box-shadow: 0 2px 8px rgba(239, 68, 68, 0.28);
       transition: all 0.2s ease;
       display: flex;
       align-items: center;
@@ -130,7 +136,7 @@
 
     .btn-power.on {
       background: var(--accent-green);
-      box-shadow: 0 3px 10px rgba(34, 197, 94, 0.3);
+      box-shadow: 0 2px 8px rgba(34, 197, 94, 0.3);
     }
 
     .btn-power:active {
@@ -140,16 +146,16 @@
     .control-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 8px;
+      gap: 6px;
     }
 
     .opt-btn {
       width: 100%;
-      padding: 10px 6px;
+      padding: 8px 4px;
       background: #f8fafc;
       border: 1px solid var(--card-border);
-      border-radius: 8px;
-      font-size: 0.82rem;
+      border-radius: 6px;
+      font-size: 0.78rem;
       font-weight: 700;
       color: #334155;
       cursor: pointer;
@@ -174,43 +180,42 @@
     .slider-container {
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      gap: 4px;
       background: #f8fafc;
-      padding: 10px 12px;
+      padding: 8px 10px;
       border: 1px solid var(--card-border);
-      border-radius: 10px;
+      border-radius: 8px;
     }
 
     .slider-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      font-size: 0.82rem;
+      font-size: 0.78rem;
       font-weight: 700;
       color: var(--text-main);
     }
 
     .slider-header .val-tag {
       color: var(--accent-blue);
-      font-size: 0.88rem;
+      font-size: 0.82rem;
       font-weight: 800;
     }
 
     .slider-labels {
       display: flex;
       justify-content: space-between;
-      font-size: 0.75rem;
+      font-size: 0.7rem;
       font-weight: 700;
       color: var(--text-muted);
-      margin-top: -2px;
     }
 
     input[type="range"] {
       -webkit-appearance: none;
       appearance: none;
       width: 100%;
-      height: 5px;
-      border-radius: 3px;
+      height: 4px;
+      border-radius: 2px;
       background: #cbd5e1;
       outline: none;
     }
@@ -218,39 +223,29 @@
     input[type="range"]::-webkit-slider-thumb {
       -webkit-appearance: none;
       appearance: none;
-      width: 16px;
-      height: 16px;
+      width: 14px;
+      height: 14px;
       border-radius: 50%;
       background: var(--accent-blue);
       cursor: pointer;
-      box-shadow: 0 2px 5px rgba(37, 99, 235, 0.4);
-      transition: transform 0.1s ease;
-    }
-
-    input[type="range"]::-webkit-slider-thumb:hover {
-      transform: scale(1.15);
+      box-shadow: 0 2px 4px rgba(37, 99, 235, 0.4);
     }
 
     .toggle-group {
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      gap: 4px;
     }
 
     .toggle-item {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 8px 12px;
+      padding: 6px 10px;
       background: #f8fafc;
       border: 1px solid var(--card-border);
-      border-radius: 8px;
+      border-radius: 6px;
       cursor: pointer;
-      transition: background 0.15s;
-    }
-
-    .toggle-item:hover {
-      background: #f1f5f9;
     }
 
     .toggle-item .info {
@@ -258,22 +253,15 @@
       align-items: center;
       gap: 4px;
       font-weight: 700;
-      font-size: 0.82rem;
+      font-size: 0.78rem;
       color: var(--text-main);
-    }
-
-    .toggle-item .arrow-icon {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      margin: 0 2px;
     }
 
     .switch {
       position: relative;
       display: inline-block;
-      width: 38px;
-      height: 20px;
+      width: 32px;
+      height: 18px;
       flex-shrink: 0;
     }
 
@@ -289,20 +277,20 @@
       top: 0; left: 0; right: 0; bottom: 0;
       background-color: #cbd5e1;
       transition: 0.25s;
-      border-radius: 20px;
+      border-radius: 18px;
     }
 
     .slider:before {
       position: absolute;
       content: "";
-      height: 14px;
-      width: 14px;
+      height: 12px;
+      width: 12px;
       left: 3px;
       bottom: 3px;
       background-color: white;
       transition: 0.25s;
       border-radius: 50%;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
     }
 
     input:checked + .slider {
@@ -310,34 +298,33 @@
     }
 
     input:checked + .slider:before {
-      transform: translateX(18px);
+      transform: translateX(14px);
     }
 
     .info-card ol {
       list-style: none;
       display: flex;
       flex-direction: column;
-      gap: 8px;
-      font-size: 0.82rem;
+      gap: 4px;
+      font-size: 0.78rem;
       color: #334155;
     }
 
     .info-card ol li {
       display: flex;
       align-items: flex-start;
-      gap: 6px;
+      gap: 4px;
     }
 
     .info-card ol li .num {
       font-weight: 700;
       flex-shrink: 0;
-      width: 14px;
-      line-height: 1.5;
+      width: 12px;
     }
 
     .info-card ol li .desc {
       flex: 1;
-      line-height: 1.5;
+      line-height: 1.4;
     }
 
     .viewport-card {
@@ -352,34 +339,33 @@
       flex: 1;
       position: relative;
       width: 100%;
-      min-height: 320px;
     }
 
     .zoom-overlay {
       position: absolute;
-      top: 12px;
-      left: 12px;
+      top: 8px;
+      left: 8px;
       z-index: 10;
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
       background: rgba(255, 255, 255, 0.88);
       backdrop-filter: blur(4px);
-      padding: 6px 12px;
-      border-radius: 20px;
+      padding: 4px 10px;
+      border-radius: 16px;
       border: 1px solid var(--card-border);
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
     }
 
     .zoom-overlay input[type="range"] {
-      width: 90px;
+      width: 80px;
     }
 
     .zoom-overlay .val-tag {
-      font-size: 0.78rem;
+      font-size: 0.75rem;
       font-weight: 800;
       color: var(--accent-blue);
-      min-width: 38px;
+      min-width: 32px;
     }
 
     canvas {
@@ -395,7 +381,7 @@
     }
 
     .viewport-bottom-bar {
-      padding: 8px 12px;
+      padding: 6px 10px;
       border-top: 1px solid var(--card-border);
       background: #ffffff;
       display: flex;
@@ -404,22 +390,29 @@
     }
 
     .drag-instruction {
-      font-size: 0.80rem;
+      font-size: 0.75rem;
       font-weight: 700;
       color: #000000;
       text-align: center;
     }
 
     @media (max-width: 960px) {
+      body {
+        overflow-y: auto;
+        height: auto;
+      }
       .main-layout {
-        grid-template-columns: 1fr;
+        display: flex;
+        flex-direction: column;
       }
       .viewport-card {
+        height: 400px;
         order: -1;
       }
       .side-panel {
         display: grid;
         grid-template-columns: 1fr 1fr;
+        overflow-y: visible;
       }
     }
 
@@ -433,31 +426,31 @@
       width: 100%;
       background-color: var(--header-bg);
       color: #ffffff;
-      padding: 14px 20px;
+      padding: 8px 16px;
       text-align: center;
       box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.12);
       display: flex;
       flex-direction: column;
-      gap: 4px;
-      margin-top: auto;
+      gap: 2px;
+      flex-shrink: 0;
     }
 
     footer p.line-1 {
       color: #ffffff;
       font-weight: 700;
       letter-spacing: -0.01em;
-      font-size: 0.85rem;
+      font-size: 0.8rem;
     }
 
     footer p.line-2 {
       color: #cbd5e1;
       font-weight: 600;
-      font-size: 0.80rem;
+      font-size: 0.75rem;
     }
 
     footer p.line-3 {
       color: #94a3b8;
-      font-size: 0.75rem;
+      font-size: 0.7rem;
     }
   </style>
 </head>
@@ -491,16 +484,15 @@
             </li>
             <li>
               <span class="num">5.</span>
-              <span class="desc"><strong>[실험 모드]</strong> '전기 그네'와 '전동기' 모드를 전환하여 관찰합니다.</span>
+              <span class="desc"><strong>[실험 모드]</strong> '전기 그네'와 '전동기' 모드를 전환합니다.</span>
             </li>
           </ol>
         </div>
 
         <div class="card panel-card">
           <h2 class="panel-title orange">⚠️ 주의사항</h2>
-          <p style="font-size: 0.82rem; color: #334155; line-height: 1.5; word-break: keep-all;">
-            본 시뮬레이션에 표시되는 <strong>자기장 방향</strong>은 입체적인 구조의 이해를 돕기 위해 말굽자석 앞쪽 일부 공간에만 시각적으로 표현되었습니다.<br><br>
-            하지만 <strong>실제로는 자석의 N극과 S극 사이의 전체 공간에 걸쳐 자기장이 고르게 형성</strong>되어 있음에 유의하세요.
+          <p style="font-size: 0.78rem; color: #334155; line-height: 1.4; word-break: keep-all;">
+            본 시뮬레이션에 표시되는 <strong>자기장 방향</strong>은 이해를 돕기 위해 자석 앞쪽 일부 공간에만 표현되었습니다. <strong>실제로는 전체 공간에 고르게 형성</strong>됩니다.
           </p>
         </div>
       </aside>
@@ -508,7 +500,7 @@
       <section class="card viewport-card">
         <div class="canvas-container">
           <div class="zoom-overlay">
-            <span style="font-size:0.82rem; font-weight:800; color:var(--text-main);">🔍</span>
+            <span style="font-size:0.78rem; font-weight:800; color:var(--text-main);">🔍</span>
             <input type="range" id="slider-zoom" min="0.6" max="1.8" step="0.05" value="1.0">
             <span class="val-tag" id="val-zoom">100%</span>
           </div>
@@ -564,7 +556,7 @@
               <span class="info">
                 자기장 방향
                 <span class="arrow-icon">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
                 </span>
               </span>
               <div class="switch">
@@ -577,7 +569,7 @@
               <span class="info">
                 전류 방향
                 <span class="arrow-icon">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
                 </span>
               </span>
               <div class="switch">
@@ -590,7 +582,7 @@
               <span class="info">
                 힘 방향
                 <span class="arrow-icon">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
                 </span>
               </span>
               <div class="switch">
@@ -606,7 +598,7 @@
 
   <footer>
     <p class="line-1">© 2026. LEE HANEUL All rights reserved.</p>
-    <p class="line-2">[자기장 안에서 전류가 흐르는 코일이 받는 힘 관찰하기] v4.8(2026-09-11)</p>
+    <p class="line-2">[자기장 안에서 전류가 흐르는 코일이 받는 힘 관찰하기] v4.9(2026-09-11)</p>
     <p class="line-3">본 프로그램은 아이패드 및 태블릿 환경에서의 터치 조작을 지원합니다.</p>
   </footer>
 
@@ -1087,19 +1079,15 @@
           const col = '#facc15'; const scale = 0.8 + state.currentStrength*0.15;
           const offset = 18;
           
-          // 좌측 세로변 전류 화살표 (길이 확장)
           const l1 = getSwungPos(-90, 0, 0); const l2 = getSwungPos(-90, 55, 0);
           queueArrow(state.currDir===1?l1:l2, state.currDir===1?l2:l1, col, scale);
           
-          // 하단 가로변 전류 화살표
           const b1 = getSwungPos(-30, 95 + offset, 0); const b2 = getSwungPos(30, 95 + offset, 0);
           queueArrow(state.currDir===1?b1:b2, state.currDir===1?b2:b1, col, scale);
           
-          // 우측 세로변 전류 화살표 (길이 확장)
           const r1 = getSwungPos(90, 55, 0); const r2 = getSwungPos(90, 0, 0);
           queueArrow(state.currDir===1?r1:r2, state.currDir===1?r2:r1, col, scale);
 
-          // 상단 가로변 전류 화살표 (하단과 동일한 길이 및 반대 방향)
           const t1 = getSwungPos(30, -30 - offset, 0); const t2 = getSwungPos(-30, -30 - offset, 0);
           queueArrow(state.currDir===1?t1:t2, state.currDir===1?t2:t1, col, scale);
         }
@@ -1121,7 +1109,7 @@
 
         const leftN = state.poleDir === 1;
         const lCol = leftN ? '#ef4444' : '#3b82f6';
-        const rCol = leftN ? '#3b82f6' : '#ef4444';
+        const rCol = leftN ? '#3b82f6' : '#3b82f6';
 
         buildCubePolygons({x: -160, y: -40, z: -60}, 60, 80, 120, lCol, leftN?'N':'S', {x: -130, y: 0, z: -61}, true, 0).forEach(queuePoly);
         buildCubePolygons({x: 100, y: -40, z: -60}, 60, 80, 120, rCol, leftN?'S':'N', {x: 130, y: 0, z: -61}, true, 0).forEach(queuePoly);
