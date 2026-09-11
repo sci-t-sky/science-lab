@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>자기장 안에서 전류가 흐르는 사각 코일이 받는 힘 관찰하기</title>
+  <title>자기장 안에서 전류가 흐르는 코일이 받는 힘 가상 실험실</title>
   <style>
     :root {
       --bg-color: #f0f4f8;
@@ -431,32 +431,33 @@
 
     footer {
       width: 100%;
-      background: var(--footer-bg);
-      border-top: 1px solid var(--footer-border);
-      color: #6c757d;
+      background-color: var(--header-bg);
+      color: #ffffff;
+      padding: 14px 20px;
       text-align: center;
-      padding: 12px 16px;
-      font-size: 0.80rem;
-      margin-top: auto;
+      box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.12);
       display: flex;
       flex-direction: column;
-      gap: 2px;
+      gap: 4px;
+      margin-top: auto;
     }
 
     footer p.line-1 {
-      color: #343a40;
+      color: #ffffff;
       font-weight: 700;
       letter-spacing: -0.01em;
+      font-size: 0.85rem;
     }
 
     footer p.line-2 {
-      color: #495057;
+      color: #cbd5e1;
       font-weight: 600;
+      font-size: 0.80rem;
     }
 
     footer p.line-3 {
-      color: #6c757d;
-      font-size: 0.76rem;
+      color: #94a3b8;
+      font-size: 0.75rem;
     }
   </style>
 </head>
@@ -605,7 +606,7 @@
 
   <footer>
     <p class="line-1">© 2026. LEE HANEUL All rights reserved.</p>
-    <p class="line-2">[자기장 안에서 전류가 흐르는 코일이 받는 힘 관찰하기] v4.3(2026-09-11)</p>
+    <p class="line-2">[자기장 안에서 전류가 흐르는 코일이 받는 힘 관찰하기] v4.8(2026-09-11)</p>
     <p class="line-3">본 프로그램은 아이패드 및 태블릿 환경에서의 터치 조작을 지원합니다.</p>
   </footer>
 
@@ -680,7 +681,6 @@
 
       const cam = state.cameras[state.mode];
 
-      // 부드러운 회전을 위해 target 값으로 서서히 보간 (Lerp)
       cam.yaw += (cam.targetYaw - cam.yaw) * 0.25;
       cam.pitch += (cam.targetPitch - cam.pitch) * 0.25;
 
@@ -1086,12 +1086,22 @@
         if (state.power && state.showCurrent) {
           const col = '#facc15'; const scale = 0.8 + state.currentStrength*0.15;
           const offset = 18;
-          const l1 = getSwungPos(-90, offset, 0); const l2 = getSwungPos(-90, 45, 0);
+          
+          // 좌측 세로변 전류 화살표 (길이 확장)
+          const l1 = getSwungPos(-90, 0, 0); const l2 = getSwungPos(-90, 55, 0);
           queueArrow(state.currDir===1?l1:l2, state.currDir===1?l2:l1, col, scale);
+          
+          // 하단 가로변 전류 화살표
           const b1 = getSwungPos(-30, 95 + offset, 0); const b2 = getSwungPos(30, 95 + offset, 0);
           queueArrow(state.currDir===1?b1:b2, state.currDir===1?b2:b1, col, scale);
-          const r1 = getSwungPos(90, 45, 0); const r2 = getSwungPos(90, offset, 0);
+          
+          // 우측 세로변 전류 화살표 (길이 확장)
+          const r1 = getSwungPos(90, 55, 0); const r2 = getSwungPos(90, 0, 0);
           queueArrow(state.currDir===1?r1:r2, state.currDir===1?r2:r1, col, scale);
+
+          // 상단 가로변 전류 화살표 (하단과 동일한 길이 및 반대 방향)
+          const t1 = getSwungPos(30, -30 - offset, 0); const t2 = getSwungPos(-30, -30 - offset, 0);
+          queueArrow(state.currDir===1?t1:t2, state.currDir===1?t2:t1, col, scale);
         }
 
         if (state.power && state.showForce && Math.abs(forceMag) > 0) {
@@ -1269,8 +1279,8 @@
         valCurrentStrength.textContent = strengthTextMap[state.currentStrength];
       });
 
-      sliderZoom.addEventListener('input', (e) => {
-        state.cameras[state.mode].zoom = parseFloat(e.target.value);
+      sliderZoom.addEventListener('input', () => {
+        state.cameras[state.mode].zoom = parseFloat(sliderZoom.value);
         valZoom.textContent = `${Math.round(state.cameras[state.mode].zoom * 100)}%`;
       });
 
