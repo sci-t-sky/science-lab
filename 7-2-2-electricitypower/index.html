@@ -1,0 +1,1322 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>자기장 안에서 전류가 흐르는 사각 코일이 받는 힘 가상 실험실</title>
+  <style>
+    :root {
+      --bg-color: #f0f4f8;
+      --card-bg: #ffffff;
+      --card-border: #e2e8f0;
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+      --accent-blue: #2563eb;
+      --accent-orange: #f59e0b;
+      --accent-green: #22c55e;
+      --accent-red: #ef4444;
+      --header-bg: #212936;
+      --footer-bg: #e9ecef;
+      --footer-border: #dee2e8;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      align-items: center;
+    }
+
+    header.top-header {
+      width: 100%;
+      background-color: var(--header-bg);
+      color: #ffffff;
+      padding: 14px 20px;
+      text-align: center;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+    }
+
+    header.top-header h1 {
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: #ffffff;
+      letter-spacing: -0.01em;
+    }
+
+    .page-wrapper {
+      width: 100%;
+      max-width: 1280px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      flex: 1;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+    }
+
+    .main-layout {
+      display: grid;
+      grid-template-columns: 270px 1fr 290px;
+      gap: 16px;
+      align-items: stretch;
+    }
+
+    .side-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .panel-card {
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .panel-title {
+      font-size: 0.90rem;
+      font-weight: 800;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      border-bottom: 2px solid var(--bg-color);
+      padding-bottom: 6px;
+    }
+
+    .panel-title.blue {
+      color: var(--accent-blue);
+    }
+
+    .panel-title.orange {
+      color: var(--accent-orange);
+    }
+
+    .btn-power {
+      width: 100%;
+      height: 44px;
+      border: none;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: #ffffff;
+      background: var(--accent-red);
+      cursor: pointer;
+      box-shadow: 0 3px 10px rgba(239, 68, 68, 0.28);
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .btn-power.on {
+      background: var(--accent-green);
+      box-shadow: 0 3px 10px rgba(34, 197, 94, 0.3);
+    }
+
+    .btn-power:active {
+      transform: scale(0.98);
+    }
+
+    .control-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .opt-btn {
+      width: 100%;
+      padding: 10px 6px;
+      background: #f8fafc;
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: #334155;
+      cursor: pointer;
+      transition: all 0.15s;
+      text-align: center;
+    }
+
+    .opt-btn:hover {
+      background: #e2e8f0;
+    }
+
+    .opt-btn.active {
+      background: #cbd5e1;
+      color: #0f172a;
+      border-color: #94a3b8;
+    }
+
+    .opt-btn:active {
+      transform: scale(0.98);
+    }
+
+    .slider-container {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      background: #f8fafc;
+      padding: 10px 12px;
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+    }
+
+    .slider-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .slider-header .val-tag {
+      color: var(--accent-blue);
+      font-size: 0.88rem;
+      font-weight: 800;
+    }
+
+    .slider-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      margin-top: -2px;
+    }
+
+    input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 5px;
+      border-radius: 3px;
+      background: #cbd5e1;
+      outline: none;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--accent-blue);
+      cursor: pointer;
+      box-shadow: 0 2px 5px rgba(37, 99, 235, 0.4);
+      transition: transform 0.1s ease;
+    }
+
+    input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.15);
+    }
+
+    .toggle-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .toggle-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 12px;
+      background: #f8fafc;
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .toggle-item:hover {
+      background: #f1f5f9;
+    }
+
+    .toggle-item .info {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-weight: 700;
+      font-size: 0.82rem;
+      color: var(--text-main);
+    }
+
+    .toggle-item .arrow-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 2px;
+    }
+
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 38px;
+      height: 20px;
+      flex-shrink: 0;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: #cbd5e1;
+      transition: 0.25s;
+      border-radius: 20px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 14px;
+      width: 14px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: 0.25s;
+      border-radius: 50%;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+
+    input:checked + .slider {
+      background-color: var(--accent-blue);
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(18px);
+    }
+
+    .info-card ol {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      font-size: 0.82rem;
+      color: #334155;
+    }
+
+    .info-card ol li {
+      display: flex;
+      align-items: flex-start;
+      gap: 6px;
+    }
+
+    .info-card ol li .num {
+      font-weight: 700;
+      flex-shrink: 0;
+      width: 14px;
+      line-height: 1.5;
+    }
+
+    .info-card ol li .desc {
+      flex: 1;
+      line-height: 1.5;
+    }
+
+    .viewport-card {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      height: 100%;
+    }
+
+    .canvas-container {
+      flex: 1;
+      position: relative;
+      width: 100%;
+      min-height: 320px;
+    }
+
+    .zoom-overlay {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.88);
+      backdrop-filter: blur(4px);
+      padding: 6px 12px;
+      border-radius: 20px;
+      border: 1px solid var(--card-border);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    .zoom-overlay input[type="range"] {
+      width: 90px;
+    }
+
+    .zoom-overlay .val-tag {
+      font-size: 0.78rem;
+      font-weight: 800;
+      color: var(--accent-blue);
+      min-width: 38px;
+    }
+
+    canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+      cursor: grab;
+    }
+
+    canvas:active {
+      cursor: grabbing;
+    }
+
+    .viewport-bottom-bar {
+      padding: 8px 12px;
+      border-top: 1px solid var(--card-border);
+      background: #ffffff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .drag-instruction {
+      font-size: 0.80rem;
+      font-weight: 700;
+      color: #000000;
+      text-align: center;
+    }
+
+    @media (max-width: 960px) {
+      .main-layout {
+        grid-template-columns: 1fr;
+      }
+      .viewport-card {
+        order: -1;
+      }
+      .side-panel {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .side-panel {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    footer {
+      width: 100%;
+      background: var(--footer-bg);
+      border-top: 1px solid var(--footer-border);
+      color: #6c757d;
+      text-align: center;
+      padding: 12px 16px;
+      font-size: 0.80rem;
+      margin-top: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    footer p.line-1 {
+      color: #343a40;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+
+    footer p.line-2 {
+      color: #495057;
+      font-weight: 600;
+    }
+
+    footer p.line-3 {
+      color: #6c757d;
+      font-size: 0.76rem;
+    }
+  </style>
+</head>
+<body>
+
+  <header class="top-header">
+    <h1>자기장 안에서 전류가 흐르는 코일이 받는 힘 관찰하기</h1>
+  </header>
+
+  <div class="page-wrapper">
+    <main class="main-layout">
+      <aside class="side-panel left-panel">
+        <div class="card panel-card info-card">
+          <h2 class="panel-title blue">🔬 실험 방법</h2>
+          <ol>
+            <li>
+              <span class="num">1.</span>
+              <span class="desc"><strong>[전원]</strong> 전원을 켭니다.</span>
+            </li>
+            <li>
+              <span class="num">2.</span>
+              <span class="desc"><strong>[조건 전환]</strong> 전류 방향과 자석 극을 바꿉니다.</span>
+            </li>
+            <li>
+              <span class="num">3.</span>
+              <span class="desc"><strong>[전류의 세기]</strong> 세기 변화를 조절합니다.</span>
+            </li>
+            <li>
+              <span class="num">4.</span>
+              <span class="desc"><strong>[방향 표시]</strong> 원하는 방향(자기장, 전류, 힘)을 화면에 표시합니다.</span>
+            </li>
+            <li>
+              <span class="num">5.</span>
+              <span class="desc"><strong>[실험 모드]</strong> '전기 그네'와 '전동기' 모드를 전환하여 관찰합니다.</span>
+            </li>
+          </ol>
+        </div>
+
+        <div class="card panel-card">
+          <h2 class="panel-title orange">⚠️ 주의사항</h2>
+          <p style="font-size: 0.82rem; color: #334155; line-height: 1.5; word-break: keep-all;">
+            본 시뮬레이션에 표시되는 <strong>자기장 방향</strong>은 입체적인 구조의 이해를 돕기 위해 말굽자석 앞쪽 일부 공간에만 시각적으로 표현되었습니다.<br><br>
+            하지만 <strong>실제로는 자석의 N극과 S극 사이의 전체 공간에 걸쳐 자기장이 고르게 형성</strong>되어 있음에 유의하세요.
+          </p>
+        </div>
+      </aside>
+
+      <section class="card viewport-card">
+        <div class="canvas-container">
+          <div class="zoom-overlay">
+            <span style="font-size:0.82rem; font-weight:800; color:var(--text-main);">🔍</span>
+            <input type="range" id="slider-zoom" min="0.6" max="1.8" step="0.05" value="1.0">
+            <span class="val-tag" id="val-zoom">100%</span>
+          </div>
+          <canvas id="simCanvas"></canvas>
+        </div>
+        
+        <div class="viewport-bottom-bar">
+          <p class="drag-instruction">💡 마우스 드래그 또는 터치로 3D 시점을 회전할 수 있습니다.</p>
+        </div>
+      </section>
+
+      <aside class="side-panel right-panel">
+        <div class="card panel-card">
+          <h2 class="panel-title">🔀 실험 모드</h2>
+          <div class="control-grid">
+            <button class="opt-btn active" id="btn-mode-swing">전기 그네</button>
+            <button class="opt-btn" id="btn-mode-motor">전동기</button>
+          </div>
+        </div>
+
+        <div class="card panel-card">
+          <h2 class="panel-title">⚡ 전원 스위치</h2>
+          <button class="btn-power" id="btn-power">전원 스위치: OFF</button>
+        </div>
+
+        <div class="card panel-card">
+          <h2 class="panel-title">🔄 조건 전환</h2>
+          <div class="control-grid">
+            <button class="opt-btn" id="btn-curr-dir">전류 방향 전환</button>
+            <button class="opt-btn" id="btn-pole-dir">자석 극 전환</button>
+          </div>
+        </div>
+
+        <div class="card panel-card">
+          <h2 class="panel-title">🎚️ 전류의 세기</h2>
+          <div class="slider-container">
+            <div class="slider-header">
+              <span>세기 설정</span>
+              <span class="val-tag" id="val-current-strength">보통</span>
+            </div>
+            <input type="range" id="slider-current-strength" min="1" max="5" value="3" step="1">
+            <div class="slider-labels">
+              <span>약</span>
+              <span>강</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="card panel-card">
+          <h2 class="panel-title">👁️ 방향 표시</h2>
+          <div class="toggle-group">
+            <label class="toggle-item">
+              <span class="info">
+                자기장 방향
+                <span class="arrow-icon">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                </span>
+              </span>
+              <div class="switch">
+                <input type="checkbox" id="chk-show-field">
+                <span class="slider"></span>
+              </div>
+            </label>
+
+            <label class="toggle-item">
+              <span class="info">
+                전류 방향
+                <span class="arrow-icon">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                </span>
+              </span>
+              <div class="switch">
+                <input type="checkbox" id="chk-show-current">
+                <span class="slider"></span>
+              </div>
+            </label>
+
+            <label class="toggle-item">
+              <span class="info">
+                힘 방향
+                <span class="arrow-icon">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                </span>
+              </span>
+              <div class="switch">
+                <input type="checkbox" id="chk-show-force">
+                <span class="slider"></span>
+              </div>
+            </label>
+          </div>
+        </div>
+      </aside>
+    </main>
+  </div>
+
+  <footer>
+    <p class="line-1">© 2026. LEE HANEUL All rights reserved.</p>
+    <p class="line-2">[자기장 안에서 전류가 흐르는 코일이 받는 힘 관찰하기] v4.2(2026-09-11)</p>
+    <p class="line-3">본 프로그램은 아이패드 및 태블릿 환경에서의 터치 조작을 지원합니다.</p>
+  </footer>
+
+  <script>
+    const state = {
+      mode: 'swing',    
+      power: false,
+      currDir: 1,       
+      poleDir: 1,       
+      currentStrength: 3, 
+      
+      showField: false,  
+      showCurrent: false, 
+      showForce: false,   
+
+      cameras: {
+        swing: { yaw: Math.PI * 0.82, pitch: 0.32, zoom: 1.0 },
+        motor: { yaw: -Math.PI * 0.15, pitch: 0.25, zoom: 0.95 }
+      },
+
+      isDragging: false,
+      lastX: 0,
+      lastY: 0,
+
+      swingAngle: 0,
+      swingVel: 0,
+      
+      motorAngle: 0,
+      motorVel: 0
+    };
+
+    const strengthTextMap = {
+      1: '매우 약',
+      2: '약',
+      3: '보통',
+      4: '강',
+      5: '매우 강'
+    };
+
+    const canvas = document.getElementById('simCanvas');
+    const ctx = canvas.getContext('2d');
+
+    const btnModeSwing = document.getElementById('btn-mode-swing');
+    const btnModeMotor = document.getElementById('btn-mode-motor');
+
+    const btnPower = document.getElementById('btn-power');
+    const btnCurrDir = document.getElementById('btn-curr-dir');
+    const btnPoleDir = document.getElementById('btn-pole-dir');
+    const sliderCurrentStrength = document.getElementById('slider-current-strength');
+    const valCurrentStrength = document.getElementById('val-current-strength');
+
+    const sliderZoom = document.getElementById('slider-zoom');
+    const valZoom = document.getElementById('val-zoom');
+
+    const chkShowField = document.getElementById('chk-show-field');
+    const chkShowCurrent = document.getElementById('chk-show-current');
+    const chkShowForce = document.getElementById('chk-show-force');
+
+    function resizeCanvas() {
+      const dpr = window.devicePixelRatio || 1;
+      const rect = canvas.getBoundingClientRect();
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+      ctx.scale(dpr, dpr);
+    }
+    window.addEventListener('resize', resizeCanvas);
+
+    function project(x, y, z) {
+      const rect = canvas.getBoundingClientRect();
+      const cx = rect.width / 2;
+      const cy = rect.height / 2 - 8;
+
+      const cam = state.cameras[state.mode];
+
+      let x1 = x * Math.cos(cam.yaw) + z * Math.sin(cam.yaw);
+      let z1 = -x * Math.sin(cam.yaw) + z * Math.cos(cam.yaw);
+
+      let y2 = y * Math.cos(cam.pitch) - z1 * Math.sin(cam.pitch);
+      let z2 = y * Math.sin(cam.pitch) + z1 * Math.cos(cam.pitch);
+
+      const perspective = 550 / (550 + z2 * cam.zoom);
+
+      return {
+        x: cx + x1 * perspective * cam.zoom,
+        y: cy + y2 * perspective * cam.zoom,
+        scale: perspective * cam.zoom,
+        zDepth: z2
+      };
+    }
+
+    function adjustColor(hex, factor) {
+      if (!hex.startsWith('#')) return hex;
+      let r = parseInt(hex.slice(1, 3), 16);
+      let g = parseInt(hex.slice(3, 5), 16);
+      let b = parseInt(hex.slice(5, 7), 16);
+
+      r = Math.min(255, Math.max(0, Math.round(r * factor)));
+      g = Math.min(255, Math.max(0, Math.round(g * factor)));
+      b = Math.min(255, Math.max(0, Math.round(b * factor)));
+
+      return `rgb(${r}, ${g}, ${b})`;
+    }
+
+    function draw3DLine(p1, p2, color, width = 2) {
+      const pr1 = project(p1.x, p1.y, p1.z);
+      const pr2 = project(p2.x, p2.y, p2.z);
+      const avgScale = (pr1.scale + pr2.scale) / 2;
+      const mainWidth = Math.max(1, width * avgScale);
+
+      ctx.save();
+      ctx.beginPath();
+      ctx.moveTo(pr1.x, pr1.y);
+      ctx.lineTo(pr2.x, pr2.y);
+      ctx.strokeStyle = color;
+      ctx.lineWidth = mainWidth;
+      ctx.lineCap = 'round';
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    function draw3DArrow(p1, p2, color, strokeScale = 1) {
+      const pr1 = project(p1.x, p1.y, p1.z);
+      const pr2 = project(p2.x, p2.y, p2.z);
+
+      const dx = pr2.x - pr1.x;
+      const dy = pr2.y - pr1.y;
+      const dist = Math.hypot(dx, dy);
+      if (dist < 1) return;
+
+      const angle = Math.atan2(dy, dx);
+      
+      const baseWidth = 2.2 * strokeScale;
+      const headLen = Math.min(dist * 0.35, (8.5 * strokeScale) * pr2.scale);
+      const lineWidth = Math.max(1.0, baseWidth * pr2.scale);
+
+      const pullBack = headLen * 0.8; 
+      const stemEndX = pr2.x - pullBack * Math.cos(angle);
+      const stemEndY = pr2.y - pullBack * Math.sin(angle);
+
+      ctx.save();
+      
+      ctx.beginPath();
+      ctx.moveTo(pr1.x, pr1.y);
+      ctx.lineTo(stemEndX, stemEndY);
+      ctx.strokeStyle = color;
+      ctx.lineWidth = lineWidth;
+      ctx.lineCap = 'round';
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.moveTo(pr2.x, pr2.y);
+      ctx.lineTo(pr2.x - headLen * Math.cos(angle - Math.PI / 6), pr2.y - headLen * Math.sin(angle - Math.PI / 6));
+      ctx.lineTo(pr2.x - headLen * Math.cos(angle + Math.PI / 6), pr2.y - headLen * Math.sin(angle + Math.PI / 6));
+      ctx.closePath();
+      ctx.fillStyle = color;
+      ctx.fill();
+      
+      ctx.restore();
+    }
+
+    function drawElectrodeBadge(pos3D, symbol) {
+      const pr = project(pos3D.x, pos3D.y, pos3D.z);
+      const text = `(${symbol})`;
+
+      ctx.save();
+      ctx.fillStyle = symbol === '+' ? '#ef4444' : '#2563eb';
+      ctx.font = `900 ${Math.max(16, Math.round(24 * pr.scale))}px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = Math.max(2, 3.5 * pr.scale);
+      ctx.strokeText(text, pr.x, pr.y);
+      ctx.fillText(text, pr.x, pr.y);
+      ctx.restore();
+    }
+
+    function buildCubePolygons(origin, w, h, d, color, labelText, labelPos, noDarkBorder = false, labelFaceIndex = 1) {
+      const v = [
+        {x: origin.x, y: origin.y, z: origin.z},                 
+        {x: origin.x + w, y: origin.y, z: origin.z},             
+        {x: origin.x + w, y: origin.y + h, z: origin.z},         
+        {x: origin.x, y: origin.y + h, z: origin.z},             
+        {x: origin.x, y: origin.y, z: origin.z + d},             
+        {x: origin.x + w, y: origin.y, z: origin.z + d},         
+        {x: origin.x + w, y: origin.y + h, z: origin.z + d},     
+        {x: origin.x, y: origin.y + h, z: origin.z + d}          
+      ];
+
+      const faces = [
+        { indices: [0, 1, 2, 3], shade: 0.75 }, 
+        { indices: [5, 4, 7, 6], shade: 1.00 }, 
+        { indices: [4, 5, 1, 0], shade: 1.15 }, 
+        { indices: [3, 2, 6, 7], shade: 0.65 }, 
+        { indices: [4, 0, 3, 7], shade: 0.85 }, 
+        { indices: [1, 5, 6, 2], shade: 0.90 }  
+      ];
+
+      if (labelText) {
+        faces[labelFaceIndex].label = labelText;
+        faces[labelFaceIndex].labelPos = labelPos;
+      }
+
+      return faces.map(f => ({
+        pts: f.indices.map(i => v[i]),
+        color: color,
+        shade: f.shade,
+        label: f.label || null,
+        labelPos: f.labelPos || null,
+        noDarkBorder: noDarkBorder,
+        thickBorder: false
+      }));
+    }
+
+    function drawPolygon(poly) {
+      const projectedPts = poly.pts.map(p => project(p.x, p.y, p.z));
+      let avgScale = 0;
+      projectedPts.forEach(p => avgScale += p.scale);
+      avgScale /= projectedPts.length;
+
+      const fillColor = adjustColor(poly.color, poly.shade || 1.0);
+
+      ctx.save();
+      ctx.beginPath();
+      ctx.moveTo(projectedPts[0].x, projectedPts[0].y);
+      for (let i = 1; i < projectedPts.length; i++) {
+        ctx.lineTo(projectedPts[i].x, projectedPts[i].y);
+      }
+      ctx.closePath();
+
+      ctx.fillStyle = fillColor;
+      ctx.fill();
+
+      if (poly.noDarkBorder) {
+        ctx.strokeStyle = fillColor;
+        ctx.lineWidth = Math.max(0.6, 1.0 * avgScale);
+        ctx.stroke();
+      } else {
+        const darkFactor = poly.thickBorder ? 0.85 : 0.75;
+        ctx.strokeStyle = adjustColor(poly.color, darkFactor);
+        const baseWidth = poly.thickBorder ? 0.8 : 1.2;
+        ctx.lineWidth = Math.max(0.5, baseWidth * avgScale);
+        ctx.lineJoin = 'round';
+        ctx.stroke();
+      }
+
+      if (poly.label && poly.labelPos) {
+        const centerPr = project(poly.labelPos.x, poly.labelPos.y, poly.labelPos.z);
+        ctx.font = `900 ${Math.round(28 * centerPr.scale)}px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`;
+        ctx.fillStyle = '#ffffff';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
+        ctx.shadowBlur = 4;
+        ctx.fillText(poly.label, centerPr.x, centerPr.y);
+      }
+      ctx.restore();
+    }
+
+    // --- Swing Mode Specifics ---
+    function buildSwingMagnetArchPolygons(topColor, bottomColor) {
+      const faces = [];
+      const N = 24;
+      const y0 = 85;   
+      const z0 = -80;  
+      const Rin = 45;  
+      const Rout = 75; 
+      const x1 = -70;  
+      const x2 = 70;   
+
+      for (let i = 0; i < N; i++) {
+        const t1 = -Math.PI / 2 + (Math.PI / N) * i;
+        const t2 = -Math.PI / 2 + (Math.PI / N) * (i + 1);
+        const baseColor = (i < N / 2) ? topColor : bottomColor;
+
+        const p_out1_l = { x: x1, y: y0 + Rout * Math.sin(t1), z: z0 - Rout * Math.cos(t1) };
+        const p_out1_r = { x: x2, y: y0 + Rout * Math.sin(t1), z: z0 - Rout * Math.cos(t1) };
+        const p_out2_r = { x: x2, y: y0 + Rout * Math.sin(t2), z: z0 - Rout * Math.cos(t2) };
+        const p_out2_l = { x: x1, y: y0 + Rout * Math.sin(t2), z: z0 - Rout * Math.cos(t2) };
+
+        const p_in1_l = { x: x1, y: y0 + Rin * Math.sin(t1), z: z0 - Rin * Math.cos(t1) };
+        const p_in1_r = { x: x2, y: y0 + Rin * Math.sin(t1), z: z0 - Rin * Math.cos(t1) };
+        const p_in2_r = { x: x2, y: y0 + Rin * Math.sin(t2), z: z0 - Rin * Math.cos(t2) };
+        const p_in2_l = { x: x1, y: y0 + Rin * Math.sin(t2), z: z0 - Rin * Math.cos(t2) };
+
+        const shadeVal = 0.92 + 0.18 * Math.cos((t1 + t2) / 2);
+
+        faces.push({ pts: [p_out1_l, p_out1_r, p_out2_r, p_out2_l], color: baseColor, shade: shadeVal, noDarkBorder: true });
+        faces.push({ pts: [p_in1_l, p_in2_l, p_in2_r, p_in1_r], color: baseColor, shade: 0.70, noDarkBorder: true });
+        faces.push({ pts: [p_out1_l, p_out2_l, p_in2_l, p_in1_l], color: baseColor, shade: 0.85, noDarkBorder: true });
+        faces.push({ pts: [p_out1_r, p_in1_r, p_in2_r, p_out2_r], color: baseColor, shade: 0.90, noDarkBorder: true });
+      }
+      return faces;
+    }
+
+    function getSwingMagnetOutlineSegments(topColor, bottomColor) {
+      const topBorderColor = adjustColor(topColor, 0.70);
+      const botBorderColor = adjustColor(bottomColor, 0.70);
+      const N = 24; const y0 = 85; const z0 = -80; const Rin = 45; const Rout = 75; const x1 = -70; const x2 = 70;
+      const segments = [];
+      function addPoly(pts, color) {
+        for (let i = 0; i < pts.length - 1; i++) segments.push({ p1: pts[i], p2: pts[i + 1], color: color, width: 1.4 });
+      }
+
+      addPoly([{x: x1, y: 10, z: 60}, {x: x2, y: 10, z: 60}, {x: x2, y: 40, z: 60}, {x: x1, y: 40, z: 60}, {x: x1, y: 10, z: 60}], topBorderColor);
+      addPoly([{x: x1, y: 130, z: 60}, {x: x2, y: 130, z: 60}, {x: x2, y: 160, z: 60}, {x: x1, y: 160, z: 60}, {x: x1, y: 130, z: 60}], botBorderColor);
+
+      const outL_top = [{ x: x1, y: 10, z: 60 }]; const outL_bot = [];
+      const outR_top = [{ x: x2, y: 10, z: 60 }]; const outR_bot = [];
+      const inL_top = [{ x: x1, y: 40, z: 60 }]; const inL_bot = [];
+      const inR_top = [{ x: x2, y: 40, z: 60 }]; const inR_bot = [];
+
+      for (let i = 0; i <= N; i++) {
+        const t = -Math.PI / 2 + (Math.PI / N) * i;
+        const pOutL = { x: x1, y: y0 + Rout * Math.sin(t), z: z0 - Rout * Math.cos(t) };
+        const pOutR = { x: x2, y: y0 + Rout * Math.sin(t), z: z0 - Rout * Math.cos(t) };
+        const pInL  = { x: x1, y: y0 + Rin  * Math.sin(t), z: z0 - Rin  * Math.cos(t) };
+        const pInR  = { x: x2, y: y0 + Rin  * Math.sin(t), z: z0 - Rin  * Math.cos(t) };
+
+        if (i <= N/2) { outL_top.push(pOutL); outR_top.push(pOutR); inL_top.push(pInL); inR_top.push(pInR); }
+        if (i >= N/2) { outL_bot.push(pOutL); outR_bot.push(pOutR); inL_bot.push(pInL); inR_bot.push(pInR); }
+      }
+      outL_bot.push({ x: x1, y: 160, z: 60 }); outR_bot.push({ x: x2, y: 160, z: 60 });
+      inL_bot.push({ x: x1, y: 130, z: 60 }); inR_bot.push({ x: x2, y: 130, z: 60 });
+
+      addPoly(outL_top, topBorderColor); addPoly(outR_top, topBorderColor);
+      addPoly(inL_top, topBorderColor); addPoly(inR_top, topBorderColor);
+      addPoly(outL_bot, botBorderColor); addPoly(outR_bot, botBorderColor);
+      addPoly(inL_bot, botBorderColor); addPoly(inR_bot, botBorderColor);
+      return segments;
+    }
+
+    function getSwungPos(x, y_rest, z_rest) {
+      const pivotY = -140;
+      const rad = (state.swingAngle * Math.PI) / 180;
+      const dy = y_rest - pivotY;
+      return {
+        x: x,
+        y: pivotY + dy * Math.cos(rad) - (z_rest || 0) * Math.sin(rad),
+        z: dy * Math.sin(rad) + (z_rest || 0) * Math.cos(rad)
+      };
+    }
+
+    function getSwungBoxPolys(x, y, z, w, h, d, color, thickBorder = false) {
+      const v = [
+        getSwungPos(x - w/2, y - h/2, z - d/2), getSwungPos(x + w/2, y - h/2, z - d/2),
+        getSwungPos(x + w/2, y + h/2, z - d/2), getSwungPos(x - w/2, y + h/2, z - d/2),
+        getSwungPos(x - w/2, y - h/2, z + d/2), getSwungPos(x + w/2, y - h/2, z + d/2),
+        getSwungPos(x + w/2, y + h/2, z + d/2), getSwungPos(x - w/2, y + h/2, z + d/2)
+      ];
+      const faces = [
+        { indices: [0, 1, 2, 3], shade: 1.0 }, { indices: [5, 4, 7, 6], shade: 1.0 }, 
+        { indices: [4, 5, 1, 0], shade: 1.0 }, { indices: [3, 2, 6, 7], shade: 1.0 }, 
+        { indices: [4, 0, 3, 7], shade: 1.0 }, { indices: [1, 5, 6, 2], shade: 1.0 }  
+      ];
+      return faces.map(f => ({
+        pts: f.indices.map(i => v[i]), color: color, shade: f.shade, noDarkBorder: false, thickBorder: thickBorder
+      }));
+    }
+
+    // --- Motor Mode Specifics ---
+    function getMotorPos(x, y, z) {
+      const rad = state.motorAngle;
+      return {
+        x: x * Math.cos(rad) - y * Math.sin(rad),
+        y: x * Math.sin(rad) + y * Math.cos(rad),
+        z: z
+      };
+    }
+
+    function buildMotorCommutator() {
+      const polys = [];
+      const r = 14;
+      const zStart = -165; 
+      const zEnd = -135;
+      const steps = 12;
+
+      function buildHalfRing(startAng, endAng, color) {
+        for(let i=0; i<steps; i++) {
+            let a1 = startAng + (endAng - startAng)*(i/steps);
+            let a2 = startAng + (endAng - startAng)*((i+1)/steps);
+            a1 += state.motorAngle;
+            a2 += state.motorAngle;
+
+            let p1 = { x: r*Math.cos(a1), y: r*Math.sin(a1), z: zStart };
+            let p2 = { x: r*Math.cos(a2), y: r*Math.sin(a2), z: zStart };
+            let p3 = { x: r*Math.cos(a2), y: r*Math.sin(a2), z: zEnd };
+            let p4 = { x: r*Math.cos(a1), y: r*Math.sin(a1), z: zEnd };
+            polys.push({ pts: [p1, p2, p3, p4], color: color, shade: 0.85 + 0.2*Math.cos(a1), noDarkBorder: true, thickBorder: false });
+        }
+      }
+
+      buildHalfRing(Math.PI/2 + 0.1, 3*Math.PI/2 - 0.1, '#b46b22');
+      buildHalfRing(-Math.PI/2 + 0.1, Math.PI/2 - 0.1, '#b46b22');
+      return polys;
+    }
+
+    // --- Main Render Loop ---
+    function render() {
+      const rect = canvas.getBoundingClientRect();
+      ctx.clearRect(0, 0, rect.width, rect.height);
+
+      const floorPts = [project(-200, 160, -200), project(200, 160, -200), project(200, 160, 200), project(-200, 160, 200)];
+      ctx.beginPath();
+      ctx.moveTo(floorPts[0].x, floorPts[0].y);
+      for(let i=1; i<4; i++) ctx.lineTo(floorPts[i].x, floorPts[i].y);
+      ctx.closePath();
+      ctx.fillStyle = '#ffffff';
+      ctx.fill();
+      ctx.strokeStyle = '#cbd5e1';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+
+      let renderQueue = [];
+      function queuePoly(poly) {
+        let sumZ = 0;
+        poly.pts.forEach(p => sumZ += project(p.x, p.y, p.z).zDepth);
+        renderQueue.push({ type: 'poly', data: poly, avgZ: sumZ / poly.pts.length });
+      }
+      function queueLine(p1, p2, color, width = 2) {
+        const z1 = project(p1.x, p1.y, p1.z).zDepth;
+        const z2 = project(p2.x, p2.y, p2.z).zDepth;
+        renderQueue.push({ type: 'line', data: {p1, p2, color, width}, avgZ: (z1+z2)/2 });
+      }
+      function queueArrow(p1, p2, color, strokeScale = 1) {
+        const z1 = project(p1.x, p1.y, p1.z).zDepth;
+        const z2 = project(p2.x, p2.y, p2.z).zDepth;
+        renderQueue.push({ type: 'arrow', data: {p1, p2, color, strokeScale}, avgZ: (z1+z2)/2 });
+      }
+
+      if (state.mode === 'swing') {
+        let forceMag = 0; let forceDir = 0;
+        if (state.power) {
+          forceDir = state.currDir * state.poleDir;
+          forceMag = 6 * state.currentStrength;
+        }
+        state.swingVel += (forceDir * forceMag - state.swingAngle) * 0.1;
+        state.swingVel *= 0.82;
+        state.swingAngle += state.swingVel;
+
+        const topN = state.poleDir === 1;
+        const topColor = topN ? '#ef4444' : '#3b82f6';
+        const bottomColor = topN ? '#3b82f6' : '#ef4444';
+
+        buildCubePolygons({x: -125, y: -140, z: -5}, 10, 300, 10, '#475569').forEach(queuePoly);
+        buildCubePolygons({x: 115, y: -140, z: -5}, 10, 300, 10, '#475569').forEach(queuePoly);
+        buildCubePolygons({x: -130, y: -140, z: -5}, 260, 10, 10, '#475569').forEach(queuePoly);
+        
+        buildCubePolygons({x: -70, y: 10, z: -80}, 140, 30, 140, topColor, topN?'N':'S', {x: 0, y: 25, z: 61}, true, 1).forEach(queuePoly);
+        buildCubePolygons({x: -70, y: 130, z: -80}, 140, 30, 140, bottomColor, topN?'S':'N', {x: 0, y: 145, z: 61}, true, 1).forEach(queuePoly);
+        buildSwingMagnetArchPolygons(topColor, bottomColor).forEach(queuePoly);
+        getSwingMagnetOutlineSegments(topColor, bottomColor).forEach(line => queueLine(line.p1, line.p2, line.color, line.width));
+
+        if (state.showField) {
+          const startY = topN ? 40 : 130; const endY = topN ? 130 : 40;
+          for (let x = -40; x <= 40; x += 40) {
+            for (let z = -30; z <= 30; z += 30) queueArrow({x, y: startY, z}, {x, y: endY, z}, '#22c55e', 1);
+          }
+        }
+
+        const coilColor = '#d46e3b'; 
+
+        for (let i = 0; i < 10; i++) {
+          const z = (i - 4.5) * 3.0;
+          getSwungBoxPolys(-80, 27.5, z, 7, 122, 3.0, coilColor, true).forEach(queuePoly);
+          getSwungBoxPolys(80, 27.5, z, 7, 122, 3.0, coilColor, true).forEach(queuePoly); 
+          getSwungBoxPolys(0, -30, z, 153, 7, 3.0, coilColor, true).forEach(queuePoly);  
+          getSwungBoxPolys(0, 85, z, 153, 7, 3.0, coilColor, true).forEach(queuePoly);   
+        }
+
+        queueLine({x: -80, y: -140, z: 0}, getSwungPos(-80, -30, 0), coilColor, 3.5); 
+        queueLine({x: 80, y: -140, z: 0}, getSwungPos(80, -30, 0), coilColor, 3.5);
+
+        if (state.power && state.showCurrent) {
+          const col = '#facc15'; const scale = 0.8 + state.currentStrength*0.15;
+          const offset = 18;
+          const l1 = getSwungPos(-90, offset, 0); const l2 = getSwungPos(-90, 45, 0);
+          queueArrow(state.currDir===1?l1:l2, state.currDir===1?l2:l1, col, scale);
+          const b1 = getSwungPos(-30, 95 + offset, 0); const b2 = getSwungPos(30, 95 + offset, 0);
+          queueArrow(state.currDir===1?b1:b2, state.currDir===1?b2:b1, col, scale);
+          const r1 = getSwungPos(90, 45, 0); const r2 = getSwungPos(90, offset, 0);
+          queueArrow(state.currDir===1?r1:r2, state.currDir===1?r2:r1, col, scale);
+        }
+
+        if (state.power && state.showForce && Math.abs(forceMag) > 0) {
+          const fStart = getSwungPos(0, 95, 0);
+          queueArrow(fStart, { x: fStart.x, y: fStart.y, z: fStart.z + forceDir * (25 + state.currentStrength * 12) }, '#ef4444', 0.8 + state.currentStrength * 0.18);
+        }
+
+      } else {
+        // --- Motor Mode ---
+        let torque = 0;
+        const forceDir = state.currDir * state.poleDir;
+        if (state.power) {
+          torque = -forceDir * state.currentStrength * 0.00125 * Math.abs(Math.cos(state.motorAngle));
+        }
+        state.motorVel = state.motorVel * 0.95 + torque;
+        state.motorAngle += state.motorVel;
+
+        const leftN = state.poleDir === 1;
+        const lCol = leftN ? '#ef4444' : '#3b82f6';
+        const rCol = leftN ? '#3b82f6' : '#ef4444';
+
+        buildCubePolygons({x: -160, y: -40, z: -60}, 60, 80, 120, lCol, leftN?'N':'S', {x: -130, y: 0, z: -61}, true, 0).forEach(queuePoly);
+        buildCubePolygons({x: 100, y: -40, z: -60}, 60, 80, 120, rCol, leftN?'S':'N', {x: 130, y: 0, z: -61}, true, 0).forEach(queuePoly);
+
+        if (state.showField) {
+          const startX = leftN ? -100 : 100; const endX = leftN ? 100 : -100;
+          for (let y = -20; y <= 20; y += 20) {
+            for (let z = -30; z <= 30; z += 30) queueArrow({x: startX, y, z}, {x: endX, y, z}, '#22c55e', 1);
+          }
+        }
+
+        const brushColor = '#94a3b8'; 
+        const brushZ = -150;
+        buildCubePolygons({x: -22, y: -15, z: brushZ - 7.5}, 8, 40, 20, brushColor, null, null, true).forEach(queuePoly);
+        buildCubePolygons({x: -42, y: 20, z: brushZ - 7.5}, 20, 5, 20, brushColor, null, null, true).forEach(queuePoly);
+        
+        buildCubePolygons({x: 14, y: -15, z: brushZ - 7.5}, 8, 40, 20, brushColor, null, null, true).forEach(queuePoly);
+        buildCubePolygons({x: 22, y: 20, z: brushZ - 7.5}, 20, 5, 20, brushColor, null, null, true).forEach(queuePoly);
+
+        const wireZ = brushZ;
+        queueLine({x: -150, y: 22.5, z: wireZ}, {x: -35, y: 22.5, z: wireZ}, '#475569', 3.0);
+        queueLine({x: 35, y: 22.5, z: wireZ}, {x: 150, y: 22.5, z: wireZ}, '#475569', 3.0);
+
+        buildMotorCommutator().forEach(queuePoly);
+
+        const coilColor = '#d46e3b';
+        const wireW = 7;
+        const cX = 70;  
+        const cZ = 60;  
+        const bendZ = -60; 
+        
+        queueLine(getMotorPos(-11, 0, -135), getMotorPos(-11, 0, bendZ), coilColor, wireW);
+        queueLine(getMotorPos(-11, 0, bendZ), getMotorPos(-cX, 0, bendZ), coilColor, wireW);
+        queueLine(getMotorPos(-cX, 0, bendZ), getMotorPos(-cX, 0, cZ), coilColor, wireW);
+
+        queueLine(getMotorPos(11, 0, -135), getMotorPos(11, 0, bendZ), coilColor, wireW);
+        queueLine(getMotorPos(11, 0, bendZ), getMotorPos(cX, 0, bendZ), coilColor, wireW);
+        queueLine(getMotorPos(cX, 0, bendZ), getMotorPos(cX, 0, cZ), coilColor, wireW);
+
+        queueLine(getMotorPos(-cX, 0, cZ), getMotorPos(cX, 0, cZ), coilColor, wireW);
+
+        if (state.power && state.showCurrent) {
+          const col = '#facc15'; const scale = 0.8 + state.currentStrength*0.15;
+          const floatOffset = 10;
+          
+          if (state.currDir === 1) {
+            queueArrow({x: -110, y: 22.5 - floatOffset, z: wireZ}, {x: -50, y: 22.5 - floatOffset, z: wireZ}, col, scale); 
+            queueArrow({x: 50, y: 22.5 - floatOffset, z: wireZ}, {x: 110, y: 22.5 - floatOffset, z: wireZ}, col, scale); 
+          } else {
+            queueArrow({x: -50, y: 22.5 - floatOffset, z: wireZ}, {x: -110, y: 22.5 - floatOffset, z: wireZ}, col, scale); 
+            queueArrow({x: 110, y: 22.5 - floatOffset, z: wireZ}, {x: 50, y: 22.5 - floatOffset, z: wireZ}, col, scale); 
+          }
+          
+          const cosTheta = Math.cos(state.motorAngle);
+          
+          if (Math.abs(cosTheta) > 0.05) {
+            const zFlow = state.currDir * Math.sign(cosTheta);
+            const offset = 20; 
+            
+            let pL1 = getMotorPos(-cX, offset, -zFlow * 25);
+            let pL2 = getMotorPos(-cX, offset, zFlow * 25);
+            queueArrow(pL1, pL2, col, scale);
+
+            let pR1 = getMotorPos(cX, offset, zFlow * 25);
+            let pR2 = getMotorPos(cX, offset, -zFlow * 25);
+            queueArrow(pR1, pR2, col, scale);
+
+            let pB1 = getMotorPos(-zFlow * 25, offset, cZ);
+            let pB2 = getMotorPos(zFlow * 25, offset, cZ);
+            queueArrow(pB1, pB2, col, scale);
+
+            let cL1 = getMotorPos(-11, offset, -115);
+            let cL2 = getMotorPos(-11, offset, -80);
+            if (zFlow > 0) queueArrow(cL1, cL2, col, scale * 0.8);
+            else queueArrow(cL2, cL1, col, scale * 0.8);
+
+            let cR1 = getMotorPos(11, offset, -115);
+            let cR2 = getMotorPos(11, offset, -80);
+            if (zFlow > 0) queueArrow(cR2, cR1, col, scale * 0.8);
+            else queueArrow(cR1, cR2, col, scale * 0.8);
+          }
+        }
+
+        if (state.power && state.showForce) {
+          const cosTheta = Math.cos(state.motorAngle);
+          if (Math.abs(cosTheta) > 0.05) {
+            const fLen = 25 + state.currentStrength * 12;
+            const F_y_left = state.currDir * state.poleDir * Math.sign(cosTheta) * fLen;
+            const offset = 14; 
+            
+            const baseL = getMotorPos(-cX, 0, 0);
+            const posL = { x: baseL.x, y: baseL.y + Math.sign(F_y_left)*offset, z: baseL.z };
+            const forceEndL = { x: posL.x, y: posL.y + F_y_left, z: posL.z };
+            queueArrow(posL, forceEndL, '#ef4444', 0.8 + state.currentStrength * 0.18);
+
+            const F_y_right = -F_y_left;
+            const baseR = getMotorPos(cX, 0, 0);
+            const posR = { x: baseR.x, y: baseR.y + Math.sign(F_y_right)*offset, z: baseR.z };
+            const forceEndR = { x: posR.x, y: posR.y + F_y_right, z: posR.z };
+            queueArrow(posR, forceEndR, '#ef4444', 0.8 + state.currentStrength * 0.18);
+          }
+        }
+      }
+
+      renderQueue.sort((a, b) => b.avgZ - a.avgZ);
+      renderQueue.forEach(item => {
+        if (item.type === 'poly') drawPolygon(item.data);
+        else if (item.type === 'line') draw3DLine(item.data.p1, item.data.p2, item.data.color, item.data.width);
+        else if (item.type === 'arrow') draw3DArrow(item.data.p1, item.data.p2, item.data.color, item.data.strokeScale);
+      });
+
+      if (state.mode === 'swing') {
+        drawElectrodeBadge({x: -80, y: -160, z: 0}, state.currDir===1?'+':'-');
+        drawElectrodeBadge({x: 80, y: -160, z: 0}, state.currDir===1?'-':'+');
+      } else {
+        drawElectrodeBadge({x: -80, y: 45, z: -147.5}, state.currDir===1?'+':'-');
+        drawElectrodeBadge({x: 80, y: 45, z: -147.5}, state.currDir===1?'-':'+');
+      }
+
+      requestAnimationFrame(render);
+    }
+
+    function updateZoomUI() {
+      const cam = state.cameras[state.mode];
+      sliderZoom.value = cam.zoom.toFixed(2);
+      valZoom.textContent = `${Math.round(cam.zoom * 100)}%`;
+    }
+
+    function updateModeUI() {
+      btnModeSwing.classList.toggle('active', state.mode === 'swing');
+      btnModeMotor.classList.toggle('active', state.mode === 'motor');
+      state.power = false;
+      btnPower.classList.remove('on');
+      btnPower.textContent = '전원 스위치: OFF';
+      state.swingAngle = 0; state.swingVel = 0;
+      state.motorAngle = 0; state.motorVel = 0;
+      updateZoomUI();
+    }
+
+    function setupEvents() {
+      btnModeSwing.addEventListener('click', () => { state.mode = 'swing'; updateModeUI(); });
+      btnModeMotor.addEventListener('click', () => { state.mode = 'motor'; updateModeUI(); });
+
+      btnPower.addEventListener('click', () => {
+        state.power = !state.power;
+        btnPower.classList.toggle('on', state.power);
+        btnPower.textContent = state.power ? '전원 스위치: ON' : '전원 스위치: OFF';
+      });
+
+      btnCurrDir.addEventListener('click', () => state.currDir = -state.currDir);
+      btnPoleDir.addEventListener('click', () => state.poleDir = -state.poleDir);
+
+      sliderCurrentStrength.addEventListener('input', (e) => {
+        state.currentStrength = parseInt(e.target.value);
+        valCurrentStrength.textContent = strengthTextMap[state.currentStrength];
+      });
+
+      sliderZoom.addEventListener('input', (e) => {
+        state.cameras[state.mode].zoom = parseFloat(e.target.value);
+        valZoom.textContent = `${Math.round(state.cameras[state.mode].zoom * 100)}%`;
+      });
+
+      chkShowField.addEventListener('change', (e) => state.showField = e.target.checked);
+      chkShowCurrent.addEventListener('change', (e) => state.showCurrent = e.target.checked);
+      chkShowForce.addEventListener('change', (e) => state.showForce = e.target.checked);
+
+      canvas.addEventListener('pointerdown', (e) => {
+        state.isDragging = true;
+        state.lastX = e.clientX;
+        state.lastY = e.clientY;
+        canvas.setPointerCapture(e.pointerId);
+      });
+
+      canvas.addEventListener('pointermove', (e) => {
+        if (!state.isDragging) return;
+        const dx = e.clientX - state.lastX;
+        const dy = e.clientY - state.lastY;
+
+        const cam = state.cameras[state.mode];
+        cam.yaw += dx * 0.007;
+        cam.pitch += dy * 0.007;
+        cam.pitch = Math.max(-Math.PI / 3, Math.min(Math.PI / 2 - 0.05, cam.pitch));
+
+        state.lastX = e.clientX;
+        state.lastY = e.clientY;
+      });
+
+      const stopDrag = (e) => {
+        if (state.isDragging) {
+          state.isDragging = false;
+          try { canvas.releasePointerCapture(e.pointerId); } catch(err) {}
+        }
+      };
+      canvas.addEventListener('pointerup', stopDrag);
+      canvas.addEventListener('pointercancel', stopDrag);
+
+      canvas.addEventListener('wheel', (e) => {
+        e.preventDefault();
+        const cam = state.cameras[state.mode];
+        cam.zoom += e.deltaY * -0.001;
+        cam.zoom = Math.max(0.6, Math.min(1.8, cam.zoom));
+        updateZoomUI();
+      }, { passive: false });
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      resizeCanvas();
+      setupEvents();
+      render();
+    });
+  </script>
+</body>
+</html>
