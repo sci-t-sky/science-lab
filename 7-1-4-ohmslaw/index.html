@@ -39,136 +39,137 @@
         header { 
             width: 100%;
             text-align: center; 
-            padding: 14px 20px; 
+            padding: 12px 20px; 
             background: var(--header-bg); 
             box-shadow: 0 4px 6px rgba(0,0,0,0.05); 
         }
-        h1 { margin: 0; font-size: 1.35rem; color: #ffffff; font-weight: 700; letter-spacing: -0.5px; }
+        h1 { margin: 0; font-size: 1.3rem; color: #ffffff; font-weight: 700; letter-spacing: -0.5px; }
 
-        /* 도구모음 공간을 고려하여 컨테이너의 상하 패딩과 여백을 적절히 최적화 */
+        /* 여백을 최소화하여 상단에 딱 붙고 화면 공간을 꽉 채우도록 설정 */
         .container { 
             max-width: 1220px; 
             width: 100%; 
-            margin: auto auto; 
+            margin: 0 auto; 
             display: flex; 
             flex-direction: column; 
-            gap: 10px; 
-            padding: 12px 10px; 
+            gap: 8px; 
+            padding: 8px 10px; 
         }
 
-        .guide-container { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .guide-container { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
         @media (max-width: 850px) { .guide-container { grid-template-columns: 1fr; } }
 
         .guide-box { 
-            padding: 10px 14px; 
+            padding: 8px 12px; 
             border-radius: 8px; 
-            font-size: 0.82rem; 
-            line-height: 1.45; 
+            font-size: 0.8rem; 
+            line-height: 1.4; 
             background: white; 
-            box-shadow: 0 2px 4px rgba(0,0,0,0.04); 
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04); 
             border: 1px solid var(--border-color);
         }
         .method-box { border-left: 4px solid var(--primary-blue); background-color: var(--guide-bg); }
         .caution-box { border-left: 4px solid var(--accent-red); background-color: var(--caution-bg); }
-        .guide-title { font-weight: bold; margin-bottom: 5px; display: block; font-size: 0.88rem; color: #0f172a; }
+        .guide-title { font-weight: bold; margin-bottom: 4px; display: block; font-size: 0.85rem; color: #0f172a; }
         
         .bullet-list { margin: 0; padding-left: 16px; list-style-type: disc; }
-        .bullet-list li { margin-bottom: 3px; }
+        .bullet-list li { margin-bottom: 2px; }
 
-        .main-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .main-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
         @media (max-width: 950px) { .main-layout { grid-template-columns: 1fr; } }
 
         .panel {
             background: var(--panel-bg); 
             border-radius: 10px; 
-            padding: 14px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.03); 
+            padding: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.03); 
             display: flex; 
             flex-direction: column; 
-            gap: 10px;
+            gap: 8px;
             border: 1px solid var(--border-color);
         }
 
         .display-container { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
         .sensor-box {
-            background: #111827; padding: 8px; border-radius: 8px; text-align: center;
-            font-family: 'Consolas', monospace; box-shadow: inset 0 0 8px rgba(0,0,0,0.6);
+            background: #111827; padding: 7px; border-radius: 6px; text-align: center;
+            font-family: 'Consolas', monospace; box-shadow: inset 0 0 6px rgba(0,0,0,0.6);
         }
         .v-box { border: 1.5px solid var(--voltmeter-color); color: var(--voltmeter-color); }
         .i-box { border: 1.5px solid var(--ammeter-color); color: var(--ammeter-color); }
-        .sensor-label { font-size: 0.72rem; opacity: 0.85; margin-bottom: 2px; color: #94a3b8; }
-        .sensor-value { font-size: 1.3rem; font-weight: bold; }
+        .sensor-label { font-size: 0.7rem; opacity: 0.85; margin-bottom: 2px; color: #94a3b8; }
+        .sensor-value { font-size: 1.2rem; font-weight: bold; }
 
         .canvas-wrapper { position: relative; width: 100%; }
-        #circuit-canvas { width: 100%; height: 215px; background: #fff; border: 1px solid var(--border-color); border-radius: 8px; display: block; }
+        #circuit-canvas { width: 100%; height: 210px; background: #fff; border: 1px solid var(--border-color); border-radius: 6px; display: block; }
         
         .circuit-legend {
-            position: absolute; bottom: 8px; left: 8px;
-            background: rgba(255, 255, 255, 0.96); padding: 7px 11px; border-radius: 6px;
-            font-size: 0.74rem; border: 1px solid var(--border-color); display: flex; flex-direction: column; gap: 4px;
+            position: absolute; bottom: 6px; left: 6px;
+            background: rgba(255, 255, 255, 0.96); padding: 6px 10px; border-radius: 6px;
+            font-size: 0.72rem; border: 1px solid var(--border-color); display: flex; flex-direction: column; gap: 4px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.06); pointer-events: none;
         }
-        .legend-item { display: flex; align-items: center; gap: 8px; font-weight: bold; color: #334155; }
+        .legend-item { display: flex; align-items: center; gap: 6px; font-weight: bold; color: #334155; }
         
         .legend-symbol {
-            width: 20px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+            width: 18px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
         }
         .legend-circle {
-            width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            font-size: 0.65rem; font-family: 'Pretendard', sans-serif; background: #fff;
+            width: 16px; height: 16px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-size: 0.6rem; font-family: 'Pretendard', sans-serif; background: #fff;
         }
         .legend-v { border: 2px solid var(--voltmeter-color); color: var(--voltmeter-color); }
         .legend-a { border: 2px solid var(--ammeter-color); color: var(--ammeter-color); }
-        .legend-electron { width: 12px; height: 12px; background: var(--electron-color); border-radius: 50%; margin: 3px; }
+        .legend-electron { width: 11px; height: 11px; background: var(--electron-color); border-radius: 50%; margin: 3px; }
         
         .legend-arrow-container {
-            width: 18px; height: 12px; display: flex; align-items: center; justify-content: center; position: relative;
+            width: 16px; height: 10px; display: flex; align-items: center; justify-content: center; position: relative;
         }
         .legend-arrow-line {
-            width: 10px; height: 2px; background: var(--current-color); position: absolute;
+            width: 9px; height: 2px; background: var(--current-color); position: absolute;
         }
         .legend-arrow-head {
-            width: 0; height: 0; border-top: 3.5px solid transparent; border-bottom: 3.5px solid transparent; border-left: 5px solid var(--current-color); position: absolute; right: 0;
+            width: 0; height: 0; border-top: 3px solid transparent; border-bottom: 3px solid transparent; border-left: 4.5px solid var(--current-color); position: absolute; right: 0;
         }
 
-        .controls { background: #f8fafc; padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); display: flex; flex-direction: column; gap: 10px; }
-        .control-group { display: flex; flex-direction: column; gap: 6px; }
-        label { font-weight: bold; font-size: 0.85rem; color: #334155; }
+        .controls { background: #f8fafc; padding: 10px; border-radius: 6px; border: 1px solid var(--border-color); display: flex; flex-direction: column; gap: 8px; }
+        .control-group { display: flex; flex-direction: column; gap: 5px; }
+        label { font-weight: bold; font-size: 0.82rem; color: #334155; }
 
         .slider-wrapper { position: relative; width: 100%; padding: 4px 0; }
-        input[type="range"] { -webkit-appearance: none; width: 100%; height: 5.5px; background: #cbd5e1; border-radius: 3px; outline: none; margin: 0; cursor: pointer; }
-        input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 22px; height: 22px; background: var(--primary-blue); border-radius: 50%; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+        input[type="range"] { -webkit-appearance: none; width: 100%; height: 5px; background: #cbd5e1; border-radius: 3px; outline: none; margin: 0; cursor: pointer; }
+        input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 20px; height: 20px; background: var(--primary-blue); border-radius: 50%; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
         
-        .tick-marks { display: flex; justify-content: space-between; padding: 0 10px; margin-top: 6px; pointer-events: none; }
-        .tick-marks span { display: flex; flex-direction: column; align-items: center; font-size: 0.72rem; color: #64748b; width: 0; white-space: nowrap; }
-        .tick-marks span::before { content: ""; width: 1px; height: 3.5px; background: #94a3b8; margin-bottom: 2px; }
+        .tick-marks { display: flex; justify-content: space-between; padding: 0 8px; margin-top: 6px; pointer-events: none; }
+        .tick-marks span { display: flex; flex-direction: column; align-items: center; font-size: 0.7rem; color: #64748b; width: 0; white-space: nowrap; }
+        .tick-marks span::before { content: ""; width: 1px; height: 3px; background: #94a3b8; margin-bottom: 2px; }
 
         .radio-group { display: flex; gap: 8px; }
-        .radio-item label { display: block; padding: 9px; background: #e2e8f0; border-radius: 6px; cursor: pointer; font-size: 0.85rem; transition: 0.2s; text-align: center; color: #475569; }
+        .radio-item label { display: block; padding: 8px; background: #e2e8f0; border-radius: 6px; cursor: pointer; font-size: 0.82rem; transition: 0.2s; text-align: center; color: #475569; }
         .radio-item { flex: 1; }
         .radio-item input { display: none; }
         .radio-item input:checked + label { background: var(--primary-blue); color: white; font-weight: bold; box-shadow: 0 2px 4px rgba(0,123,255,0.3); }
 
         .button-group { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-        button { padding: 10px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 0.85rem; transition: background 0.2s; }
+        button { padding: 9px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 0.82rem; transition: background 0.2s; }
         .btn-record { background: var(--primary-blue); color: white; }
         .btn-record:hover { background: #0056b3; }
         .btn-reset { background: #64748b; color: white; }
         .btn-reset:hover { background: #475569; }
 
-        .graph-panel { min-height: 290px; display: flex; flex-direction: column; }
+        .graph-panel { min-height: 270px; display: flex; flex-direction: column; }
         
         footer { 
             width: 100%;
             text-align: center; 
-            padding: 14px 20px; 
+            padding: 10px 20px; 
             background: var(--header-bg); 
             color: #94a3b8; 
-            font-size: 0.78rem; 
-            line-height: 1.5;
-            box-shadow: 0 -4px 6px rgba(0,0,0,0.05);
+            font-size: 0.75rem; 
+            line-height: 1.4;
+            margin-top: auto;
+            box-shadow: 0 -2px 4px rgba(0,0,0,0.05);
         }
-        footer div:first-child { color: #ffffff; font-weight: bold; margin-bottom: 2px; }
+        footer div:first-child { color: #ffffff; font-weight: bold; margin-bottom: 1px; }
     </style>
 </head>
 <body>
@@ -295,8 +296,8 @@
         options: {
             responsive: true, maintainAspectRatio: false,
             scales: {
-                x: { title: { display: true, text: '전압 (V)', font: { weight: 'bold', size: 12 } }, min: 0, max: 10 },
-                y: { title: { display: true, text: '전류 (A)', font: { weight: 'bold', size: 12 } }, min: 0, max: 1.0 }
+                x: { title: { display: true, text: '전압 (V)', font: { weight: 'bold', size: 11 } }, min: 0, max: 10 },
+                y: { title: { display: true, text: '전류 (A)', font: { weight: 'bold', size: 11 } }, min: 0, max: 1.0 }
             },
             plugins: { legend: { labels: { boxWidth: 12, font: { size: 11 } } } }
         }
