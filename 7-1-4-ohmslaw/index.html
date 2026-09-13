@@ -39,75 +39,77 @@
         header { 
             width: 100%;
             text-align: center; 
-            padding: 8px 16px; 
+            padding: 10px 20px; 
             background: var(--header-bg); 
             box-shadow: 0 2px 4px rgba(0,0,0,0.05); 
             flex-shrink: 0;
         }
-        h1 { margin: 0; font-size: 1.15rem; color: #ffffff; font-weight: 700; letter-spacing: -0.5px; }
+        h1 { margin: 0; font-size: 1.25rem; color: #ffffff; font-weight: 700; letter-spacing: -0.5px; }
 
-        /* 화면 높이에 맞춰 내부 요소들이 압축되어 스크롤 없이 한 화면에 배치되도록 설정 */
+        /* 컨테이너 크기를 화면에 딱 맞추고 스크롤이 생기지 않도록 공간 압축 */
         .container { 
-            max-width: 1200px; 
+            max-width: 1220px; 
             width: 100%; 
             margin: 0 auto; 
             display: flex; 
             flex-direction: column; 
             gap: 6px; 
-            padding: 6px 8px; 
+            padding: 6px 10px; 
             flex: 1;
-            justify-content: center;
+            overflow: hidden;
         }
 
-        .guide-container { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+        .guide-container { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; flex-shrink: 0; }
         @media (max-width: 850px) { .guide-container { grid-template-columns: 1fr; } }
 
         .guide-box { 
             padding: 6px 10px; 
             border-radius: 6px; 
-            font-size: 0.75rem; 
+            font-size: 0.78rem; 
             line-height: 1.35; 
             background: white; 
-            box-shadow: 0 1px 2px rgba(0,0,0,0.03); 
+            box-shadow: 0 1px 2px rgba(0,0,0,0.04); 
             border: 1px solid var(--border-color);
         }
-        .method-box { border-left: 3.5px solid var(--primary-blue); background-color: var(--guide-bg); }
-        .caution-box { border-left: 3.5px solid var(--accent-red); background-color: var(--caution-bg); }
-        .guide-title { font-weight: bold; margin-bottom: 2px; display: block; font-size: 0.78rem; color: #0f172a; }
+        .method-box { border-left: 4px solid var(--primary-blue); background-color: var(--guide-bg); }
+        .caution-box { border-left: 4px solid var(--accent-red); background-color: var(--caution-bg); }
+        .guide-title { font-weight: bold; margin-bottom: 3px; display: block; font-size: 0.82rem; color: #0f172a; }
         
         .bullet-list { margin: 0; padding-left: 14px; list-style-type: disc; }
         .bullet-list li { margin-bottom: 1px; }
 
-        .main-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
-        @media (max-width: 950px) { .main-layout { grid-template-columns: 1fr; } }
+        .main-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; flex: 1; min-height: 0; }
+        @media (max-width: 950px) { .main-layout { grid-template-columns: 1fr; overflow-y: auto; } }
 
         .panel {
             background: var(--panel-bg); 
             border-radius: 8px; 
-            padding: 8px 10px;
+            padding: 10px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.03); 
             display: flex; 
             flex-direction: column; 
             gap: 6px;
             border: 1px solid var(--border-color);
+            height: 100%;
+            min-height: 0;
         }
 
-        .display-container { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+        .display-container { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; flex-shrink: 0; }
         .sensor-box {
             background: #111827; padding: 5px; border-radius: 6px; text-align: center;
             font-family: 'Consolas', monospace; box-shadow: inset 0 0 6px rgba(0,0,0,0.6);
         }
-        .v-box { border: 1px solid var(--voltmeter-color); color: var(--voltmeter-color); }
-        .i-box { border: 1px solid var(--ammeter-color); color: var(--ammeter-color); }
-        .sensor-label { font-size: 0.65rem; opacity: 0.85; margin-bottom: 1px; color: #94a3b8; }
+        .v-box { border: 1.5px solid var(--voltmeter-color); color: var(--voltmeter-color); }
+        .i-box { border: 1.5px solid var(--ammeter-color); color: var(--ammeter-color); }
+        .sensor-label { font-size: 0.68rem; opacity: 0.85; margin-bottom: 1px; color: #94a3b8; }
         .sensor-value { font-size: 1.1rem; font-weight: bold; }
 
-        .canvas-wrapper { position: relative; width: 100%; }
-        #circuit-canvas { width: 100%; height: 165px; background: #fff; border: 1px solid var(--border-color); border-radius: 6px; display: block; }
+        .canvas-wrapper { position: relative; width: 100%; flex: 1; min-height: 0; display: flex; }
+        #circuit-canvas { width: 100%; height: 100% !important; background: #fff; border: 1px solid var(--border-color); border-radius: 6px; display: block; }
         
         .circuit-legend {
-            position: absolute. bottom: 6px; left: 6px;
-            background: rgba(255, 255, 255, 0.96); padding: 4px 8px; border-radius: 5px;
+            position: absolute; bottom: 6px; left: 6px;
+            background: rgba(255, 255, 255, 0.96); padding: 5px 8px; border-radius: 5px;
             font-size: 0.68rem; border: 1px solid var(--border-color); display: flex; flex-direction: column; gap: 3px;
             box-shadow: 0 1px 3px rgba(0,0,0,0.06); pointer-events: none;
         }
@@ -134,41 +136,42 @@
             width: 0; height: 0; border-top: 3px solid transparent; border-bottom: 3px solid transparent; border-left: 4px solid var(--current-color); position: absolute; right: 0;
         }
 
-        .controls { background: #f8fafc; padding: 8px; border-radius: 6px; border: 1px solid var(--border-color); display: flex; flex-direction: column; gap: 6px; }
+        .controls { background: #f8fafc; padding: 8px 10px; border-radius: 6px; border: 1px solid var(--border-color); display: flex; flex-direction: column; gap: 6px; flex-shrink: 0; }
         .control-group { display: flex; flex-direction: column; gap: 4px; }
-        label { font-weight: bold; font-size: 0.78rem; color: #334155; }
+        label { font-weight: bold; font-size: 0.8rem; color: #334155; }
 
         .slider-wrapper { position: relative; width: 100%; padding: 2px 0; }
         input[type="range"] { -webkit-appearance: none; width: 100%; height: 4.5px; background: #cbd5e1; border-radius: 3px; outline: none; margin: 0; cursor: pointer; }
         input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; background: var(--primary-blue); border-radius: 50%; cursor: pointer; box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
         
-        .tick-marks { display: flex; justify-content: space-between; padding: 0 6px; margin-top: 5px; pointer-events: none; }
+        .tick-marks { display: flex; justify-content: space-between; padding: 0 6px; margin-top: 4px; pointer-events: none; }
         .tick-marks span { display: flex; flex-direction: column; align-items: center; font-size: 0.65rem; color: #64748b; width: 0; white-space: nowrap; }
-        .tick-marks span::before { content: ""; width: 1px; height: 3px; background: #94a3b8; margin-bottom: 2px; }
+        .tick-marks span::before { content: ""; width: 1px; height: 3px; background: #94a3b8; margin-bottom: 1px; }
 
         .radio-group { display: flex; gap: 6px; }
-        .radio-item label { display: block; padding: 7px; background: #e2e8f0; border-radius: 5px; cursor: pointer; font-size: 0.78rem; transition: 0.2s; text-align: center; color: #475569; }
+        .radio-item label { display: block; padding: 6px; background: #e2e8f0; border-radius: 5px; cursor: pointer; font-size: 0.8rem; transition: 0.2s; text-align: center; color: #475569; }
         .radio-item { flex: 1; }
         .radio-item input { display: none; }
         .radio-item input:checked + label { background: var(--primary-blue); color: white; font-weight: bold; box-shadow: 0 1px 3px rgba(0,123,255,0.3); }
 
         .button-group { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
-        button { padding: 8px; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; font-size: 0.78rem; transition: background 0.2s; }
+        button { padding: 7px; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; font-size: 0.8rem; transition: background 0.2s; }
         .btn-record { background: var(--primary-blue); color: white; }
         .btn-record:hover { background: #0056b3; }
         .btn-reset { background: #64748b; color: white; }
         .btn-reset:hover { background: #475569; }
 
-        .graph-panel { min-height: 220px; display: flex; flex-direction: column; }
+        .graph-panel { display: flex; flex-direction: column; height: 100%; min-height: 0; }
+        .graph-panel canvas { flex: 1; width: 100% !important; height: 100% !important; min-height: 0; }
         
         footer { 
             width: 100%;
             text-align: center; 
-            padding: 8px 16px; 
+            padding: 8px 15px; 
             background: var(--header-bg); 
             color: #94a3b8; 
-            font-size: 0.7rem; 
-            line-height: 1.35;
+            font-size: 0.72rem; 
+            line-height: 1.3;
             flex-shrink: 0;
             box-shadow: 0 -2px 4px rgba(0,0,0,0.05);
         }
@@ -185,17 +188,15 @@
     <div class="guide-container">
         <div class="guide-box method-box">
             <span class="guide-title">📘 실험 방법</span>
-            1. 전압 조절 슬라이더를 움직여 회로에 흐르는 전압을 바꿉니다.<br>
-            2. 니크롬선의 길이에 따라 전류계의 눈금이 어떻게 변하는지 봅니다.<br>
-            3. '데이터 기록하기' 버튼으로 측정 결과를 그래프에 남깁니다.<br>
-            4. 짧은 니크롬선과 긴 니크롬선일 때 기록된 그래프의 기울기를 비교합니다.
+            1. 전압 조절 슬라이더로 회로의 전압을 바꿉니다. 2. 니크롬선 길이에 따른 전류 변화를 관찰합니다.<br>
+            3. '데이터 기록하기'로 그래프에 남깁니다. 4. 두 니크롬선 그래프의 기울기를 비교합니다.
         </div>
         <div class="guide-box caution-box">
             <span class="guide-title">💡 알아 두기</span>
             <ul class="bullet-list">
                 <li>전자는 (-)극에서 (+)극으로 전선을 따라 이동합니다.</li>
-                <li>전압이 높을수록 전자의 이동 속도가 빨라짐을 관찰하세요.</li>
-                <li>실제 회로에는 눈에 보이는 것보다 훨씬 엄청나게 많은 수의 전자가 이동하지만, 원활한 이해를 돕기 위해 시각적으로 간소화하여 표현한 것이므로 오개념이 없도록 유의하세요.</li>
+                <li>전압이 높을수록 전자의 이동 속도가 빨라집니다.</li>
+                <li>실제보다 시각적으로 간소화하여 표현한 것이므로 오개념이 없도록 유의하세요.</li>
             </ul>
         </div>
     </div>
@@ -266,8 +267,7 @@
 </div>
 
 <footer>
-    <div>Copyright © 2026. LEE HANEUL All rights reserved.</div>
-    <div>[전류, 전압, 저항 사이의 관계 탐구하기] v2.1 (2026-09-09)</div>
+    <div>Copyright © 2026. LEE HANEUL All rights reserved. [전류, 전압, 저항 사이의 관계 탐구하기] v2.1 (2026-09-09)</div>
     <div>본 프로그램은 아이패드 및 태블릿 환경에서의 터치 조작을 지원합니다.</div>
 </footer>
 
@@ -299,8 +299,8 @@
         options: {
             responsive: true, maintainAspectRatio: false,
             scales: {
-                x: { title: { display: true, text: '전압 (V)', font: { weight: 'bold', size: 10 } }, min: 0, max: 10 },
-                y: { title: { display: true, text: '전류 (A)', font: { weight: 'bold', size: 10 } }, min: 0, max: 1.0 }
+                x: { title: { display: true, text: '전압 (V)', font: { weight: 'bold', size: 11 } }, min: 0, max: 10 },
+                y: { title: { display: true, text: '전류 (A)', font: { weight: 'bold', size: 11 } }, min: 0, max: 1.0 }
             },
             plugins: { legend: { labels: { boxWidth: 10, font: { size: 10 } } } }
         }
@@ -335,8 +335,8 @@
 
         ctx.beginPath();
         ctx.moveTo(8, 0);
-        ctx.lineTo(2.5, -3.5);
-        ctx.lineTo(2.5, 3.5);
+        ctx.lineTo(2, -3.5);
+        ctx.lineTo(2, 3.5);
         ctx.closePath();
         ctx.fill();
 
@@ -366,7 +366,7 @@
         const lw = circuitCanvas.width / dpr;
         const lh = circuitCanvas.height / dpr;
         const centerX = lw / 2, centerY = lh / 2;
-        const w = 200, h = 100; 
+        const w = 200, h = 110; 
         const left = centerX - w/2, top = centerY - h/2 + 2;
         const turns = (resistance === 10) ? 5 : 12;
         const resWidth = 7;
@@ -397,7 +397,7 @@
         ctx.lineTo(left + w + 35, centerY + 40); ctx.lineTo(left + w, centerY + 40); ctx.stroke();
         drawMeter(left + w + 35, centerY, "V", "#f39c12");
 
-        ctx.fillStyle = "#fff"; ctx.strokeStyle = "#333"; ctx.lineWidth = 1.8;
+        ctx.fillStyle = "#fff"; ctx.strokeStyle = "#333"; ctx.lineWidth = 2;
         ctx.fillRect(left - 13, powerBoxTop, 26, 50); ctx.strokeRect(left - 13, powerBoxTop, 26, 50);
         
         ctx.fillStyle = "#333"; 
@@ -405,11 +405,10 @@
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
         ctx.fillText("+", left, powerBoxTop + 15);
-        ctx.fillText("-", left, powerBoxTop + 36);
+        ctx.fillText("-", left, powerBoxTop + 35);
 
         ctx.font = "bold 10px 'Pretendard'";
-        ctx.fillText("전", left - 24, powerBoxTop + 15);
-        ctx.fillText("원", left - 24, powerBoxTop + 27);
+        ctx.fillText("전원", left - 24, powerBoxTop + 25);
 
         drawMeter(centerX, top + h, "A", "#27ae60");
 
@@ -431,7 +430,7 @@
         }
 
         ctx.fillStyle = "#333"; ctx.textAlign = "right"; ctx.textBaseline = "alphabetic"; ctx.font = "bold 11.5px 'Pretendard'";
-        ctx.fillText(resistance === 10 ? "짧은 니크롬선" : "긴 니크롬선", left + w - 15, centerY + 48);
+        ctx.fillText(resistance === 10 ? "짧은 니크롬선" : "긴 니크롬선", left + w - 12, centerY + 48);
 
         requestAnimationFrame(drawCircuit);
     }
