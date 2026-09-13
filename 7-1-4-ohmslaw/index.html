@@ -39,138 +39,136 @@
         header { 
             width: 100%;
             text-align: center; 
-            padding: 8px 16px; 
+            padding: 16px 20px; 
             background: var(--header-bg); 
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05); 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05); 
         }
-        h1 { margin: 0; font-size: 1.2rem; color: #ffffff; font-weight: 700; letter-spacing: -0.5px; }
+        h1 { margin: 0; font-size: 1.45rem; color: #ffffff; font-weight: 700; letter-spacing: -0.5px; }
 
-        /* 스크롤 없이 한눈에 들어오도록 내부 간격 및 마진 압축 */
+        /* 본문 영역을 수직 중앙 정렬(Flex)시키고 여백 조절 */
         .container { 
-            max-width: 1220px; 
+            max-width: 1240px; 
             width: 100%; 
-            margin: 0 auto; 
+            margin: auto auto; /* 상하 공간 자동 분배를 통한 중앙 배치 */
             display: flex; 
             flex-direction: column; 
-            gap: 6px; 
-            padding: 6px 10px; 
+            gap: 12px; 
+            padding: 16px 12px; 
         }
 
-        .guide-container { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+        .guide-container { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         @media (max-width: 850px) { .guide-container { grid-template-columns: 1fr; } }
 
         .guide-box { 
-            padding: 6px 10px; 
-            border-radius: 6px; 
-            font-size: 0.8rem; 
-            line-height: 1.35; 
+            padding: 12px 16px; 
+            border-radius: 10px; 
+            font-size: 0.86rem; 
+            line-height: 1.5; 
             background: white; 
-            box-shadow: 0 1px 2px rgba(0,0,0,0.04); 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.04); 
             border: 1px solid var(--border-color);
         }
-        .method-box { border-left: 4px solid var(--primary-blue); background-color: var(--guide-bg); }
-        .caution-box { border-left: 4px solid var(--accent-red); background-color: var(--caution-bg); }
-        .guide-title { font-weight: bold; margin-bottom: 2px; display: block; font-size: 0.82rem; color: #0f172a; }
+        .method-box { border-left: 5px solid var(--primary-blue); background-color: var(--guide-bg); }
+        .caution-box { border-left: 5px solid var(--accent-red); background-color: var(--caution-bg); }
+        .guide-title { font-weight: bold; margin-bottom: 6px; display: block; font-size: 0.92rem; color: #0f172a; }
         
         .bullet-list { margin: 0; padding-left: 16px; list-style-type: disc; }
-        .bullet-list li { margin-bottom: 1px; }
+        .bullet-list li { margin-bottom: 3px; }
 
-        .main-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+        .main-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         @media (max-width: 950px) { .main-layout { grid-template-columns: 1fr; } }
 
         .panel {
             background: var(--panel-bg); 
-            border-radius: 8px; 
-            padding: 10px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.03); 
+            border-radius: 12px; 
+            padding: 16px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.03); 
             display: flex; 
             flex-direction: column; 
-            gap: 6px;
+            gap: 12px;
             border: 1px solid var(--border-color);
         }
 
-        .display-container { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+        .display-container { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .sensor-box {
-            background: #111827; padding: 5px; border-radius: 6px; text-align: center;
-            font-family: 'Consolas', monospace; box-shadow: inset 0 0 6px rgba(0,0,0,0.6);
+            background: #111827; padding: 10px; border-radius: 8px; text-align: center;
+            font-family: 'Consolas', monospace; box-shadow: inset 0 0 10px rgba(0,0,0,0.6);
         }
         .v-box { border: 1.5px solid var(--voltmeter-color); color: var(--voltmeter-color); }
         .i-box { border: 1.5px solid var(--ammeter-color); color: var(--ammeter-color); }
-        .sensor-label { font-size: 0.68rem; opacity: 0.85; margin-bottom: 1px; color: #94a3b8; }
-        .sensor-value { font-size: 1.15rem; font-weight: bold; }
+        .sensor-label { font-size: 0.75rem; opacity: 0.85; margin-bottom: 3px; color: #94a3b8; }
+        .sensor-value { font-size: 1.4rem; font-weight: bold; }
 
         .canvas-wrapper { position: relative; width: 100%; }
-        /* 캔버스 세로 높이를 줄여 하단 여백 및 전체 높이 압축 */
-        #circuit-canvas { width: 100%; height: 145px; background: #fff; border: 1px solid var(--border-color); border-radius: 6px; display: block; }
+        #circuit-canvas { width: 100%; height: 230px; background: #fff; border: 1px solid var(--border-color); border-radius: 8px; display: block; }
         
         .circuit-legend {
-            position: absolute. bottom: 6px; left: 6px; bottom: 6px;
-            background: rgba(255, 255, 255, 0.96); padding: 4px 8px; border-radius: 4px;
-            font-size: 0.68rem; border: 1px solid var(--border-color); display: flex; flex-direction: column; gap: 2px;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.06); pointer-events: none;
+            position: absolute; bottom: 8px; left: 8px;
+            background: rgba(255, 255, 255, 0.96); padding: 8px 12px; border-radius: 6px;
+            font-size: 0.76rem; border: 1px solid var(--border-color); display: flex; flex-direction: column; gap: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.06); pointer-events: none;
         }
-        .legend-item { display: flex; align-items: center; gap: 5px; font-weight: bold; color: #334155; }
+        .legend-item { display: flex; align-items: center; gap: 8px; font-weight: bold; color: #334155; }
         
         .legend-symbol {
-            width: 16px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+            width: 20px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
         }
         .legend-circle {
-            width: 14px; height: 14px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            font-size: 0.55rem; font-family: 'Pretendard', sans-serif; background: #fff;
+            width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-size: 0.65rem; font-family: 'Pretendard', sans-serif; background: #fff;
         }
-        .legend-v { border: 1.5px solid var(--voltmeter-color); color: var(--voltmeter-color); }
-        .legend-a { border: 1.5px solid var(--ammeter-color); color: var(--ammeter-color); }
-        .legend-electron { width: 10px; height: 10px; background: var(--electron-color); border-radius: 50%; margin: 2px; }
+        .legend-v { border: 2px solid var(--voltmeter-color); color: var(--voltmeter-color); }
+        .legend-a { border: 2px solid var(--ammeter-color); color: var(--ammeter-color); }
+        .legend-electron { width: 12px; height: 12px; background: var(--electron-color); border-radius: 50%; margin: 3px; }
         
         .legend-arrow-container {
-            width: 14px; height: 8px; display: flex; align-items: center; justify-content: center; position: relative;
+            width: 18px; height: 12px; display: flex; align-items: center; justify-content: center; position: relative;
         }
         .legend-arrow-line {
-            width: 8px; height: 1.5px; background: var(--current-color); position: absolute;
+            width: 10px; height: 2px; background: var(--current-color); position: absolute;
         }
         .legend-arrow-head {
-            width: 0; height: 0; border-top: 3px solid transparent; border-bottom: 3px solid transparent; border-left: 4px solid var(--current-color); position: absolute; right: 0;
+            width: 0; height: 0; border-top: 3.5px solid transparent; border-bottom: 3.5px solid transparent; border-left: 5px solid var(--current-color); position: absolute; right: 0;
         }
 
-        .controls { background: #f8fafc; padding: 8px; border-radius: 6px; border: 1px solid var(--border-color); display: flex; flex-direction: column; gap: 6px; }
-        .control-group { display: flex; flex-direction: column; gap: 3px; }
-        label { font-weight: bold; font-size: 0.82rem; color: #334155; }
+        .controls { background: #f8fafc; padding: 14px; border-radius: 8px; border: 1px solid var(--border-color); display: flex; flex-direction: column; gap: 12px; }
+        .control-group { display: flex; flex-direction: column; gap: 8px; }
+        label { font-weight: bold; font-size: 0.88rem; color: #334155; }
 
-        .slider-wrapper { position: relative; width: 100%; padding: 2px 0; }
-        input[type="range"] { -webkit-appearance: none; width: 100%; height: 5px; background: #cbd5e1; border-radius: 3px; outline: none; margin: 0; cursor: pointer; }
-        input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; background: var(--primary-blue); border-radius: 50%; cursor: pointer; box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
+        .slider-wrapper { position: relative; width: 100%; padding: 6px 0; }
+        input[type="range"] { -webkit-appearance: none; width: 100%; height: 6px; background: #cbd5e1; border-radius: 3px; outline: none; margin: 0; cursor: pointer; }
+        input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 24px; height: 24px; background: var(--primary-blue); border-radius: 50%; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
         
-        .tick-marks { display: flex; justify-content: space-between; padding: 0 6px; margin-top: 4px; pointer-events: none; }
-        .tick-marks span { display: flex; flex-direction: column; align-items: center; font-size: 0.68rem; color: #64748b; width: 0; white-space: nowrap; }
-        .tick-marks span::before { content: ""; width: 1px; height: 3px; background: #94a3b8; margin-bottom: 1px; }
+        .tick-marks { display: flex; justify-content: space-between; padding: 0 10px; margin-top: 8px; pointer-events: none; }
+        .tick-marks span { display: flex; flex-direction: column; align-items: center; font-size: 0.74rem; color: #64748b; width: 0; white-space: nowrap; }
+        .tick-marks span::before { content: ""; width: 1px; height: 4px; background: #94a3b8; margin-bottom: 2px; }
 
-        .radio-group { display: flex; gap: 6px; }
-        .radio-item label { display: block; padding: 6px; background: #e2e8f0; border-radius: 5px; cursor: pointer; font-size: 0.82rem; transition: 0.2s; text-align: center; color: #475569; }
+        .radio-group { display: flex; gap: 10px; }
+        .radio-item label { display: block; padding: 10px; background: #e2e8f0; border-radius: 6px; cursor: pointer; font-size: 0.88rem; transition: 0.2s; text-align: center; color: #475569; }
         .radio-item { flex: 1; }
         .radio-item input { display: none; }
-        .radio-item input:checked + label { background: var(--primary-blue); color: white; font-weight: bold; box-shadow: 0 1px 3px rgba(0,123,255,0.3); }
+        .radio-item input:checked + label { background: var(--primary-blue); color: white; font-weight: bold; box-shadow: 0 2px 4px rgba(0,123,255,0.3); }
 
-        .button-group { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
-        button { padding: 7px; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; font-size: 0.82rem; transition: background 0.2s; }
+        .button-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        button { padding: 11px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 0.88rem; transition: background 0.2s; }
         .btn-record { background: var(--primary-blue); color: white; }
         .btn-record:hover { background: #0056b3; }
         .btn-reset { background: #64748b; color: white; }
         .btn-reset:hover { background: #475569; }
 
-        .graph-panel { min-height: 200px; display: flex; flex-direction: column; }
+        .graph-panel { min-height: 310px; display: flex; flex-direction: column; }
         
         footer { 
             width: 100%;
             text-align: center; 
-            padding: 8px 16px; 
+            padding: 16px 20px; 
             background: var(--header-bg); 
             color: #94a3b8; 
-            font-size: 0.72rem; 
-            line-height: 1.3;
-            margin-top: auto;
-            box-shadow: 0 -2px 4px rgba(0,0,0,0.05);
+            font-size: 0.82rem; 
+            line-height: 1.6;
+            box-shadow: 0 -4px 6px rgba(0,0,0,0.05);
         }
-        footer div:first-child { color: #ffffff; font-weight: bold; margin-bottom: 1px; }
+        footer div:first-child { color: #ffffff; font-weight: bold; margin-bottom: 3px; }
     </style>
 </head>
 <body>
@@ -297,10 +295,10 @@
         options: {
             responsive: true, maintainAspectRatio: false,
             scales: {
-                x: { title: { display: true, text: '전압 (V)', font: { weight: 'bold', size: 11 } }, min: 0, max: 10 },
-                y: { title: { display: true, text: '전류 (A)', font: { weight: 'bold', size: 11 } }, min: 0, max: 1.0 }
+                x: { title: { display: true, text: '전압 (V)', font: { weight: 'bold', size: 12 } }, min: 0, max: 10 },
+                y: { title: { display: true, text: '전류 (A)', font: { weight: 'bold', size: 12 } }, min: 0, max: 1.0 }
             },
-            plugins: { legend: { labels: { boxWidth: 10, font: { size: 10 } } } }
+            plugins: { legend: { labels: { boxWidth: 12, font: { size: 11 } } } }
         }
     });
 
@@ -312,9 +310,9 @@
     }
 
     function drawMeter(x, y, label, color) {
-        ctx.beginPath(); ctx.arc(x, y, 14, 0, Math.PI * 2);
-        ctx.fillStyle = "#fff"; ctx.fill(); ctx.strokeStyle = color; ctx.lineWidth = 2; ctx.stroke();
-        ctx.fillStyle = color; ctx.font = "bold 12px 'Pretendard'"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+        ctx.beginPath(); ctx.arc(x, y, 16, 0, Math.PI * 2);
+        ctx.fillStyle = "#fff"; ctx.fill(); ctx.strokeStyle = color; ctx.lineWidth = 2.5; ctx.stroke();
+        ctx.fillStyle = color; ctx.font = "bold 14px 'Pretendard'"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
         ctx.fillText(label, x, y);
     }
 
@@ -324,17 +322,17 @@
         ctx.rotate(angle);
         ctx.strokeStyle = "#e74c3c";
         ctx.fillStyle = "#e74c3c";
-        ctx.lineWidth = 2;
+        ctx.lineWidth = 2.5;
 
         ctx.beginPath();
-        ctx.moveTo(-8, 0);
-        ctx.lineTo(8, 0);
+        ctx.moveTo(-10, 0);
+        ctx.lineTo(10, 0);
         ctx.stroke();
 
         ctx.beginPath();
-        ctx.moveTo(8, 0);
-        ctx.lineTo(2, -3.5);
-        ctx.lineTo(2, 3.5);
+        ctx.moveTo(10, 0);
+        ctx.lineTo(3, -4);
+        ctx.lineTo(3, 4);
         ctx.closePath();
         ctx.fill();
 
@@ -352,7 +350,7 @@
         d -= w;
         if (d < h) {
             const currentY = top + d;
-            const tx = getSmoothCoilX(currentY, centerY - 28, centerY + 28, turns, resWidth, left + w);
+            const tx = getSmoothCoilX(currentY, centerY - 35, centerY + 35, turns, resWidth, left + w);
             return { x: tx, y: currentY };
         }
         d -= h;
@@ -364,71 +362,72 @@
         const lw = circuitCanvas.width / dpr;
         const lh = circuitCanvas.height / dpr;
         const centerX = lw / 2, centerY = lh / 2;
-        const w = 180, h = 95; 
-        const left = centerX - w/2, top = centerY - h/2 + 2;
+        const w = 220, h = 140; 
+        const left = centerX - w/2, top = centerY - h/2 + 5;
         const turns = (resistance === 10) ? 5 : 12;
-        const resWidth = 6;
+        const resWidth = 8;
         const pathParams = { left, top, w, h, centerY, turns, resWidth };
 
-        const powerBoxTop = centerY - 25;
-        const powerBoxBottom = centerY + 25;
+        const powerBoxTop = centerY - 30;
+        const powerBoxBottom = centerY + 30;
 
-        ctx.strokeStyle = "#444"; ctx.lineWidth = 2; ctx.lineJoin = "round";
+        ctx.strokeStyle = "#444"; ctx.lineWidth = 2.5; ctx.lineJoin = "round";
         ctx.beginPath();
         ctx.moveTo(left, powerBoxTop); ctx.lineTo(left, top); ctx.lineTo(left + w, top);
-        ctx.lineTo(left + w, centerY - 28); ctx.stroke();
+        ctx.lineTo(left + w, centerY - 35); ctx.stroke();
         
         ctx.beginPath();
-        ctx.moveTo(left + w, centerY + 28); ctx.lineTo(left + w, top + h);
+        ctx.moveTo(left + w, centerY + 35); ctx.lineTo(left + w, top + h);
         ctx.lineTo(left, top + h); ctx.lineTo(left, powerBoxBottom); ctx.stroke();
 
-        ctx.strokeStyle = (resistance === 10) ? "#777" : "#b03a2e"; ctx.lineWidth = 3;
+        ctx.strokeStyle = (resistance === 10) ? "#777" : "#b03a2e"; ctx.lineWidth = 3.5;
         ctx.beginPath();
-        ctx.moveTo(left + w, centerY - 28);
-        for (let y = centerY - 28; y <= centerY + 28; y += 0.5) {
-            ctx.lineTo(getSmoothCoilX(y, centerY - 28, centerY + 28, turns, resWidth, left + w), y);
+        ctx.moveTo(left + w, centerY - 35);
+        for (let y = centerY - 35; y <= centerY + 35; y += 0.5) {
+            ctx.lineTo(getSmoothCoilX(y, centerY - 35, centerY + 35, turns, resWidth, left + w), y);
         }
         ctx.stroke();
 
-        ctx.strokeStyle = "#ccc"; ctx.lineWidth = 1.2; ctx.beginPath();
-        ctx.moveTo(left + w, centerY - 38); ctx.lineTo(left + w + 35, centerY - 38);
-        ctx.lineTo(left + w + 35, centerY + 38); ctx.lineTo(left + w, centerY + 38); ctx.stroke();
-        drawMeter(left + w + 35, centerY, "V", "#f39c12");
+        ctx.strokeStyle = "#ccc"; ctx.lineWidth = 1.5; ctx.beginPath();
+        ctx.moveTo(left + w, centerY - 45); ctx.lineTo(left + w + 40, centerY - 45);
+        ctx.lineTo(left + w + 40, centerY + 45); ctx.lineTo(left + w, centerY + 45); ctx.stroke();
+        drawMeter(left + w + 40, centerY, "V", "#f39c12");
 
-        ctx.fillStyle = "#fff"; ctx.strokeStyle = "#333"; ctx.lineWidth = 1.8;
-        ctx.fillRect(left - 13, powerBoxTop, 26, 50); ctx.strokeRect(left - 13, powerBoxTop, 26, 50);
+        ctx.fillStyle = "#fff"; ctx.strokeStyle = "#333"; ctx.lineWidth = 2;
+        ctx.fillRect(left - 15, powerBoxTop, 30, 60); ctx.strokeRect(left - 15, powerBoxTop, 30, 60);
         
         ctx.fillStyle = "#333"; 
-        ctx.font = "bold 13px 'Pretendard'"; 
+        ctx.font = "bold 15px 'Pretendard'"; 
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
-        ctx.fillText("+", left, powerBoxTop + 15);
-        ctx.fillText("-", left, powerBoxTop + 35);
+        ctx.fillText("+", left, powerBoxTop + 18);
+        ctx.fillText("-", left, powerBoxTop + 43);
 
-        ctx.font = "bold 10px 'Pretendard'";
-        ctx.fillText("전원", left - 24, powerBoxTop + 25);
+        ctx.font = "bold 11px 'Pretendard'";
+        ctx.fillText("전", left - 27, powerBoxTop + 18);
+        ctx.fillText("원", left - 27, powerBoxTop + 32);
 
         drawMeter(centerX, top + h, "A", "#27ae60");
 
         if (voltage > 0) {
-            drawArrow(left + w - 35, top - 12, 0);
-            drawArrow(left + 45, top + h + 12, Math.PI);
+            drawArrow(left + w - 40, top - 14, 0);
+            drawArrow(left + 50, top + h + 14, Math.PI);
         }
 
         if (current > 0) {
-            electronOffset -= current * 8;
+            electronOffset -= current * 10;
             const totalLen = (w * 2) + (h * 2);
             ctx.fillStyle = "#f1c40f";
-            for (let i = 0; i < 12; i++) {
-                const d = (electronOffset + (i * (totalLen / 12))) % totalLen;
+            for (let i = 0; i < 15; i++) {
+                const d = (electronOffset + (i * (totalLen / 15))) % totalLen;
                 const pos = getCircuitPoint(d, pathParams);
                 if (pos.x === left && pos.y >= powerBoxTop && pos.y <= powerBoxBottom) continue;
-                ctx.beginPath(); ctx.arc(pos.x, pos.y, 4, 0, Math.PI * 2); ctx.fill();
+                ctx.beginPath(); ctx.arc(pos.x, pos.y, 4.5, 0, Math.PI * 2); ctx.fill();
             }
         }
 
-        ctx.fillStyle = "#333"; ctx.textAlign = "right"; ctx.textBaseline = "alphabetic"; ctx.font = "bold 11px 'Pretendard'";
-        ctx.fillText(resistance === 10 ? "짧은 니크롬선" : "긴 니크롬선", left + w - 12, centerY + 46);
+        ctx.fillStyle = "#333"; ctx.textAlign = "right"; ctx.textBaseline = "alphabetic"; ctx.font = "bold 12.5px 'Pretendard'";
+        ctx.fillText(resistance === 10 ? "짧은 니크롬선" : "긴 니크롬선", left + w - 15, centerY + 55);
 
         requestAnimationFrame(drawCircuit);
     }
