@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>중2 과학 - 전류가 흐르는 도선 주위의 자기장</title>
+    <title>전류가 흐르는 도선 주위의 자기장</title>
     <style>
         :root { --bg: #f0f2f5; --panel: #1e272e; --primary: #3498db; --current: #f1c40f; --warning: #e74c3c; }
         
@@ -70,8 +70,8 @@
         .card li { margin-bottom: 4px; }
         .card li:last-child { margin-bottom: 0; }
         
-        .legend-list { list-style: none; padding-left: 0; margin: 8px 0 0 0; border-top: 1px dashed #e0e0e0; padding-top: 6px; }
-        .legend-list li { margin-bottom: 4px; }
+        /* 관찰 가이드 하단 여백 확보 */
+        .card ol { margin-bottom: 4px; }
 
         .control-group {
             display: flex;
@@ -100,10 +100,49 @@
         
         .btn-toggle { background: #f39c12; color: white; }
         
-        .btn-opt { background: #f8f9fa; color: #2d3748; border: 1px solid #cbd5e0; display: flex; justify-content: space-between; align-items: center; }
-        .btn-opt::after { content: 'ON'; background: #48bb78; color: white; font-size: 10px; padding: 2px 6px; border-radius: 4px; font-weight: bold; }
-        .btn-opt.off { background: #edf2f7; color: #a0aec0; }
-        .btn-opt.off::after { content: 'OFF'; background: #cbd5e0; }
+        /* 토글 버튼 스위치 디자인 스타일 (줄바꿈 방지 nowrap 설정) */
+        .btn-switch {
+            background: #f8f9fa;
+            color: #2d3748;
+            border: 1px solid #cbd5e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 12px;
+            white-space: nowrap;
+        }
+        .btn-switch span.label-wrap {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .switch-track {
+            width: 40px;
+            height: 22px;
+            background: #cbd5e0;
+            border-radius: 11px;
+            position: relative;
+            transition: background 0.2s;
+            display: inline-block;
+            flex-shrink: 0;
+        }
+        .switch-thumb {
+            width: 18px;
+            height: 18px;
+            background: white;
+            border-radius: 50%;
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            transition: transform 0.2s;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        }
+        .btn-switch.on .switch-track {
+            background: #48bb78;
+        }
+        .btn-switch.on .switch-thumb {
+            transform: translateX(18px);
+        }
 
         .canvas-container { 
             flex: 1; 
@@ -138,13 +177,13 @@
 
         footer { 
             flex-shrink: 0;
-            background: #e2e8f0; 
-            color: #4a5568; 
-            padding: 10px 8px; 
+            background: var(--panel); 
+            color: #ffffff; 
+            padding: 14px 8px; 
             text-align: center; 
             font-size: 11px; 
-            border-top: 1px solid #cbd5e0; 
-            line-height: 1.5; 
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.3); 
+            line-height: 1.6; 
         }
 
         /* 아이패드 세로 모드 및 모바일 반응형 처리 */
@@ -165,7 +204,7 @@
 <body>
 
     <header>
-        <h1>중2 과학 - 전류가 흐르는 도선 주위의 자기장</h1>
+        <h1>전류가 흐르는 도선 주위의 자기장</h1>
     </header>
 
     <main>
@@ -174,7 +213,7 @@
             <div class="card">
                 <h3>🧪 실험 방법</h3>
                 <ol>
-                    <li><b>[전원 스위치]</b> 버튼을 눌러 전원을 켭니다 (전원 ON).</li>
+                    <li><b>[OFF]</b> 버튼을 눌러 전원을 켭니다 (전원 ON).</li>
                     <li><b>[전류 방향 전환]</b> 버튼을 눌러 도선에 흐르는 전류의 방향을 바꿔봅니다.</li>
                     <li>우측 패널에서 화면 요소(나침반, 전류 방향, 자기력선)의 표시 여부를 설정합니다.</li>
                     <li>상단의 <b>[직선 도선]</b>, <b>[원형 도선]</b>, <b>[코일]</b> 버튼을 클릭하며 자기장의 모양과 방향 변화를 관찰합니다.</li>
@@ -188,11 +227,6 @@
                     <li>나침반의 <b>N극(빨간색 바늘)</b>이 가리키는 방향이 해당 위치의 자기장 방향입니다.</li>
                     <li>화살표 방향은 자기력선의 방향입니다.</li>
                 </ol>
-                <ul class="legend-list">
-                    <li><span style="color:#e74c3c; font-weight:bold;">▲ :</span> 나침반 N극 (자기장 방향)</li>
-                    <li><span style="color:#d4ac0d; font-weight:bold;">➡ :</span> 전류의 방향(I)</li>
-                    <li><span style="color:#8c7ae6; font-weight:bold;">┈ :</span> 자기력선</li>
-                </ul>
             </div>
         </aside>
 
@@ -216,7 +250,7 @@
             <div class="card">
                 <h3>⚡ 전원 스위치</h3>
                 <div class="control-group">
-                    <button id="powerBtn" class="btn-power" onclick="togglePower()">전원 스위치: OFF</button>
+                    <button id="powerBtn" class="btn-power" onclick="togglePower()">OFF</button>
                 </div>
             </div>
 
@@ -228,22 +262,58 @@
             </div>
 
             <div class="card">
-                <h3>👁️ 방향 및 요소 표시</h3>
+                <h3>👁️ 요소 표시</h3>
                 <div class="control-group">
-                    <button id="compassOptBtn" class="btn-opt off" onclick="toggleOptCompass()">나침반 표시</button>
-                    <button id="currentOptBtn" class="btn-opt" onclick="toggleOptCurrent()">전류 방향 표시</button>
-                    <button id="fieldOptBtn" class="btn-opt" onclick="toggleOptField()">자기력선 표시</button>
+                    <button id="compassOptBtn" class="btn-switch" onclick="toggleOptCompass()">
+                        <span class="label-wrap">나침반 <canvas id="miniCompassIcon" width="40" height="40" style="width:20px; height:20px; vertical-align:middle;"></canvas></span>
+                        <span class="switch-track"><span class="switch-thumb"></span></span>
+                    </button>
+                    <button id="currentOptBtn" class="btn-switch" onclick="toggleOptCurrent()">
+                        <span class="label-wrap">전류 방향 <span style="color:#d4ac0d; font-weight:bold; font-size:14px;">➡</span></span>
+                        <span class="switch-track"><span class="switch-thumb"></span></span>
+                    </button>
+                    <button id="fieldOptBtn" class="btn-switch" onclick="toggleOptField()">
+                        <span class="label-wrap">자기력선 <span style="color:#8c7ae6; font-weight:bold; font-size:14px;">┈</span></span>
+                        <span class="switch-track"><span class="switch-thumb"></span></span>
+                    </button>
                 </div>
             </div>
         </aside>
     </main>
 
     <footer>
-        © 2026. LEE HANEUL All rights reserved. [전류가 흐르는 도선 주위의 자기장] [v1.1] (2026-09-13)<br>
+        © 2026. LEE HANEUL All rights reserved.<br>
+        [전류가 흐르는 도선 주위의 자기장] v1.1 (2026-09-13)<br>
         본 프로그램은 아이패드 및 태블릿 환경에서의 터치 조작을 지원합니다.
     </footer>
 
 <script>
+    // 고해상도(Retina) 슈퍼샘플링을 적용하여 미니 나침반 선명하게 렌더링 및 테두리 얇게 조정
+    const miniCanvas = document.getElementById('miniCompassIcon');
+    const miniCtx = miniCanvas.getContext('2d');
+    const mDpr = window.devicePixelRatio || 2;
+    miniCanvas.width = 40 * mDpr;
+    miniCanvas.height = 40 * mDpr;
+    miniCtx.scale(mDpr, mDpr);
+
+    miniCtx.save();
+    miniCtx.translate(20, 20);
+    
+    // 외곽 원 (테두리를 얇고 깔끔하게 설정: lineWidth = 0.8)
+    miniCtx.beginPath(); miniCtx.arc(0, 0, 16, 0, Math.PI*2);
+    miniCtx.fillStyle = "#fff"; miniCtx.fill();
+    miniCtx.strokeStyle = "#95a5a6"; miniCtx.lineWidth = 0.8; miniCtx.stroke();
+    
+    // N극 (빨강 바늘)
+    miniCtx.beginPath(); miniCtx.moveTo(0, -14); miniCtx.lineTo(5, 0); miniCtx.lineTo(-5, 0); miniCtx.closePath();
+    miniCtx.fillStyle = "#e74c3c"; miniCtx.fill();
+    
+    // S극 (파랑 바늘)
+    miniCtx.beginPath(); miniCtx.moveTo(0, 14); miniCtx.lineTo(5, 0); miniCtx.lineTo(-5, 0); miniCtx.closePath();
+    miniCtx.fillStyle = "#3498db"; miniCtx.fill();
+    
+    miniCtx.restore();
+
     const canvas = document.getElementById('simCanvas');
     const ctx = canvas.getContext('2d');
     
@@ -265,10 +335,10 @@
     let direction = -1; 
     let dashOffset = 0;
 
-    // 가시성 토글 상태 변수
-    let showCompass = false;     // 초기 시작 시 나침반 숨김
-    let showCurrentDir = true;   // 전류 방향 표시 여부
-    let showMagneticField = true;// 자기력선 표시 여부
+    // 초기 시작 시 나침반, 전류 방향, 자기력선 모두 OFF 상태로 설정
+    let showCompass = false;     
+    let showCurrentDir = false;   
+    let showMagneticField = false;
 
     const ISO_ANGLE = 0.55;
 
@@ -282,14 +352,14 @@
         // 다른 도선을 선택할 경우 전원 자동 OFF 처리
         isPowered = false;
         const powerBtn = document.getElementById('powerBtn');
-        powerBtn.innerText = "전원 스위치: OFF";
+        powerBtn.innerText = "OFF";
         powerBtn.classList.remove('on');
     }
 
     function togglePower() {
         isPowered = !isPowered;
         const powerBtn = document.getElementById('powerBtn');
-        powerBtn.innerText = isPowered ? "전원 스위치: ON" : "전원 스위치: OFF";
+        powerBtn.innerText = isPowered ? "ON" : "OFF";
         powerBtn.classList.toggle('on', isPowered);
     }
 
@@ -298,20 +368,17 @@
     // 개별 요소 표시/숨김 토글 함수들
     function toggleOptCompass() {
         showCompass = !showCompass;
-        const btn = document.getElementById('compassOptBtn');
-        btn.classList.toggle('off', !showCompass);
+        document.getElementById('compassOptBtn').classList.toggle('on', showCompass);
     }
 
     function toggleOptCurrent() {
         showCurrentDir = !showCurrentDir;
-        const btn = document.getElementById('currentOptBtn');
-        btn.classList.toggle('off', !showCurrentDir);
+        document.getElementById('currentOptBtn').classList.toggle('on', showCurrentDir);
     }
 
     function toggleOptField() {
         showMagneticField = !showMagneticField;
-        const btn = document.getElementById('fieldOptBtn');
-        btn.classList.toggle('off', !showMagneticField);
+        document.getElementById('fieldOptBtn').classList.toggle('on', showMagneticField);
     }
 
     function project(x, y, z) {
@@ -336,14 +403,13 @@
             draw3DScene();
         }
 
+        // 우측 상단 기준 나침반은 나침반 요소 토글과 무관하게 항상 표시되도록 유지
         drawReferenceCompass();
 
         requestAnimationFrame(render);
     }
 
     function drawReferenceCompass() {
-        if (!showCompass) return; // 나침반이 꺼져 있으면 우측 상단 기준 나침반도 숨김
-
         const cx = 765;
         const cy = 65; 
         const r = 22;
@@ -553,7 +619,7 @@
     }
 
     function draw2DCompass(x, y, targetAngle) {
-        if (!showCompass) return; // 나침반 표시 여부 토글 반영
+        if (!showCompass) return; // 나침반 표시 여부 토글 반영 (필드 위의 나침반들)
 
         const size = 18;
         const angle = isPowered ? targetAngle : -Math.PI/2;
