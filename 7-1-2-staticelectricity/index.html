@@ -100,15 +100,12 @@
         .info-box h3 { margin: 0 0 8px 0; font-size: 16px; color: #1e293b; border-bottom: 1px solid #e2e8f0; padding-bottom: 5px; }
         .info-box ul { margin: 0; padding: 0; list-style: none; }
         
-        /* 공통 li 스타일 및 들여쓰기 */
         .info-box li { font-size: 14px; line-height: 1.5; color: #334155; margin-bottom: 4px; position: relative; padding-left: 18px; text-align: left; }
         .info-box li::before { content: ""; position: absolute; left: 0; }
         
-        /* 실험 방법: 숫자 번호 매기기 */
         .info-box.method li { counter-increment: step; }
         .info-box.method li::before { content: counter(step) "."; font-weight: bold; color: #10b981; }
 
-        /* 알아 두기: 작은 동그라미 불릿 포인트 */
         .info-box.notice li::before { content: "•"; color: #f59e0b; font-weight: bold; font-size: 16px; line-height: 1; top: -1px; }
 
         .footer-info {
@@ -174,11 +171,10 @@
             </ul>
         </div>
         <div class="info-box notice">
-            <h3>💡 알아 두기</h3>
+            <h3>💡 주의 사항</h3>
             <ul>
                 <li><b>원자핵(+)</b>은 제자리에 고정되어 있습니다.</li>
                 <li><b>전자(-)</b>만 전기력을 받아 이동합니다.</li>
-                <li>본 실험은 원리 이해를 위한 <b>학습용 모델</b>입니다.</li>
             </ul>
         </div>
     </div>
@@ -186,7 +182,7 @@
 
 <div class="footer-info">
   <div class="copyright">Copyright © 2026 LEE HANEUL. All Rights Reserved.</div>
-  <div>금속 물체가 전기를 띠는 현상 관찰하기 v1.47 (2026-09-09)</div>
+  <div>금속 물체가 전기를 띠는 현상 관찰하기 v1.48 (2026-09-09)</div>
   <div>본 프로그램은 아이패드 및 태블릿 환경에서의 터치 조작을 지원합니다.</div>
 </div>
 
@@ -194,7 +190,7 @@
     let particles = [];
     let rod, can;
     let rodType = -1; 
-    let CAN_W = 220; 
+    let CAN_W = 180; // 가로 크기를 한 칸 더 줄임 (기존 220)
     let CAN_H = 270;
     const NUCLEUS_SIZE = 28;
     const ELECTRON_SIZE = 14;
@@ -217,14 +213,14 @@
 
         particles = [];
         let rows = 6;
-        let cols = 4;
+        let cols = 3; // 열 개수를 4개에서 3개로 줄여 좁은 깡통 폭에 맞춤
         for (let i = 0; i < cols; i++) {
             for (let j = 0; j < rows; j++) {
-                let px = map(i, 0, cols - 1, -CAN_W / 2 + 40, CAN_W / 2 - 40);
+                let px = map(i, 0, cols - 1, -CAN_W / 2 + 32, CAN_W / 2 - 32);
                 let py = map(j, 0, rows - 1, -CAN_H / 2 + 45, CAN_H / 2 - 45);
                 particles.push({ 
                     nx: px, ny: py, 
-                    ex: px + 20, ey: py, 
+                    ex: px + 16, ey: py, 
                     vx: 0, vy: 0 
                 });
             }
@@ -250,7 +246,7 @@
             let forceMagnitude = map(distance, 0, 500, 4.0, 0, true);
             let externalForceX = rodType * forceMagnitude;
 
-            let anchorX = p.nx + 20;
+            let anchorX = p.nx + 16;
             let anchorY = p.ny;
             let springX = (anchorX - p.ex) * 0.05;
             let springY = (anchorY - p.ey) * 0.05;
@@ -263,8 +259,8 @@
                     let dx = p.ex - other.ex;
                     let dy = p.ey - other.ey;
                     let d = dist(p.ex, p.ey, other.ex, other.ey);
-                    if (d < 40 && d > 0) {
-                        let repForce = map(d, 0, 40, 1.3, 0);
+                    if (d < 35 && d > 0) {
+                        let repForce = map(d, 0, 35, 1.3, 0);
                         repulX += (dx / d) * repForce;
                         repulY += (dy / d) * repForce;
                     }
@@ -283,7 +279,7 @@
             p.ex += p.vx * 0.5;
             p.ey += p.vy * 0.5;
 
-            p.ex = constrain(p.ex, -CAN_W / 2 + 16, CAN_W / 2 - 16);
+            p.ex = constrain(p.ex, -CAN_W / 2 + 14, CAN_W / 2 - 14);
             p.ey = constrain(p.ey, -CAN_H / 2 + 20, CAN_H / 2 - 20);
         }
 
@@ -347,7 +343,7 @@
         
         // 대전체 하단에 명칭 및 부호 표시
         fill(80); textStyle(NORMAL); textSize(15);
-        let rodNameText = rodType === 1 ? "(+) 대전체" : "(-) 대전체";
+        let rodNameText = rodType === 1 ? "대전체 (+)" : "대전체 (-)";
         text(rodNameText, 0, rod.h/2 + 28);
         pop();
 
