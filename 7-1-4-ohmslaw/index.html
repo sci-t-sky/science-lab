@@ -43,44 +43,44 @@
             background: var(--header-bg); 
             box-shadow: 0 4px 6px rgba(0,0,0,0.05); 
         }
-        h1 { margin: 0; font-size: 1.45rem; color: #ffffff; font-weight: 700; letter-spacing: -0.5px; }
+        h1 { margin: 0; font-size: 1.35rem; color: #ffffff; font-weight: 700; letter-spacing: -0.5px; }
 
-        /* 여백을 절반으로 줄여 중앙에 배치 */
+        /* 도구모음 공간을 고려하여 컨테이너의 상하 패딩과 여백을 적절히 최적화 */
         .container { 
-            max-width: 1240px; 
+            max-width: 1220px; 
             width: 100%; 
             margin: auto auto; 
             display: flex; 
             flex-direction: column; 
-            gap: 6px; 
-            padding: 8px 12px; 
+            gap: 10px; 
+            padding: 12px 10px; 
         }
 
-        .guide-container { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .guide-container { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         @media (max-width: 850px) { .guide-container { grid-template-columns: 1fr; } }
 
         .guide-box { 
             padding: 10px 14px; 
-            border-radius: 10px; 
-            font-size: 0.86rem; 
+            border-radius: 8px; 
+            font-size: 0.82rem; 
             line-height: 1.45; 
             background: white; 
             box-shadow: 0 2px 4px rgba(0,0,0,0.04); 
             border: 1px solid var(--border-color);
         }
-        .method-box { border-left: 5px solid var(--primary-blue); background-color: var(--guide-bg); }
-        .caution-box { border-left: 5px solid var(--accent-red); background-color: var(--caution-bg); }
-        .guide-title { font-weight: bold; margin-bottom: 5px; display: block; font-size: 0.92rem; color: #0f172a; }
+        .method-box { border-left: 4px solid var(--primary-blue); background-color: var(--guide-bg); }
+        .caution-box { border-left: 4px solid var(--accent-red); background-color: var(--caution-bg); }
+        .guide-title { font-weight: bold; margin-bottom: 5px; display: block; font-size: 0.88rem; color: #0f172a; }
         
         .bullet-list { margin: 0; padding-left: 16px; list-style-type: disc; }
-        .bullet-list li { margin-bottom: 2px; }
+        .bullet-list li { margin-bottom: 3px; }
 
         .main-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         @media (max-width: 950px) { .main-layout { grid-template-columns: 1fr; } }
 
         .panel {
             background: var(--panel-bg); 
-            border-radius: 12px; 
+            border-radius: 10px; 
             padding: 14px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.03); 
             display: flex; 
@@ -91,16 +91,16 @@
 
         .display-container { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
         .sensor-box {
-            background: #111827; padding: 9px; border-radius: 8px; text-align: center;
-            font-family: 'Consolas', monospace; box-shadow: inset 0 0 10px rgba(0,0,0,0.6);
+            background: #111827; padding: 8px; border-radius: 8px; text-align: center;
+            font-family: 'Consolas', monospace; box-shadow: inset 0 0 8px rgba(0,0,0,0.6);
         }
         .v-box { border: 1.5px solid var(--voltmeter-color); color: var(--voltmeter-color); }
         .i-box { border: 1.5px solid var(--ammeter-color); color: var(--ammeter-color); }
         .sensor-label { font-size: 0.72rem; opacity: 0.85; margin-bottom: 2px; color: #94a3b8; }
-        .sensor-value { font-size: 1.35rem; font-weight: bold; }
+        .sensor-value { font-size: 1.3rem; font-weight: bold; }
 
         .canvas-wrapper { position: relative; width: 100%; }
-        #circuit-canvas { width: 100%; height: 220px; background: #fff; border: 1px solid var(--border-color); border-radius: 8px; display: block; }
+        #circuit-canvas { width: 100%; height: 215px; background: #fff; border: 1px solid var(--border-color); border-radius: 8px; display: block; }
         
         .circuit-legend {
             position: absolute; bottom: 8px; left: 8px;
@@ -133,7 +133,7 @@
 
         .controls { background: #f8fafc; padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); display: flex; flex-direction: column; gap: 10px; }
         .control-group { display: flex; flex-direction: column; gap: 6px; }
-        label { font-weight: bold; font-size: 0.86rem; color: #334155; }
+        label { font-weight: bold; font-size: 0.85rem; color: #334155; }
 
         .slider-wrapper { position: relative; width: 100%; padding: 4px 0; }
         input[type="range"] { -webkit-appearance: none; width: 100%; height: 5.5px; background: #cbd5e1; border-radius: 3px; outline: none; margin: 0; cursor: pointer; }
@@ -144,13 +144,13 @@
         .tick-marks span::before { content: ""; width: 1px; height: 3.5px; background: #94a3b8; margin-bottom: 2px; }
 
         .radio-group { display: flex; gap: 8px; }
-        .radio-item label { display: block; padding: 9px; background: #e2e8f0; border-radius: 6px; cursor: pointer; font-size: 0.86rem; transition: 0.2s; text-align: center; color: #475569; }
+        .radio-item label { display: block; padding: 9px; background: #e2e8f0; border-radius: 6px; cursor: pointer; font-size: 0.85rem; transition: 0.2s; text-align: center; color: #475569; }
         .radio-item { flex: 1; }
         .radio-item input { display: none; }
         .radio-item input:checked + label { background: var(--primary-blue); color: white; font-weight: bold; box-shadow: 0 2px 4px rgba(0,123,255,0.3); }
 
         .button-group { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-        button { padding: 10px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 0.86rem; transition: background 0.2s; }
+        button { padding: 10px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 0.85rem; transition: background 0.2s; }
         .btn-record { background: var(--primary-blue); color: white; }
         .btn-record:hover { background: #0056b3; }
         .btn-reset { background: #64748b; color: white; }
@@ -164,7 +164,7 @@
             padding: 14px 20px; 
             background: var(--header-bg); 
             color: #94a3b8; 
-            font-size: 0.82rem; 
+            font-size: 0.78rem; 
             line-height: 1.5;
             box-shadow: 0 -4px 6px rgba(0,0,0,0.05);
         }
@@ -362,7 +362,7 @@
         const lw = circuitCanvas.width / dpr;
         const lh = circuitCanvas.height / dpr;
         const centerX = lw / 2, centerY = lh / 2;
-        const w = 220, h = 135; 
+        const w = 220, h = 130; 
         const left = centerX - w/2, top = centerY - h/2 + 5;
         const turns = (resistance === 10) ? 5 : 12;
         const resWidth = 8;
