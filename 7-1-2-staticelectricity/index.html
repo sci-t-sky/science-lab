@@ -182,7 +182,7 @@
 
 <div class="footer-info">
   <div class="copyright">Copyright © 2026 LEE HANEUL. All Rights Reserved.</div>
-  <div>금속 물체가 전기를 띠는 현상 관찰하기 v1.48 (2026-09-09)</div>
+  <div>금속 물체가 전기를 띠는 현상 관찰하기 v1.49 (2026-09-09)</div>
   <div>본 프로그램은 아이패드 및 태블릿 환경에서의 터치 조작을 지원합니다.</div>
 </div>
 
@@ -190,7 +190,7 @@
     let particles = [];
     let rod, can;
     let rodType = -1; 
-    let CAN_W = 180; // 가로 크기를 한 칸 더 줄임 (기존 220)
+    let CAN_W = 180; 
     let CAN_H = 270;
     const NUCLEUS_SIZE = 28;
     const ELECTRON_SIZE = 14;
@@ -208,12 +208,13 @@
 
     function initSimulation() {
         CAN_H = min(height * 0.7, 270);
-        can = { x: width * 0.28, y: height / 2, vx: 0 };
+        // 깡통 시작 위치를 왼쪽 박스와 안 겹치도록 오른쪽으로 좀 더 이동 (0.28 -> 0.35)
+        can = { x: width * 0.35, y: height / 2, vx: 0 };
         rod = { x: width * 0.92, y: height / 2, w: 42, h: height * 0.7, isDragging: false };
 
         particles = [];
         let rows = 6;
-        let cols = 3; // 열 개수를 4개에서 3개로 줄여 좁은 깡통 폭에 맞춤
+        let cols = 3;
         for (let i = 0; i < cols; i++) {
             for (let j = 0; j < rows; j++) {
                 let px = map(i, 0, cols - 1, -CAN_W / 2 + 32, CAN_W / 2 - 32);
@@ -294,7 +295,7 @@
             can.x = rodEdgeX - 15 - CAN_W/2;
             can.vx = 0;
         }
-        can.x = max(can.x, 260 + CAN_W/2);
+        can.x = max(can.x, 320 + CAN_W/2); // 왼쪽 박스와 겹치지 않도록 제한선 상향 조정
 
         // --- 렌더링 ---
         
