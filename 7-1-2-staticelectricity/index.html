@@ -10,45 +10,69 @@
             --rod-plus: #ef4444;
             --rod-minus: #3b82f6;
             --bg-color: #f8fafc;
-            --primary-dark: #1e293b;
+            --primary-dark: #212936;
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
-        body {
+        html, body {
             margin: 0; padding: 0;
             font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             background-color: var(--bg-color);
-            overflow: hidden;
-            display: flex; flex-direction: column; 
             height: 100vh;
+            height: 100dvh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
         }
 
         #header {
-            background: white; padding: 10px; text-align: center;
-            border-bottom: 1px solid #e2e8f0; flex-shrink: 0;
+            background-color: var(--primary-dark);
+            color: #ffffff;
+            padding: 14px 20px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+            flex-shrink: 0;
         }
 
-        #header h1 { margin: 0; font-size: 18px; color: var(--primary-dark); font-weight: 800; }
+        #header h1 { 
+            margin: 0; 
+            font-size: 1.25rem; 
+            color: #ffffff; 
+            font-weight: 800; 
+            letter-spacing: -0.01em;
+        }
 
-        /* 캔버스 영역의 세로 폭을 제한함 */
+        /* 캔버스 영역 */
         #canvas-wrapper { 
             flex: 1; 
-            max-height: 55vh; /* 세로 높이를 화면의 55%로 제한 */
-            min-height: 320px;
-            position: relative; width: 100%; 
-            background: #fff; overflow: hidden; touch-action: none;
+            position: relative; 
+            width: 100%; 
+            background: #fff; 
+            overflow: hidden; 
+            touch-action: none;
+            min-height: 0;
         }
 
+        /* 우측 상단으로 이동한 컨트롤 버튼 그룹 */
         #controls {
-            background: white; padding: 12px 10px;
-            display: flex; justify-content: center; gap: 10px;
-            border-top: 1px solid #e2e8f0; flex-shrink: 0;
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            display: flex;
+            gap: 8px;
+            z-index: 10;
+            background: rgba(255, 255, 255, 0.88);
+            backdrop-filter: blur(4px);
+            padding: 8px;
+            border-radius: 12px;
+            border: 1px solid #cbd5e1;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
         }
 
         button {
-            padding: 10px 18px; font-size: 14px; font-weight: bold;
-            border: 2px solid transparent; border-radius: 12px;
+            padding: 8px 14px; font-size: 13px; font-weight: bold;
+            border: 2px solid transparent; border-radius: 8px;
             cursor: pointer; transition: all 0.15s; color: white;
             -webkit-appearance: none;
         }
@@ -56,7 +80,7 @@
         .btn-plus { background-color: var(--rod-plus); }
         .btn-minus { background-color: var(--rod-minus); }
         .btn-reset { background-color: #64748b; }
-        .selected { border-color: #000; box-shadow: 0 0 0 3px rgba(0,0,0,0.1); }
+        .selected { border-color: #000; box-shadow: 0 0 0 2px rgba(0,0,0,0.15); }
 
         .info-container {
             position: absolute; top: 12px; left: 12px;
@@ -79,15 +103,39 @@
         .info-box li::before { content: "•"; position: absolute; left: 0; color: #94a3b8; }
 
         .footer-info {
-            padding: 10px 10px 25px 10px; /* 하단 여백 유지 */
-            text-align: center; font-size: 0.7rem; color: #888;
-            background: white; border-top: 1px solid #f1f5f9; flex-shrink: 0;
+            width: 100%;
+            background-color: var(--primary-dark);
+            color: #ffffff;
+            padding: 12px 20px;
+            text-align: center;
+            box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.12);
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            flex-shrink: 0;
+        }
+
+        .footer-info .copyright {
+            color: #ffffff;
+            font-weight: 700;
+            letter-spacing: -0.01em;
+            font-size: 0.85rem;
+        }
+
+        .footer-info div:nth-child(2) {
+            color: #cbd5e1;
+            font-weight: 600;
+            font-size: 0.8rem;
+        }
+
+        .footer-info div:nth-child(3) {
+            color: #94a3b8;
+            font-size: 0.75rem;
         }
 
         @media (max-width: 768px) {
-            #canvas-wrapper { max-height: 50vh; }
             .info-box { width: 190px; }
-            button { padding: 8px 12px; font-size: 12px; }
+            button { padding: 6px 10px; font-size: 11px; }
         }
     </style>
 </head>
@@ -98,11 +146,18 @@
 </div>
 
 <div id="canvas-wrapper">
+    <!-- 우측 상단 컨트롤 버튼들 -->
+    <div id="controls">
+        <button id="plusRod" class="btn-plus">＋ 대전체</button>
+        <button id="minusRod" class="btn-minus selected">－ 대전체</button>
+        <button id="reset" class="btn-reset">초기화</button>
+    </div>
+
     <div class="info-container">
         <div class="info-box method">
             <h3>🔍 실험 방법</h3>
             <ul>
-                <li>하단 버튼으로 <b>대전체 종류</b>를 선택합니다.</li>
+                <li>우측 상단 버튼으로 <b>대전체 종류</b>를 선택합니다.</li>
                 <li>오른쪽 <b>대전체</b>를 드래그하여 이동시킵니다.</li>
                 <li><b>전자(-)의 이동</b>과 <b>유도 전하</b>를 관찰합니다.</li>
             </ul>
@@ -118,16 +173,10 @@
     </div>
 </div>
 
-<div id="controls">
-    <button id="plusRod" class="btn-plus">＋ 대전체</button>
-    <button id="minusRod" class="btn-minus selected">－ 대전체</button>
-    <button id="reset" class="btn-reset">초기화</button>
-</div>
-
 <div class="footer-info">
   <div class="copyright">Copyright © 2026 LEE HANEUL. All Rights Reserved.</div>
-  <div style="margin-top: 2px; color: #999;">정전기 유도 가상 실험 v1.32 (2026-09-09)</div>
-  <div style="margin-top: 2px; color: #aaa;">본 프로그램은 아이패드 및 태블릿 환경에서의 터치 조작을 지원합니다.</div>
+  <div>정전기 유도 가상 실험 v1.39 (2026-09-09)</div>
+  <div>본 프로그램은 아이패드 및 태블릿 환경에서의 터치 조작을 지원합니다.</div>
 </div>
 
 <script>
@@ -135,10 +184,9 @@
     let rod, can;
     let rodType = -1; 
     let CAN_W = 140; 
-    let CAN_H = 180; // 세로폭 축소
+    let CAN_H = 180;
     const NUCLEUS_SIZE = 22;
     const ELECTRON_SIZE = 11;
-    const NEUTRAL_OFFSET = 16; 
 
     function setup() {
         let container = document.getElementById('canvas-wrapper');
@@ -152,18 +200,22 @@
     }
 
     function initSimulation() {
-        CAN_H = min(height * 0.5, 180); // 캔버스 높이에 따라 가변적이나 최대 180으로 축소
+        CAN_H = min(height * 0.5, 180);
         can = { x: width * 0.35, y: height / 2, vx: 0 };
         rod = { x: width * 0.92, y: height / 2, w: 42, h: height * 0.7, isDragging: false };
 
         particles = [];
-        let rows = 5; // 6개에서 5개로 줄여 좁은 공간 최적화
+        let rows = 5;
         let cols = 3;
         for (let i = 0; i < cols; i++) {
             for (let j = 0; j < rows; j++) {
                 let px = map(i, 0, cols - 1, -CAN_W / 2 + 32, CAN_W / 2 - 32);
                 let py = map(j, 0, rows - 1, -CAN_H / 2 + 35, CAN_H / 2 - 35);
-                particles.push({ nx: px, ny: py, ex: px + NEUTRAL_OFFSET, ey: py });
+                particles.push({ 
+                    nx: px, ny: py, 
+                    ex: px + 16, ey: py, 
+                    vx: 0, vy: 0 
+                });
             }
         }
     }
@@ -181,12 +233,48 @@
         let distance = max(5, rodEdgeX - canEdgeX);
 
         // --- 물리 로직 ---
-        particles.forEach(p => {
-            let forceEffect = map(distance, 0, 500, 65, 0, true);
-            let targetEx = (p.nx + NEUTRAL_OFFSET) + (rodType * forceEffect);
-            targetEx = constrain(targetEx, -CAN_W / 2 + 12, CAN_W / 2 - 12);
-            p.ex += (targetEx - p.ex) * 0.12;
-        });
+        for (let i = 0; i < particles.length; i++) {
+            let p = particles[i];
+
+            let forceMagnitude = map(distance, 0, 500, 4.0, 0, true);
+            let externalForceX = rodType * forceMagnitude;
+
+            let anchorX = p.nx + 16;
+            let anchorY = p.ny;
+            let springX = (anchorX - p.ex) * 0.05;
+            let springY = (anchorY - p.ey) * 0.05;
+
+            let repulX = 0;
+            let repulY = 0;
+            for (let j = 0; j < particles.length; j++) {
+                if (i !== j) {
+                    let other = particles[j];
+                    let dx = p.ex - other.ex;
+                    let dy = p.ey - other.ey;
+                    let d = dist(p.ex, p.ey, other.ex, other.ey);
+                    if (d < 35 && d > 0) {
+                        let repForce = map(d, 0, 35, 1.2, 0);
+                        repulX += (dx / d) * repForce;
+                        repulY += (dy / d) * repForce;
+                    }
+                }
+            }
+
+            let randomJitterX = random(-0.8, 0.8);
+            let randomJitterY = random(-0.8, 0.8);
+
+            p.vx += externalForceX + springX + repulX + randomJitterX;
+            p.vy += springY + repulY + randomJitterY;
+
+            p.vx *= 0.72;
+            p.vy *= 0.72;
+
+            p.ex += p.vx * 0.5;
+            p.ey += p.vy * 0.5;
+
+            p.ex = constrain(p.ex, -CAN_W / 2 + 12, CAN_W / 2 - 12);
+            p.ey = constrain(p.ey, -CAN_H / 2 + 15, CAN_H / 2 - 15);
+        }
 
         if (distance < 500) {
             let attraction = map(distance, 0, 500, 0.45, 0, true); 
@@ -199,7 +287,7 @@
             can.x = rodEdgeX - 15 - CAN_W/2;
             can.vx = 0;
         }
-        can.x = max(can.x, 240 + CAN_W/2); // 안내 박스 영역 보호
+        can.x = max(can.x, 240 + CAN_W/2);
 
         // --- 렌더링 ---
         
@@ -245,13 +333,18 @@
         fill(255); textAlign(CENTER, CENTER); textSize(26); textStyle(BOLD);
         let s = rodType === 1 ? "+" : "-";
         for(let i = -2; i <= 2; i++) text(s, 0, i * (rod.h/6));
+        
+        // 대전체 하단에 명칭 및 부호 표시
+        fill(80); textStyle(NORMAL); textSize(13);
+        let rodNameText = rodType === 1 ? "(+) 대전체" : "(-) 대전체";
+        text(rodNameText, 0, rod.h/2 + 25);
         pop();
 
         // 3. 인력 화살표
         if (distance < 380 && distance > 15) {
             let startX = can.x + CAN_W/2 + 75; 
             drawArrow(startX, can.y - 45, distance); 
-            drawArrow(startX, can.y, distance);      
+            drawArrow(startX, can.y, distance);     
             drawArrow(startX, can.y + 45, distance); 
         }
     }
