@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>전류, 전압, 저항 사이의 관계 실험 (옴의 법칙)</title>
+    <title>전류, 전압, 저항 사이의 관계 탐구하기</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
@@ -12,11 +12,14 @@
             --primary-blue: #007bff;
             --accent-red: #dc3545;
             --text-dark: #333;
-            --border-color: #ddd;
+            --border-color: #e2e8f0;
             --voltmeter-color: #f39c12;
             --ammeter-color: #27ae60;
+            --electron-color: #f1c40f;
+            --current-color: #e74c3c;
             --guide-bg: #e7f3ff;
             --caution-bg: #fff3f3;
+            --header-bg: #1e293b;
         }
 
         * { 
@@ -29,80 +32,121 @@
         
         body {
             font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
-            margin: 0; padding: 8px; background-color: var(--bg-color); color: var(--text-dark);
+            margin: 0; padding: 10px; background-color: var(--bg-color); color: var(--text-dark);
         }
 
-        .container { max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; gap: 10px; }
-        header { text-align: center; padding: 8px; background: white; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-        h1 { margin: 0; font-size: 1.25rem; color: #222; }
+        .container { max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; gap: 12px; }
+        
+        header { 
+            text-align: center; 
+            padding: 14px 20px; 
+            background: var(--header-bg); 
+            border-radius: 10px; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.08); 
+        }
+        h1 { margin: 0; font-size: 1.35rem; color: #ffffff; font-weight: 700; letter-spacing: -0.5px; }
 
-        .guide-container { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-        .guide-box { padding: 10px 12px; border-radius: 8px; font-size: 0.82rem; line-height: 1.5; }
-        .method-box { background-color: var(--guide-bg); border-left: 3.5px solid var(--primary-blue); }
-        .caution-box { background-color: var(--caution-bg); border-left: 3.5px solid var(--accent-red); }
-        .guide-title { font-weight: bold; margin-bottom: 4px; display: block; font-size: 0.88rem; }
+        .guide-container { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .guide-box { padding: 12px 14px; border-radius: 8px; font-size: 0.82rem; line-height: 1.5; background: white; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+        .method-box { border-left: 4px solid var(--primary-blue); }
+        .caution-box { border-left: 4px solid var(--accent-red); }
+        .guide-title { font-weight: bold; margin-bottom: 6px; display: block; font-size: 0.88rem; color: #1e293b; }
+        
+        .bullet-list { margin: 0; padding-left: 16px; list-style-type: disc; }
+        .bullet-list li { margin-bottom: 4px; }
 
         .main-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         @media (max-width: 900px) { .main-layout { grid-template-columns: 1fr; } }
 
         .panel {
-            background: var(--panel-bg); border-radius: 10px; padding: 15px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05); display: flex; flex-direction: column; gap: 12px;
+            background: var(--panel-bg); border-radius: 10px; padding: 16px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.04); display: flex; flex-direction: column; gap: 12px;
+            border: 1px solid var(--border-color);
         }
 
         .display-container { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
         .sensor-box {
-            background: #222; padding: 10px; border-radius: 6px; text-align: center;
+            background: #1e1e1e; padding: 10px; border-radius: 8px; text-align: center;
             font-family: 'Consolas', monospace; box-shadow: inset 0 0 8px rgba(0,0,0,0.5);
         }
         .v-box { border: 1px solid var(--voltmeter-color); color: var(--voltmeter-color); }
         .i-box { border: 1px solid var(--ammeter-color); color: var(--ammeter-color); }
-        .sensor-label { font-size: 0.72rem; opacity: 0.8; margin-bottom: 3px; color: #eee; }
+        .sensor-label { font-size: 0.72rem; opacity: 0.8; margin-bottom: 3px; color: #cbd5e1; }
         .sensor-value { font-size: 1.35rem; font-weight: bold; }
 
-        #circuit-canvas { width: 100%; height: 250px; background: #fff; border: 1px solid #eee; border-radius: 8px; }
+        .canvas-wrapper { position: relative; width: 100%; }
+        #circuit-canvas { width: 100%; height: 250px; background: #fff; border: 1px solid var(--border-color); border-radius: 8px; display: block; }
+        
+        .circuit-legend {
+            position: absolute; bottom: 10px; left: 10px;
+            background: rgba(255, 255, 255, 0.95); padding: 8px 12px; border-radius: 6px;
+            font-size: 0.75rem; border: 1px solid #cbd5e1; display: flex; flex-direction: column; gap: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.08); pointer-events: none;
+        }
+        .legend-item { display: flex; align-items: center; gap: 8px; font-weight: bold; color: #333; }
+        .legend-circle {
+            width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-size: 0.7rem; font-family: 'Pretendard', sans-serif; background: #fff;
+        }
+        .legend-v { border: 2px solid var(--voltmeter-color); color: var(--voltmeter-color); }
+        .legend-a { border: 2px solid var(--ammeter-color); color: var(--ammeter-color); }
+        .legend-electron { width: 14px; height: 14px; background: var(--electron-color); border-radius: 50%; margin: 3px; }
+        
+        .legend-arrow-container {
+            width: 20px; height: 14px; display: flex; align-items: center; justify-content: center; margin: 3px; position: relative;
+        }
+        .legend-arrow-line {
+            width: 12px; height: 2.5px; background: var(--current-color); position: absolute;
+        }
+        .legend-arrow-head {
+            width: 0; height: 0; border-top: 4px solid transparent; border-bottom: 4px solid transparent; border-left: 6px solid var(--current-color); position: absolute; right: 0;
+        }
 
-        .controls { background: #f8f9fa; padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); display: flex; flex-direction: column; gap: 15px; }
+        .controls { background: #f8fafc; padding: 14px; border-radius: 8px; border: 1px solid var(--border-color); display: flex; flex-direction: column; gap: 14px; }
         .control-group { display: flex; flex-direction: column; gap: 8px; }
-        label { font-weight: bold; font-size: 0.88rem; color: #444; }
+        label { font-weight: bold; font-size: 0.88rem; color: #334155; }
 
         .slider-wrapper { position: relative; width: 100%; padding: 5px 0; }
-        input[type="range"] { -webkit-appearance: none; width: 100%; height: 6px; background: #ddd; border-radius: 3px; outline: none; margin: 0; cursor: pointer; }
-        input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 22px; height: 22px; background: var(--primary-blue); border-radius: 50%; cursor: pointer; box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
+        input[type="range"] { -webkit-appearance: none; width: 100%; height: 6px; background: #cbd5e1; border-radius: 3px; outline: none; margin: 0; cursor: pointer; }
+        input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 22px; height: 22px; background: var(--primary-blue); border-radius: 50%; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
         
         .tick-marks { display: flex; justify-content: space-between; padding: 0 11px; margin-top: 8px; pointer-events: none; }
-        .tick-marks span { display: flex; flex-direction: column; align-items: center; font-size: 0.75rem; color: #777; width: 0; white-space: nowrap; }
-        .tick-marks span::before { content: ""; width: 1px; height: 4px; background: #bbb; margin-bottom: 3px; }
+        .tick-marks span { display: flex; flex-direction: column; align-items: center; font-size: 0.75rem; color: #64748b; width: 0; white-space: nowrap; }
+        .tick-marks span::before { content: ""; width: 1px; height: 4px; background: #94a3b8; margin-bottom: 3px; }
 
         .radio-group { display: flex; gap: 8px; }
-        .radio-item label { display: block; padding: 9px; background: #eee; border-radius: 6px; cursor: pointer; font-size: 0.88rem; transition: 0.2s; text-align: center; }
+        .radio-item label { display: block; padding: 10px; background: #e2e8f0; border-radius: 6px; cursor: pointer; font-size: 0.88rem; transition: 0.2s; text-align: center; color: #475569; }
         .radio-item { flex: 1; }
         .radio-item input { display: none; }
-        .radio-item input:checked + label { background: var(--primary-blue); color: white; }
+        .radio-item input:checked + label { background: var(--primary-blue); color: white; font-weight: bold; }
 
         .button-group { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-        button { padding: 11px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 0.88rem; }
+        button { padding: 11px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 0.88rem; transition: background 0.2s; }
         .btn-record { background: var(--primary-blue); color: white; }
-        .btn-reset { background: #6c757d; color: white; }
+        .btn-record:hover { background: #0056b3; }
+        .btn-reset { background: #64748b; color: white; }
+        .btn-reset:hover { background: #475569; }
 
         .graph-panel { min-height: 320px; }
         
-        .footer-info { 
-            margin-top: 10px;
-            padding: 15px; 
+        footer { 
             text-align: center; 
-            font-size: 0.82rem; 
+            padding: 16px; 
+            background: var(--header-bg); 
+            color: #94a3b8; 
+            border-radius: 10px; 
+            font-size: 0.8rem; 
             line-height: 1.6;
-            color: #666; 
-            border-top: 1px solid #eee;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
+        footer div:first-child { color: #ffffff; font-weight: bold; margin-bottom: 3px; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <header>
-        <h1>전류, 전압, 저항 사이의 관계 (옴의 법칙)</h1>
+        <h1>전류, 전압, 저항 사이의 관계 탐구하기</h1>
     </header>
 
     <div class="guide-container">
@@ -110,13 +154,16 @@
             <span class="guide-title">📘 실험 방법</span>
             1. 전압 조절 슬라이더를 움직여 회로에 흐르는 전압을 바꿉니다.<br>
             2. 니크롬선의 길이에 따라 전류계의 눈금이 어떻게 변하는지 봅니다.<br>
-            3. '데이터 기록하기' 버튼으로 측정 결과를 그래프에 남깁니다.
+            3. '데이터 기록하기' 버튼으로 측정 결과를 그래프에 남깁니다.<br>
+            4. 짧은 니크롬선과 긴 니크롬선일 때 기록된 그래프의 기울기를 비교합니다.
         </div>
         <div class="guide-box caution-box">
-            <span class="guide-title">⚠️ 주의사항</span>
-            1. 전자는 (-)극에서 (+)극으로 전선을 따라 이동합니다.<br>
-            2. 전압이 높을수록 전자의 이동 속도가 빨라짐을 관찰하세요.<br>
-            3. 니크롬선이 촘촘할수록(길이가 길수록) 저항이 커집니다.
+            <span class="guide-title">💡 알아 두기</span>
+            <ul class="bullet-list">
+                <li>전자는 (-)극에서 (+)극으로 전선을 따라 이동합니다.</li>
+                <li>전압이 높을수록 전자의 이동 속도가 빨라짐을 관찰하세요.</li>
+                <li>실제 회로에는 눈에 보이는 것보다 훨씬 엄청나게 많은 수의 전자가 이동하지만, 원활한 이해를 돕기 위해 시각적으로 간소화하여 표현한 것이므로 오개념이 없도록 유의하세요.</li>
+            </ul>
         </div>
     </div>
 
@@ -133,7 +180,20 @@
                 </div>
             </div>
 
-            <canvas id="circuit-canvas"></canvas>
+            <div class="canvas-wrapper">
+                <canvas id="circuit-canvas"></canvas>
+                <div class="circuit-legend">
+                    <div class="legend-item"><span class="legend-circle legend-v">V</span> 전압계</div>
+                    <div class="legend-item"><span class="legend-circle legend-a">A</span> 전류계</div>
+                    <div class="legend-item"><span class="legend-electron"></span> 전자</div>
+                    <div class="legend-item">
+                        <div class="legend-arrow-container">
+                            <div class="legend-arrow-line"></div>
+                            <div class="legend-arrow-head"></div>
+                        </div> 전류 방향
+                    </div>
+                </div>
+            </div>
 
             <div class="controls">
                 <div class="control-group">
@@ -169,9 +229,9 @@
         </div>
     </div>
 
-    <footer class="footer-info">
-        <div>Copyright © 2026 LEE HANEUL. All Rights Reserved.</div>
-        <div>전류, 전압, 저항 사이의 관계 가상 실험 v2.1 (2026-09-09)</div>
+    <footer>
+        <div>Copyright © 2026. LEE HANEUL All rights reserved.</div>
+        <div>[전류, 전압, 저항 사이의 관계 탐구하기] v2.1 (2026-09-09)</div>
         <div>본 프로그램은 아이패드 및 태블릿 환경에서의 터치 조작을 지원합니다.</div>
     </footer>
 </div>
@@ -223,6 +283,29 @@
         ctx.fillStyle = "#fff"; ctx.fill(); ctx.strokeStyle = color; ctx.lineWidth = 2.5; ctx.stroke();
         ctx.fillStyle = color; ctx.font = "bold 14px 'Pretendard'"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
         ctx.fillText(label, x, y);
+    }
+
+    function drawArrow(x, y, angle) {
+        ctx.save();
+        ctx.translate(x, y);
+        ctx.rotate(angle);
+        ctx.strokeStyle = "#e74c3c";
+        ctx.fillStyle = "#e74c3c";
+        ctx.lineWidth = 2.5;
+
+        ctx.beginPath();
+        ctx.moveTo(-10, 0);
+        ctx.lineTo(10, 0);
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.moveTo(10, 0);
+        ctx.lineTo(3, -4);
+        ctx.lineTo(3, 4);
+        ctx.closePath();
+        ctx.fill();
+
+        ctx.restore();
     }
 
     function getCircuitPoint(distance, params) {
@@ -277,16 +360,29 @@
 
         ctx.fillStyle = "#fff"; ctx.strokeStyle = "#333"; ctx.lineWidth = 2;
         ctx.fillRect(left - 15, centerY - 15, 30, 60); ctx.strokeRect(left - 15, centerY - 15, 30, 60);
-        ctx.fillStyle = "#333"; ctx.textAlign = "center"; 
-        ctx.font = "bold 16px 'Pretendard'"; ctx.fillText("+", left, centerY + 5); ctx.fillText("-", left, centerY + 35);
-        ctx.font = "bold 9px 'Pretendard'"; ctx.fillText("Power", left, centerY - 20);
+        
+        ctx.fillStyle = "#333"; 
+        ctx.font = "bold 15px 'Pretendard'"; 
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText("+", left, centerY + 3);
+        ctx.fillText("-", left, centerY + 28);
+
+        ctx.font = "bold 11px 'Pretendard'";
+        ctx.fillText("전", left - 27, centerY + 3);
+        ctx.fillText("원", left - 27, centerY + 17);
 
         drawMeter(centerX, top + h, "A", "#27ae60");
 
+        if (voltage > 0) {
+            drawArrow(left + w - 40, top - 14, 0);
+            drawArrow(left + 50, top + h + 14, Math.PI);
+        }
+
         if (current > 0) {
-            electronOffset += current * 10;
+            electronOffset -= current * 10;
             const totalLen = (w * 2) + (h * 2);
-            ctx.fillStyle = "#FFEB3B";
+            ctx.fillStyle = "#f1c40f";
             for (let i = 0; i < 15; i++) {
                 const d = (electronOffset + (i * (totalLen / 15))) % totalLen;
                 const pos = getCircuitPoint(d, pathParams);
@@ -295,7 +391,7 @@
             }
         }
 
-        ctx.fillStyle = "#333"; ctx.textAlign = "right"; ctx.font = "bold 12.5px 'Pretendard'";
+        ctx.fillStyle = "#333"; ctx.textAlign = "right"; ctx.textBaseline = "alphabetic"; ctx.font = "bold 12.5px 'Pretendard'";
         ctx.fillText(resistance === 10 ? "짧은 니크롬선" : "긴 니크롬선", left + w - 15, centerY + 55);
 
         requestAnimationFrame(drawCircuit);
