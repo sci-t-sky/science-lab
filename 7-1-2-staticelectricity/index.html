@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>정전기 유도 가상 실험</title>
+    <title>금속 물체가 전기를 띠는 현상 관찰하기</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
     <style>
         :root {
@@ -142,7 +142,7 @@
 <body>
 
 <div id="header">
-    <h1>정전기 유도 가상 실험</h1>
+    <h1>금속 물체가 전기를 띠는 현상 관찰하기</h1>
 </div>
 
 <div id="canvas-wrapper">
@@ -175,7 +175,7 @@
 
 <div class="footer-info">
   <div class="copyright">Copyright © 2026 LEE HANEUL. All Rights Reserved.</div>
-  <div>정전기 유도 가상 실험 v1.39 (2026-09-09)</div>
+  <div>금속 물체가 전기를 띠는 현상 관찰하기 v1.39 (2026-09-13)</div>
   <div>본 프로그램은 아이패드 및 태블릿 환경에서의 터치 조작을 지원합니다.</div>
 </div>
 
@@ -291,7 +291,7 @@
 
         // --- 렌더링 ---
         
-        // 1. 금속 캔
+        // 1. 알루미늄 깡통
         push();
         translate(can.x, can.y);
         stroke(140); strokeWeight(2); fill(230, 235, 240);
@@ -321,7 +321,7 @@
         });
 
         noStroke(); fill(80); textStyle(NORMAL); textSize(13); 
-        text("금속 캔 (도체)", 0, CAN_H/2 + 32);
+        text("알루미늄 깡통", 0, CAN_H/2 + 32);
         pop();
 
         // 2. 대전체
