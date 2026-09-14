@@ -100,6 +100,38 @@
         
         .btn-toggle { background: #f39c12; color: white; }
         
+        /* 슬라이더 컨트롤 스타일 추가 */
+        .slider-container {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            background: #f8f9fa;
+            border: 1px solid #cbd5e0;
+            border-radius: 8px;
+            padding: 10px;
+        }
+        .slider-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: bold;
+            color: #2d3748;
+        }
+        .slider-header span#currentIntensityLabel {
+            color: #3182ce;
+        }
+        .slider-container input[type=range] {
+            width: 100%;
+            cursor: pointer;
+            accent-color: #3182ce;
+        }
+        .slider-range-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 10px;
+            color: #718093;
+        }
+
         /* 토글 버튼 스위치 디자인 스타일 (줄바꿈 방지 nowrap 설정) */
         .btn-switch {
             background: #f8f9fa;
@@ -214,6 +246,7 @@
                 <h3>🧪 실험 방법</h3>
                 <ol>
                     <li><b>[OFF]</b> 버튼을 눌러 전원을 켭니다 (전원 ON).</li>
+                    <li><b>[전류의 세기]</b> 다이얼을 조절하여 전류 세기에 따른 변화를 관찰합니다.</li>
                     <li><b>[전류 방향 전환]</b> 버튼을 눌러 도선에 흐르는 전류의 방향을 바꿔봅니다.</li>
                     <li>우측 패널에서 화면 요소(나침반, 전류 방향, 자기력선)의 표시 여부를 설정합니다.</li>
                     <li>상단의 <b>[직선 도선]</b>, <b>[원형 도선]</b>, <b>[코일]</b> 버튼을 클릭하며 자기장의 모양과 방향 변화를 관찰합니다.</li>
@@ -257,6 +290,20 @@
             <div class="card">
                 <h3>🔄 조건 전환</h3>
                 <div class="control-group">
+                    <!-- 전류의 세기 다이얼을 위로 이동 -->
+                    <div class="slider-container">
+                        <div class="slider-header">
+                            <span>전류의 세기</span>
+                            <span id="currentIntensityLabel">보통</span>
+                        </div>
+                        <input type="range" id="currentSlider" min="1" max="3" step="1" value="2" oninput="updateIntensity(this.value)">
+                        <div class="slider-range-labels">
+                            <span>약</span>
+                            <span>보통</span>
+                            <span>강</span>
+                        </div>
+                    </div>
+                    <!-- 전류 방향 전환 버튼을 아래로 이동 -->
                     <button class="btn-toggle" onclick="toggleDir()">전류 방향 전환</button>
                 </div>
             </div>
@@ -333,7 +380,9 @@
     let mode = 'straight';
     let isPowered = false;
     let direction = -1; 
+    let currentIntensity = 2; // 전류 세기 (1: 약, 2: 보통, 3: 강)
     let dashOffset = 0;
+    let timeTick = 0; // 자침 흔들림 효과를 위한 타이머 변수
 
     // 초기 시작 시 나침반, 전류 방향, 자기력선 모두 OFF 상태로 설정
     let showCompass = false;     
@@ -365,6 +414,15 @@
 
     function toggleDir() { direction *= -1; }
 
+    // 전류 세기 변경 함수
+    function updateIntensity(val) {
+        currentIntensity = parseInt(val);
+        const label = document.getElementById('currentIntensityLabel');
+        if (currentIntensity === 1) label.innerText = "약";
+        else if (currentIntensity === 2) label.innerText = "보통";
+        else if (currentIntensity === 3) label.innerText = "강";
+    }
+
     // 개별 요소 표시/숨김 토글 함수들
     function toggleOptCompass() {
         showCompass = !showCompass;
@@ -395,7 +453,9 @@
 
     function render() {
         ctx.clearRect(0, 0, LOGICAL_WIDTH, LOGICAL_HEIGHT);
-        if(isPowered) dashOffset += 0.8;
+        timeTick += 0.1;
+        const speedMultiplier = currentIntensity === 1 ? 0.5 : (currentIntensity === 2 ? 1.0 : 1.6);
+        if(isPowered) dashOffset += 0.8 * speedMultiplier;
 
         if (mode === 'solenoid') {
             draw2DSolenoid();
@@ -528,8 +588,8 @@
 
         // 자기력선 표시 여부 반영
         if (isPowered && showMagneticField) {
-            ctx.strokeStyle = "rgba(156, 136, 255, 0.85)";
-            ctx.lineWidth = 2;
+            ctx.strokeStyle = "rgba(156, 136, 255, " + (0.4 + currentIntensity * 0.2) + ")";
+            ctx.lineWidth = 1.5 + currentIntensity * 0.5;
             ctx.setLineDash([8, 8]);
 
             [-30, 0, 30].forEach(offsetY => {
@@ -569,8 +629,8 @@
             ctx.setLineDash([]);
         }
 
-        draw2DCompass(cx - 60, cy, bAngleInternal);
-        draw2DCompass(cx + 60, cy, bAngleInternal);
+        draw2DCompass(cx - 60, cy, bAngleInternal, 1);
+        draw2DCompass(cx + 60, cy, bAngleInternal, 2);
 
         for (let i = 0; i < turns; i++) {
             const x = startX + i * stepX;
@@ -597,11 +657,11 @@
         const lowerLineY = bottomY + 20 + (40 + 70*0.3);
 
         const bAngleExternal = bAngleInternal + Math.PI;
-        draw2DCompass(cx, upperLineY, bAngleExternal);
-        draw2DCompass(cx, lowerLineY, bAngleExternal);
+        draw2DCompass(cx, upperLineY, bAngleExternal, 3);
+        draw2DCompass(cx, lowerLineY, bAngleExternal, 4);
 
-        draw2DCompass(cx - width/2 - 75, cy, bAngleInternal);
-        draw2DCompass(cx + width/2 + 75, cy, bAngleInternal);
+        draw2DCompass(cx - width/2 - 75, cy, bAngleInternal, 5);
+        draw2DCompass(cx + width/2 + 75, cy, bAngleInternal, 6);
     }
 
     function drawMagneticArrowHead(x, y, rad) {
@@ -618,11 +678,20 @@
         ctx.restore();
     }
 
-    function draw2DCompass(x, y, targetAngle) {
+    function draw2DCompass(x, y, targetAngle, seed = 0) {
         if (!showCompass) return; // 나침반 표시 여부 토글 반영 (필드 위의 나침반들)
 
         const size = 18;
-        const angle = isPowered ? targetAngle : -Math.PI/2;
+        // 자침이 약간 흔들리는 효과 (지시각에 미세한 삼각함수 노이즈 가미)
+        let angle = isPowered ? targetAngle : -Math.PI/2;
+        if (isPowered) {
+            const jitter = Math.sin(timeTick * 4 + seed * 1.5) * 0.04; // 미세한 떨림
+            angle += jitter;
+        } else {
+            // 전원이 꺼져 있을 때도 미세하게 미풍에 흔들리는 느낌
+            angle += Math.sin(timeTick * 2 + seed) * 0.02;
+        }
+
         ctx.save();
         ctx.translate(x, y);
         ctx.beginPath(); ctx.arc(0, 0, size, 0, Math.PI*2);
@@ -686,12 +755,14 @@
                 }
             }
 
+            let cIndex = 0;
             [80, 140].forEach(r => {
                 for(let a=0; a<Math.PI*2; a+=Math.PI/4) {
                     const cx = Math.cos(a)*r; const cz = Math.sin(a)*r;
                     const dx = Math.sin(a) * (currentUp ? 1 : -1);
                     const dz = -Math.cos(a) * (currentUp ? 1 : -1);
-                    queue.push({ depth: cx + cz + 50, draw: () => drawCompass(cx, 0, cz, getScreenAngle(cx, cz, dx, dz)) });
+                    const seedVal = ++cIndex;
+                    queue.push({ depth: cx + cz + 50, draw: () => drawCompass(cx, 0, cz, getScreenAngle(cx, cz, dx, dz), seedVal) });
                 }
             });
 
@@ -752,7 +823,7 @@
             [45, 85].forEach(r => [Math.PI/4, 3*Math.PI/4, 5*Math.PI/4, 7*Math.PI/4].forEach(a => compassPoints.push({x: R + Math.cos(a)*r, z: Math.sin(a)*r, center: R})));
             compassPoints.push({x: 0, z: 0, center: 0});
 
-            compassPoints.forEach(pos => {
+            compassPoints.forEach((pos, idx) => {
                 queue.push({ depth: pos.x + pos.z + 800, draw: () => {
                     let dx, dz;
                     if (pos.center === -R) { 
@@ -766,7 +837,7 @@
                     } else { 
                         dx = 0; dz = dirLtoR ? -1 : 1;
                     }
-                    drawCompass(pos.x, 0, pos.z, getScreenAngle(pos.x, pos.z, dx, dz));
+                    drawCompass(pos.x, 0, pos.z, getScreenAngle(pos.x, pos.z, dx, dz), idx + 10);
                 }});
             });
         }
@@ -803,14 +874,15 @@
         ctx.restore();
     }
 
-    function drawCompass(x, y, z, targetAngle) {
+    function drawCompass(x, y, z, targetAngle, seed = 0) {
         const p = project(x, y, z);
-        draw2DCompass(p.x, p.y, targetAngle);
+        draw2DCompass(p.x, p.y, targetAngle, seed);
     }
 
     function addMovingStraightLines(queue, x, z, radii, flowDir) {
         queue.push({ depth: -500, draw: () => {
-            ctx.strokeStyle = "rgba(156, 136, 255, 0.75)"; ctx.lineWidth = 2;
+            ctx.strokeStyle = "rgba(156, 136, 255, 0.75)";
+            ctx.lineWidth = 1 + currentIntensity * 0.5;
             ctx.setLineDash([8, 8]);
             ctx.lineDashOffset = dashOffset * flowDir;
             radii.forEach(r => {
@@ -827,7 +899,8 @@
 
     function addMovingLoopLines(queue, R, dirLtoR) {
         queue.push({ depth: -500, draw: () => {
-            ctx.strokeStyle = "rgba(156, 136, 255, 0.75)"; ctx.lineWidth = 2;
+            ctx.strokeStyle = "rgba(156, 136, 255, 0.75)";
+            ctx.lineWidth = 1 + currentIntensity * 0.5;
             ctx.setLineDash([8, 8]);
             
             ctx.lineDashOffset = dashOffset * (dirLtoR ? 1 : -1);
